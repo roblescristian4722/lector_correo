@@ -14,7 +14,7 @@ public:
 
     // Getters
     size_t getIdentificador() const;
-    size_t getHoraEnvio() const;
+    char *getHoraEnvio() const;
     char *getContenido() const;
     char *getAsunto() const;
     char *getCopiaCarbon() const;
@@ -24,7 +24,7 @@ public:
     char *getFechaEnvio() const;
 
     // Setters
-    void setHoraEnvio(const size_t &horaEnvio);
+    void setHoraEnvio(const char *horaEnvio);
     void setIdentificador(const size_t &identificador);
     void setContenido(const char *contenido);
     void setAsunto(const char *asunto);
@@ -36,8 +36,8 @@ public:
 
 private:
     size_t m_identificador;
-    size_t m_horaEnvio;
-    char m_fechaEnvio[50];
+    char m_horaEnvio[9];
+    char m_fechaEnvio[11];
     char m_destinatario[50];
     char m_rem[50];
     char m_copiaCarbon[100];

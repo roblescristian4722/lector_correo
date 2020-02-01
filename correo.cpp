@@ -2,13 +2,6 @@
 
 Correo::Correo()
 {
-    m_fechaEnvio[10] = {'\0'};
-    m_rem[50] = {'\0'};
-    m_destinatario[50] = {'\0'};
-    m_copiaCarbon[100] = {'\0'};
-    m_copiaCarbonCiega[100] = {'\0'};
-    m_asunto[200] = {'\0'};
-    m_contenido[500] = {'\0'};
 }
 
 
@@ -57,9 +50,11 @@ char *Correo::getFechaEnvio() const
     strcpy(tmp, m_fechaEnvio);
     return tmp;
 }
-size_t Correo::getHoraEnvio() const
+char *Correo::getHoraEnvio() const
 {
-    return m_horaEnvio;
+    char* tmp = new char[6];
+    strcpy(tmp, m_horaEnvio);
+    return tmp;
 }
 
 char *Correo::getContenido() const
@@ -102,7 +97,7 @@ void Correo::setFechaEnvio(const char *fechaEnvio)
 {
     strcpy(m_fechaEnvio, fechaEnvio);
 }
-void Correo::setHoraEnvio(const size_t &horaEnvio)
+void Correo::setHoraEnvio(const char *horaEnvio)
 {
-    m_horaEnvio = horaEnvio;
+    strcpy(m_horaEnvio, horaEnvio);
 }

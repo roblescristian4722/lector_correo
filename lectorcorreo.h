@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <stdexcept>
+#include <ctime>
 #include "correo.h"
 #include "ldl.h"
 

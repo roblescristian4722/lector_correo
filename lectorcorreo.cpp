@@ -2,25 +2,33 @@
 
 LectorCorreo::LectorCorreo()
 {
+    // Por defecto se iguala 0 al contador de correos
     m_correos = 0;
+    // Correo temporal que se utilizará para obtener todos los correos del binario
     Correo tmp;
+    // Se abre un archivo binario en modo de entrada
     fstream entrada("datos.bin", ios::binary | ios::in);
     if (!entrada.is_open())
     {
+        // En caso de que falle la lectura del archivo se crea uno
         cout << " Nota: Aún no se ha creado archivo binario, ejecute la opción \"crear\"" << endl
              << " Creando archivo binario..." << endl;
         entrada.open("datos.bin", ios::binary | ios::out);
+        entrada.close();
     }
-    entrada.seekg(0);
-    entrada.read((char*)&m_correos, sizeof(size_t));
-    for (size_t i = 0; i < m_correos; i++)
+    else
     {
-        long pos = sizeof(size_t) + i * sizeof(Correo);
-        entrada.seekg(pos);
-        entrada.read((char*)&tmp, sizeof(Correo));
-        m_correosLista.push_back(tmp);
+        entrada.seekg(0);
+        entrada.read((char*)&m_correos, sizeof(size_t));
+        for (size_t i = 0; i < m_correos; i++)
+        {
+            long pos = sizeof(size_t) + i * sizeof(Correo);
+            entrada.seekg(pos);
+            entrada.read((char*)&tmp, sizeof(Correo));
+            m_correosLista.push_back(tmp);
+        }
+        entrada.close();
     }
-    entrada.close();
 }
 
 LectorCorreo::~LectorCorreo()
@@ -35,13 +43,13 @@ void LectorCorreo::menu()
     {
         cout << " Bienvenido, eliga la opción a ejecutar" << endl
              << " Correos ingresados: " << m_correos << endl
-             << char(CREAR) << ") Crear correo" << endl
-             << char(LEER_ID) << ") Buscar correo por ID" << endl
-             << char(LEER_REM) << ") Buscar correo por remitente" << endl
-             << char(MOD_ID) << ") Modificar correo (buscar por ID)" << endl
-             << char(MOD_REM) << ") Modificar correo (buscar por remitente)" << endl
-             << char(SALIR) << ") Salir" << endl
-             << "Opción: ";
+             << " " << char(CREAR) << ") Crear correo" << endl
+             << " " << char(LEER_ID) << ") Buscar correo por ID" << endl
+             << " " << char(LEER_REM) << ") Buscar correo por remitente" << endl
+             << " " << char(MOD_ID) << ") Modificar correo (buscar por ID)" << endl
+             << " " << char(MOD_REM) << ") Modificar correo (buscar por remitente)" << endl
+             << " " << char(SALIR) << ") Salir" << endl
+             << " Opción: ";
         cin >> opc;
         cin.ignore();
         CLEAR;
@@ -59,10 +67,8 @@ void LectorCorreo::menu()
                 char copiaCarbonCiega[100];
                 char asunto[200];
                 char contenido[500];
-
-                // Se obtiene la fecha del sistema
-                auto now = chrono::system_clock::now();
-                auto fecha = chrono::system_clock::to_time_t(now);
+                char fechaEnvio[11];
+                char horaEnvio[9];
 
                 // Se guardan datos al correo temporal
                 cout << " Introduzca la siguiente información:" << endl << endl
@@ -76,9 +82,21 @@ void LectorCorreo::menu()
                 cin.getline(copiaCarbonCiega, 100);
                 cout << " Asunto: ";
                 cin.getline(asunto, 200);
-                cout << " Contenido: ";
+                cout << " Contenido (NOTA: escriba un caracter \"~\" en la parte en la que desee" << endl
+                     << " terminar de escribir el contenido del mensaje):" << endl << " ";
                 cin.getline(contenido, 500, '~');
-                correoTmp.setFechaEnvio(ctime(&fecha));
+
+                // Se obtiene la fecha del sistema
+                time_t now = time(0);
+                tm * time = localtime(&now);
+                snprintf(fechaEnvio, sizeof(fechaEnvio), "%s/%s/%s", to_string(time->tm_mday).c_str(),
+                         to_string(time->tm_mon + 1).c_str(), to_string(time->tm_year + 1900).c_str());
+
+                snprintf(horaEnvio, sizeof(horaEnvio), "%d:%d:%d", time->tm_hour, time->tm_min, time->tm_sec);
+
+                // Se introducen los atributos al objeto con setters
+                correoTmp.setFechaEnvio(fechaEnvio);
+                correoTmp.setHoraEnvio(horaEnvio);
                 correoTmp.setIdentificador(m_correos + 1);
                 correoTmp.setRem(rem);
                 correoTmp.setAsunto(asunto);
@@ -86,6 +104,8 @@ void LectorCorreo::menu()
                 correoTmp.setCopiaCarbon(copiaCarbon);
                 correoTmp.setDestinatario(dest);
                 correoTmp.setCopiaCarbonCiega(copiaCarbonCiega);
+                
+                // Se guarda el objeto en el archivo biario en la siguiente clase
                 crear(correoTmp);
             }
             break;
@@ -106,7 +126,8 @@ void LectorCorreo::menu()
                          << " ID: " << mostrar.getIdentificador() << endl
                          << " Remitente: " << mostrar.getRem() << endl
                          << " Destinatario: " << mostrar.getDestinatario() << endl
-                         /*<< " Fecha: " << correoTmp.getFechaEnvio() << endl*/
+                         << " Fecha de envío: " << mostrar.getFechaEnvio() << endl
+                         << " Hora de envío: " << mostrar.getHoraEnvio() << endl
                          << " CC: " << mostrar.getCopiaCarbon() << endl
                          << " CCCiega: " << mostrar.getCopiaCarbonCiega() << endl
                          << " Asunto: " << mostrar.getAsunto() << endl
@@ -128,6 +149,7 @@ void LectorCorreo::menu()
                          << " El identificador no corresponde a ningún correo" << endl;
                 else
                 {
+                    // Variables temporales para copiar los datos de la clase y mostrarlos
                     Correo correoTmp;
                     auto now = chrono::system_clock::now();
                     auto fecha = chrono::system_clock::to_time_t(now);
@@ -217,7 +239,7 @@ void LectorCorreo::crear(Correo &correo)
 
 const Correo &LectorCorreo::leer(const char* remitente)
 {
-
+    // Aún sin implementar
 }
 
 void LectorCorreo::modificar(size_t id, Correo& correo)
