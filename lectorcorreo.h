@@ -23,7 +23,7 @@ public:
 
     void menu();
     void crear(Correo& tmp);
-    Correo* leer(size_t id);
+    const Correo& leer(size_t id);
     const Correo& leer(const char* remitente);
     void modificar(size_t id);
     void modificar(const char* remitente);

@@ -6,7 +6,11 @@ LectorCorreo::LectorCorreo()
     Correo tmp;
     fstream entrada("datos.bin", ios::binary | ios::in);
     if (!entrada.is_open())
-        cout << " Nota: Aún no se ha creado archivo binario, ejecute la opción \"crear\"" << endl;
+    {
+        cout << " Nota: Aún no se ha creado archivo binario, ejecute la opción \"crear\"" << endl
+             << " Creando archivo binario..." << endl;
+        entrada.open("datos.bin", ios::binary | ios::out);
+    }
     entrada.seekg(0);
     entrada.read((char*)&m_correos, sizeof(size_t));
     for (size_t i = 0; i < m_correos; i++)
@@ -89,7 +93,7 @@ void LectorCorreo::menu()
             case LEER_ID:
             {
                 size_t id;
-                Correo* mostrar;
+                Correo mostrar;
                 cout << " Ingrese el ID del correo a buscar: ";
                 cin >> id;
                 if (id > m_correos || !id)
@@ -99,14 +103,14 @@ void LectorCorreo::menu()
                 {
                     mostrar = leer(id);
                     cout << endl
-                         << " ID: " << mostrar->getIdentificador() << endl
-                         << " Asunto: " << mostrar->getAsunto() << endl
-                         << " Remitente: " << mostrar->getRem() << endl
-                         << " Destinatario: " << mostrar->getDestinatario() << endl
+                         << " ID: " << mostrar.getIdentificador() << endl
+                         << " Remitente: " << mostrar.getRem() << endl
+                         << " Destinatario: " << mostrar.getDestinatario() << endl
                          /*<< " Fecha: " << correoTmp.getFechaEnvio() << endl*/
-                         << " CC: " << mostrar->getCopiaCarbon() << endl
-                         << " CCCiega: " << mostrar->getCopiaCarbonCiega() << endl
-                         << " Contenido: " << mostrar->getContenido() << endl;
+                         << " CC: " << mostrar.getCopiaCarbon() << endl
+                         << " CCCiega: " << mostrar.getCopiaCarbonCiega() << endl
+                         << " Asunto: " << mostrar.getAsunto() << endl
+                         << " Contenido: " << mostrar.getContenido() << endl;
                 }
                 cin.ignore();
             }
@@ -137,7 +141,7 @@ void LectorCorreo::menu()
 
 void LectorCorreo::crear(Correo &correo)
 {
-    ofstream archivo("datos.bin", ios::out | ios::binary);
+    fstream archivo("datos.bin", ios::out | ios::binary | ios::in);
     if (!archivo.is_open())
         cout << "Error en el achivo" << endl;
 
@@ -147,14 +151,9 @@ void LectorCorreo::crear(Correo &correo)
     archivo.seekp(0);
     archivo.write((char*)&m_correos, sizeof(size_t));
 
-    // Se escriben todos los correos anteriores al correo a crear
-    for (size_t i = 0; i < m_correos - 1; i++)
-    {
-        long pos = sizeof(size_t) + i * sizeof(Correo);
-        archivo.seekp(pos);
-        archivo.write((char*)&m_correosLista[i], sizeof(Correo));
-    }
     // Se elige la posición en la que se escribirá el correo
+    // A esta se le suman los bytes del size_t para que no sobre
+    // escriba el campo del contador
     long pos = sizeof(size_t) + (m_correos - 1) * sizeof(Correo);
     archivo.seekp(pos);
     // Se almacena el correo nuevo
@@ -164,21 +163,9 @@ void LectorCorreo::crear(Correo &correo)
     archivo.close();
 }
 
-Correo *LectorCorreo::leer(size_t id)
+ const Correo &LectorCorreo::leer(size_t id)
 {
-    ifstream archivo("datos.bin", ios::in | ios::binary);
-    if (!archivo.is_open())
-        cout << "Error en el achivo" << endl;
-
-    Correo* correoTmp = new Correo();
-
-    long pos = sizeof(size_t) + (id - 1) * sizeof(Correo);
-    archivo.seekg(pos);
-    archivo.read((char*)correoTmp, sizeof(Correo));
-
-    archivo.close();
-
-    return correoTmp;
+    return m_correosLista[id - 1];
 }
 
 const Correo &LectorCorreo::leer(const char* remitente)
