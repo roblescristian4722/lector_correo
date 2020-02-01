@@ -8,5 +8,6 @@ using namespace std;
 int main()
 {
     LectorCorreo lector;
+    lector.menu();
     return 0;
 }

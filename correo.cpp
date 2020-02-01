@@ -1,14 +1,19 @@
 #include "correo.h"
 
 Correo::Correo()
-{    
+{
+    m_fechaEnvio[10] = {'\0'};
+    m_rem[50] = {'\0'};
+    m_destinatario[50] = {'\0'};
+    m_copiaCarbon[100] = {'\0'};
+    m_copiaCarbonCiega[100] = {'\0'};
+    m_asunto[200] = {'\0'};
+    m_contenido[500] = {'\0'};
 }
 
 
 Correo::~Correo()
-{
-
-}
+{}
 
 // Getters
 size_t Correo::getIdentificador() const
@@ -40,10 +45,10 @@ char *Correo::getDestinatario() const
     strcpy(tmp, m_destinatario);
     return tmp;
 }
-char *Correo::getRemitente() const
+char *Correo::getRem() const
 {
-    char* tmp = new char[50];
-    strcpy(tmp, m_remitente);
+    char* tmp = new char[60];
+    strcpy(tmp, m_rem);
     return tmp;
 }
 char *Correo::getFechaEnvio() const
@@ -89,9 +94,9 @@ void Correo::setDestinatario(const char *destinatario)
 {
     strcpy(m_destinatario, destinatario);
 }
-void Correo::setRemitente(const char *remitente)
+void Correo::setRem(const char *value)
 {
-    strcpy(m_remitente, remitente);
+    strcpy(m_rem, value);
 }
 void Correo::setFechaEnvio(const char *fechaEnvio)
 {

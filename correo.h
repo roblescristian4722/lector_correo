@@ -2,6 +2,7 @@
 #define CORREO_H
 
 #include <iostream>
+#include <chrono>
 #include <string.h>
 using namespace std;
 
@@ -19,26 +20,26 @@ public:
     char *getCopiaCarbon() const;
     char *getCopiaCarbonCiega() const;
     char *getDestinatario() const;
-    char *getRemitente() const;
+    char *getRem() const;
     char *getFechaEnvio() const;
 
     // Setters
+    void setHoraEnvio(const size_t &horaEnvio);
     void setIdentificador(const size_t &identificador);
     void setContenido(const char *contenido);
     void setAsunto(const char *asunto);
     void setCopiaCarbonCiega(const char *copiaCarbonCiega);
     void setCopiaCarbon(const char *copiaCarbon);
     void setDestinatario(const char *destinatario);
-    void setRemitente(const char *remitente);
+    void setRem(const char *value);
     void setFechaEnvio(const char *fechaEnvio);
-    void setHoraEnvio(const size_t &horaEnvio);
 
 private:
     size_t m_identificador;
     size_t m_horaEnvio;
-    char m_fechaEnvio[10];
-    char m_remitente[50];
+    char m_fechaEnvio[50];
     char m_destinatario[50];
+    char m_rem[50];
     char m_copiaCarbon[100];
     char m_copiaCarbonCiega[100];
     char m_asunto[200];
