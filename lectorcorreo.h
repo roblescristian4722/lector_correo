@@ -22,11 +22,12 @@ public:
     virtual ~LectorCorreo();
 
     void menu();
-    void crear(Correo& tmp);
-    const Correo& leer(size_t id);
+    void crear(Correo& tmp, size_t id);
+    Correo* leer(size_t id);
     const Correo& leer(const char* remitente);
-    void modificar(size_t id, Correo& correo);
+    void modificar(size_t id, Correo* correo);
     void modificar(const char* remitente);
+    Correo& obtenerID(size_t id);
     /*void eliminar(size_t id);
     void eliminar(const char* remitente);
     void exportar(size_t id);
@@ -34,13 +35,7 @@ public:
     void importar();
     void exportar();*/
 
-    size_t getCorreos() const;
-    void setCorreos(const size_t &correos);
-
 private:
-    size_t m_correos;
-    LDL<Correo> m_correosLista;
-
     enum OPC
     {
         CREAR = '1',
@@ -50,6 +45,14 @@ private:
         MOD_REM,
         SALIR
     };
+
+    struct Datos
+    {
+        size_t correos;
+        bool posiciones[10];
+    };
+
+    Datos m_correos;
 };
 
 #endif // LECTORCORREO_H

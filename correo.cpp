@@ -2,6 +2,7 @@
 
 Correo::Correo()
 {
+    m_identificador = 0;
 }
 
 
