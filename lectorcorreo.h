@@ -22,8 +22,8 @@ public:
     virtual ~LectorCorreo();
 
     void menu();
-    void crear();
-    const Correo& leer(size_t id);
+    void crear(Correo& tmp);
+    Correo* leer(size_t id);
     const Correo& leer(const char* remitente);
     void modificar(size_t id);
     void modificar(const char* remitente);
@@ -39,6 +39,7 @@ public:
 
 private:
     size_t m_correos;
+    LDL<Correo> m_correosLista;
 
     enum OPC
     {

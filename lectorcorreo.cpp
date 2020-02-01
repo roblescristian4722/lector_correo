@@ -3,6 +3,20 @@
 LectorCorreo::LectorCorreo()
 {
     m_correos = 0;
+    Correo tmp;
+    fstream entrada("datos.bin", ios::binary | ios::in);
+    if (!entrada.is_open())
+        cout << " Nota: Aún no se ha creado archivo binario, ejecute la opción \"crear\"" << endl;
+    entrada.seekg(0);
+    entrada.read((char*)&m_correos, sizeof(size_t));
+    for (size_t i = 0; i < m_correos; i++)
+    {
+        long pos = sizeof(size_t) + i * sizeof(Correo);
+        entrada.seekg(pos);
+        entrada.read((char*)&tmp, sizeof(Correo));
+        m_correosLista.push_back(tmp);
+    }
+    entrada.close();
 }
 
 LectorCorreo::~LectorCorreo()
@@ -13,12 +27,6 @@ void LectorCorreo::menu()
 {
     CLEAR;
     char opc;
-    fstream entrada("datos.bin", ios::binary | ios::in);
-    if (!entrada.is_open())
-        cout << " Nota: Aún no se ha creado archivo binario, ejecute la opción \"crear\"" << endl;
-    entrada.seekg(0);
-    entrada.read((char*)&m_correos, sizeof(size_t));
-    entrada.close();
     do
     {
         cout << " Bienvenido, eliga la opción a ejecutar" << endl
@@ -36,15 +44,72 @@ void LectorCorreo::menu()
         switch (opc)
         {
             case CREAR:
-                crear();
+            {
+
+                // Correo temporal que guardará los datos y los escribirá
+                // al archivo binario
+                Correo correoTmp;
+                char dest[50];
+                char rem[50];
+                char copiaCarbon[100];
+                char copiaCarbonCiega[100];
+                char asunto[200];
+                char contenido[500];
+
+                // Se obtiene la fecha del sistema
+                auto now = chrono::system_clock::now();
+                auto fecha = chrono::system_clock::to_time_t(now);
+
+                // Se guardan datos al correo temporal
+                cout << " Introduzca la siguiente información:" << endl << endl
+                     << " Destinatario: ";
+                cin.getline(dest, 50);
+                cout << " Remitente: ";
+                cin.getline(rem, 50);
+                cout << " Copia Carbón (opcional): ";
+                cin.getline(copiaCarbon, 100);
+                cout << " Copia Carbón Ciega (opcinal): ";
+                cin.getline(copiaCarbonCiega, 100);
+                cout << " Asunto: ";
+                cin.getline(asunto, 200);
+                cout << " Contenido: ";
+                cin.getline(contenido, 500, '~');
+                correoTmp.setFechaEnvio(ctime(&fecha));
+                correoTmp.setIdentificador(m_correos + 1);
+                correoTmp.setRem(rem);
+                correoTmp.setAsunto(asunto);
+                correoTmp.setContenido(contenido);
+                correoTmp.setCopiaCarbon(copiaCarbon);
+                correoTmp.setDestinatario(dest);
+                correoTmp.setCopiaCarbonCiega(copiaCarbonCiega);
+                crear(correoTmp);
+            }
             break;
 
             case LEER_ID:
+            {
                 size_t id;
+                Correo* mostrar;
                 cout << " Ingrese el ID del correo a buscar: ";
                 cin >> id;
-                leer(id);
+                if (id > m_correos || !id)
+                    cout << endl
+                         << " El identificador no corresponde a ningún correo" << endl;
+                else
+                {
+                    mostrar = leer(id);
+                    cout << endl
+                         << " ID: " << mostrar->getIdentificador() << endl
+                         << " Asunto: " << mostrar->getAsunto() << endl
+                         << " Remitente: " << mostrar->getRem() << endl
+                         << " Destinatario: " << mostrar->getDestinatario() << endl
+                         /*<< " Fecha: " << correoTmp.getFechaEnvio() << endl*/
+                         << " CC: " << mostrar->getCopiaCarbon() << endl
+                         << " CCCiega: " << mostrar->getCopiaCarbonCiega() << endl
+                         << " Contenido: " << mostrar->getContenido() << endl;
+                }
                 cin.ignore();
+            }
             break;
 
             case LEER_REM:
@@ -70,90 +135,50 @@ void LectorCorreo::menu()
     }while (opc != SALIR);
 }
 
-void LectorCorreo::crear()
+void LectorCorreo::crear(Correo &correo)
 {
     ofstream archivo("datos.bin", ios::out | ios::binary);
     if (!archivo.is_open())
         cout << "Error en el achivo" << endl;
 
-    // Correo temporal que guardará los datos y los escribirá
-    // al archivo binario
-    Correo correoTmp;
-    char dest[50];
-    char rem[50];
-    char copiaCarbon[100];
-    char copiaCarbonCiega[100];
-    char asunto[200];
-    char contenido[500];
-
-    // Se obtiene la fecha del sistema
-    auto now = chrono::system_clock::now();
-    auto fecha = chrono::system_clock::to_time_t(now);
-
-    // Se guardan datos al correo temporal
-    cout << " Introduzca la siguiente información:" << endl << endl
-         << " Destinatario: ";
-    cin.getline(dest, 50);
-    cout << " Remitente: ";
-    cin.getline(rem, 50);
-    cout << " Copia Carbón (opcional): ";
-    cin.getline(copiaCarbon, 100);
-    cout << " Copia Carbón Ciega (opcinal): ";
-    cin.getline(copiaCarbonCiega, 100);
-    cout << " Asunto: ";
-    cin.getline(asunto, 200);
-    cout << " Contenido: ";
-    cin.getline(contenido, 500);
-    correoTmp.setFechaEnvio(ctime(&fecha));
-    correoTmp.setIdentificador(m_correos + 1);
-    correoTmp.setRem(rem);
-    correoTmp.setAsunto(asunto);
-    correoTmp.setContenido(contenido);
-    correoTmp.setCopiaCarbon(copiaCarbon);
-    correoTmp.setDestinatario(dest);
-    correoTmp.setCopiaCarbonCiega(copiaCarbonCiega);
-
-    archivo.seekp(0);
+    // Se guarda en los primeros 8 bytes del archivo la
+    // cantidad de correos almacenados
     ++m_correos;
+    archivo.seekp(0);
     archivo.write((char*)&m_correos, sizeof(size_t));
 
+    // Se escriben todos los correos anteriores al correo a crear
+    for (size_t i = 0; i < m_correos - 1; i++)
+    {
+        long pos = sizeof(size_t) + i * sizeof(Correo);
+        archivo.seekp(pos);
+        archivo.write((char*)&m_correosLista[i], sizeof(Correo));
+    }
+    // Se elige la posición en la que se escribirá el correo
     long pos = sizeof(size_t) + (m_correos - 1) * sizeof(Correo);
     archivo.seekp(pos);
-
-    archivo.write((char*)&correoTmp, sizeof(Correo));
+    // Se almacena el correo nuevo
+    archivo.write((char*)&correo, sizeof(Correo));
+    m_correosLista.push_back(correo);
 
     archivo.close();
 }
 
-const Correo &LectorCorreo::leer(size_t id)
+Correo *LectorCorreo::leer(size_t id)
 {
-    if (id > m_correos || !id)
-        cout << endl
-             << " El identificador no corresponde a ningún correo" << endl;
-    else
-    {
-        ifstream archivo("datos.bin", ios::in | ios::binary);
-        if (!archivo.is_open())
-            cout << "Error en el achivo" << endl;
+    ifstream archivo("datos.bin", ios::in | ios::binary);
+    if (!archivo.is_open())
+        cout << "Error en el achivo" << endl;
 
-        Correo correoTmp;
+    Correo* correoTmp = new Correo();
 
-        long pos = sizeof(size_t) + (id - 1) * sizeof(Correo);
-        archivo.seekg(pos);
-        archivo.read((char*)&correoTmp, sizeof(Correo));
+    long pos = sizeof(size_t) + (id - 1) * sizeof(Correo);
+    archivo.seekg(pos);
+    archivo.read((char*)correoTmp, sizeof(Correo));
 
-        archivo.close();
+    archivo.close();
 
-        cout << endl
-             << " ID: " << correoTmp.getIdentificador() << endl
-             << " Asunto: " << correoTmp.getAsunto() << endl
-             << " Remitente: " << correoTmp.getRem() << endl
-             << " Destinatario: " << correoTmp.getDestinatario() << endl
-             /*<< " Fecha: " << correoTmp.getFechaEnvio() << endl*/
-             << " CC: " << correoTmp.getCopiaCarbon() << endl
-             << " CCCiega: " << correoTmp.getCopiaCarbonCiega() << endl
-             << " Contenido: " << correoTmp.getContenido() << endl;
-    }
+    return correoTmp;
 }
 
 const Correo &LectorCorreo::leer(const char* remitente)
