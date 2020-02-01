@@ -120,6 +120,53 @@ void LectorCorreo::menu()
             break;
 
             case MOD_ID:
+                cout << " Ingrese el id del correo a modificar: ";
+                size_t id;
+                cin >> id;
+                if (id > m_correos || !id)
+                    cout << endl
+                         << " El identificador no corresponde a ningún correo" << endl;
+                else
+                {
+                    Correo correoTmp;
+                    auto now = chrono::system_clock::now();
+                    auto fecha = chrono::system_clock::to_time_t(now);
+                    char dest[50];
+                    char rem[50];
+                    char copiaCarbon[100];
+                    char copiaCarbonCiega[100];
+                    char asunto[200];
+                    char contenido[500];
+
+                    cout << " Ingrese los siguientes datos" << endl << endl
+                         << " Destinatario: ";
+                    cin.ignore();
+                    cin.getline(dest, 50);
+                    cout << " Remitente: ";
+                    cin.getline(rem, 50);
+                    cout << " Copia Carbón (opcional): ";
+                    cin.getline(copiaCarbon, 100);
+                    cout << " Copia Carbón Ciega (opcinal): ";
+                    cin.getline(copiaCarbonCiega, 100);
+                    cout << " Asunto: ";
+                    cin.getline(asunto, 200);
+                    cout << " Contenido: ";
+                    cin.getline(contenido, 500, '~');
+
+                    correoTmp.setFechaEnvio(ctime(&fecha));
+                    correoTmp.setIdentificador(id);
+                    correoTmp.setRem(rem);
+                    correoTmp.setAsunto(asunto);
+                    correoTmp.setContenido(contenido);
+                    correoTmp.setCopiaCarbon(copiaCarbon);
+                    correoTmp.setDestinatario(dest);
+                    correoTmp.setCopiaCarbonCiega(copiaCarbonCiega);
+                    
+                    modificar(id, correoTmp);
+                    cout << endl
+                         << " Los cambios se han realizado con éxito" << endl;
+                }
+                cin.ignore();
             break;
 
             case MOD_REM:
@@ -173,8 +220,19 @@ const Correo &LectorCorreo::leer(const char* remitente)
 
 }
 
-void LectorCorreo::modificar(size_t id)
+void LectorCorreo::modificar(size_t id, Correo& correo)
 {
+    fstream archivo("datos.bin", ios::in | ios::out | ios::binary);
+    if (!archivo.is_open())
+        cout << " Error en el archivo de entrada" << endl;
+    
+    long pos = sizeof(size_t) + (id - 1) * sizeof(Correo);
+    archivo.seekp(pos);
+
+    archivo.write((char*)&correo, sizeof(Correo));
+    archivo.close();
+    m_correosLista.erase(id - 1);
+    m_correosLista.insert(correo, id - 1);
 
 }
 
