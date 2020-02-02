@@ -80,3 +80,8 @@ bool LectorCorreo::getPosicion(int index)
 {
     return m_correos.posiciones[index];
 }
+
+bool* LectorCorreo::getPosicion()
+{
+    return m_correos.posiciones;
+}

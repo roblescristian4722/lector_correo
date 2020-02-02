@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>917</width>
+    <width>822</width>
     <height>596</height>
    </rect>
   </property>
@@ -17,9 +17,9 @@
    <widget class="QLabel" name="titulo">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>0</x>
       <y>20</y>
-      <width>361</width>
+      <width>821</width>
       <height>51</height>
      </rect>
     </property>
@@ -33,9 +33,9 @@
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>90</y>
-      <width>751</width>
+      <x>10</x>
+      <y>100</y>
+      <width>801</width>
       <height>391</height>
      </rect>
     </property>
@@ -49,13 +49,13 @@
      <set>QAbstractItemView::NoEditTriggers</set>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>110</x>
       <y>500</y>
       <width>601</width>
-      <height>61</height>
+      <height>41</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">

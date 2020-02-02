@@ -17,7 +17,7 @@ class agregar : public QDialog
     Q_OBJECT
 
 public:
-    explicit agregar(Correo* correo, bool* escribir, QWidget *parent = nullptr);
+    explicit agregar(Correo* correo, bool* escribir, bool* pos, QWidget *parent = nullptr);
     ~agregar();
 
 private slots:
@@ -26,6 +26,7 @@ private slots:
 private:
     Ui::agregar *ui;
     Correo* m_correo;
+    bool* m_pos;
     bool* m_escribir;
 };
 

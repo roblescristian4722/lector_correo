@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtDebug>
 #include "agregar.h"
+#include "modificar.h"
 #include "ldl.h"
 #include "correo.h"
 #include "lectorcorreo.h"
@@ -28,16 +29,25 @@ private slots:
 
     void on_eliminar_clicked();
 
+    void on_modificar_clicked();
+
 private:
     Ui::MainWindow *ui;
+
+    // Objeto lector que se encargará de administrar
+    // todos los datos de la interfaz
     LectorCorreo m_lector;
-    int m_row, m_column;
+    int m_row;
+    int m_column;
+
     enum COLUMNAS
     {
         COL_ID,
         COL_REM,
         COL_DES,
         COL_ASUNTO,
+        COL_CC,
+        COL_CCC,
         COL_FECHA,
         COL_HORA
     };

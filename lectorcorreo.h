@@ -28,6 +28,7 @@ public:
     Correo& obtenerID(size_t id);
 
     bool getPosicion(int index);
+    bool* getPosicion();
 
 private:
     struct Datos
@@ -36,6 +37,8 @@ private:
         bool posiciones[10];
     };
 
+    // Estructura que gestiona los id usados
+    // y la cantidad de correos ingresados
     Datos m_correos;
 };
 

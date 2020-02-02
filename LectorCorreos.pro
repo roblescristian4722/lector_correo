@@ -20,18 +20,21 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     correo.cpp \
-    lectorcorreo.cpp
+    lectorcorreo.cpp \
+    modificar.cpp
 
 HEADERS += \
     agregar.h \
     mainwindow.h \
     correo.h \
     ldl.h \
-    lectorcorreo.h
+    lectorcorreo.h \
+    modificar.h
 
 FORMS += \
     agregar.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    modificar.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
