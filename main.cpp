@@ -1,13 +1,11 @@
-#include <iostream>
-#include <fstream>
-#include "correo.h"
-#include "lectorcorreo.h"
-#include "ldl.h"
-using namespace std;
+#include "mainwindow.h"
 
-int main()
+#include <QApplication>
+
+int main(int argc, char *argv[])
 {
-    LectorCorreo lector;
-    lector.menu();
-    return 0;
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+    return a.exec();
 }
