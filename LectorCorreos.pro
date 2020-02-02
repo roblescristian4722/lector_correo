@@ -21,7 +21,8 @@ SOURCES += \
     mainwindow.cpp \
     correo.cpp \
     lectorcorreo.cpp \
-    modificar.cpp
+    modificar.cpp \
+    vistaprevia.cpp
 
 HEADERS += \
     agregar.h \
@@ -29,12 +30,14 @@ HEADERS += \
     correo.h \
     ldl.h \
     lectorcorreo.h \
-    modificar.h
+    modificar.h \
+    vistaprevia.h
 
 FORMS += \
     agregar.ui \
     mainwindow.ui \
-    modificar.ui
+    modificar.ui \
+    vistaprevia.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

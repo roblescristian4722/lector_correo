@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QMessageBox>
+#include <QDebug>
 #include "correo.h"
 
 namespace Ui {

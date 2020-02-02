@@ -91,7 +91,6 @@ void MainWindow::on_agregar_clicked()
 
 void MainWindow::on_tableWidget_cellClicked(int row, int column)
 {
-    qDebug() << row << " " << column << endl;
     m_row = row;
     m_column = column;
 }
@@ -109,13 +108,12 @@ void MainWindow::on_modificar_clicked()
     {
         Correo *tmp = new Correo;
         bool *escribir = new bool(false);
-
+        modificar* a;
         size_t id = size_t(ui->tableWidget->item(m_row, COL_ID)->text().toInt());
 
         *tmp = m_lector.leer(id);
-
-        modificar a(tmp, escribir, id);
-        a.exec();
+        a = new modificar(tmp, escribir, id);
+        a->exec();
 
         if (*escribir)
         {
@@ -139,5 +137,17 @@ void MainWindow::on_modificar_clicked()
             delete tmp;
             delete escribir;
         }
+        delete a;
     }
+}
+
+void MainWindow::on_tableWidget_cellDoubleClicked(int row, int column)
+{
+    Correo* correo = new Correo;
+    *correo = m_lector.leer(row + 1);
+    vistaprevia* v = new vistaprevia(correo);
+    v->setModal(true);
+    v->exec();
+    delete v;
+    delete correo;
 }

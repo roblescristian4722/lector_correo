@@ -2,7 +2,8 @@
 
 LectorCorreo::LectorCorreo()
 {
-    // Por defecto se iguala 0 al contador de correos
+    // Por defecto el contador de correos se iguala a 0
+    // y cada id a false
     m_correos.correos = 0;
     for (size_t i = 0; i < 10; i++)
         m_correos.posiciones[i] = false;

@@ -9,6 +9,7 @@ agregar::agregar(Correo* correo, bool* escribir, bool* pos, QWidget *parent) :
     m_pos(pos)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Agregar correo");
 }
 
 agregar::~agregar()

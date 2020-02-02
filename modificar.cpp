@@ -9,6 +9,14 @@ modificar::modificar(Correo* correo, bool* escribir, size_t id, QWidget *parent)
     ui(new Ui::modificar)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Modificar correo");
+
+    ui->des_linea->setText(m_correo->getDestinatario());
+    ui->rem_linea->setText(m_correo->getRem());
+    ui->asunto_linea->setText(m_correo->getAsunto());
+    ui->contenido_caja->setPlainText(m_correo->getContenido());
+    ui->copiaCarbon_linea->setText(m_correo->getCopiaCarbon());
+    ui->copiaCarbonCiega_linea->setText(m_correo->getCopiaCarbonCiega());
 }
 
 modificar::~modificar()

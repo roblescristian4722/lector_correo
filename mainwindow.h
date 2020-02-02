@@ -5,10 +5,11 @@
 #include <QtDebug>
 #include "agregar.h"
 #include "modificar.h"
+#include "agregar.h"
+#include "vistaprevia.h"
 #include "ldl.h"
 #include "correo.h"
 #include "lectorcorreo.h"
-#include "agregar.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -30,6 +31,8 @@ private slots:
     void on_eliminar_clicked();
 
     void on_modificar_clicked();
+
+    void on_tableWidget_cellDoubleClicked(int row, int column);
 
 private:
     Ui::MainWindow *ui;
