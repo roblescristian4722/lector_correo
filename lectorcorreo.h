@@ -7,7 +7,7 @@
 #include "correo.h"
 #include "ldl.h"
 
-#if defined(_WIN64) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
     #define CLEAR std::system("cls")
 #else
     #define CLEAR std::system("clear")
