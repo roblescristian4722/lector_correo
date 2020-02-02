@@ -56,7 +56,7 @@ void LectorCorreo::menu()
                 {
                     // Correo temporal que guardará los datos y los escribirá
                     // al archivo binario
-                    Correo correoTmp;
+                    Correo *correoTmp = new Correo;
                     char dest[50];
                     char rem[50];
                     char copiaCarbon[100];
@@ -117,16 +117,15 @@ void LectorCorreo::menu()
                     snprintf(horaEnvio, sizeof(horaEnvio), "%d:%d:%d", time->tm_hour, time->tm_min, time->tm_sec);
 
                     // Se introducen los atributos al objeto con setters
-                    correoTmp.setIdentificador(id);
-                    correoTmp.setFechaEnvio(fechaEnvio);
-                    correoTmp.setHoraEnvio(horaEnvio);
-                    correoTmp.setIdentificador(m_correos.correos + 1);
-                    correoTmp.setRem(rem);
-                    correoTmp.setAsunto(asunto);
-                    correoTmp.setContenido(contenido);
-                    correoTmp.setCopiaCarbon(copiaCarbon);
-                    correoTmp.setDestinatario(dest);
-                    correoTmp.setCopiaCarbonCiega(copiaCarbonCiega);
+                    correoTmp->setIdentificador(id);
+                    correoTmp->setFechaEnvio(fechaEnvio);
+                    correoTmp->setHoraEnvio(horaEnvio);
+                    correoTmp->setRem(rem);
+                    correoTmp->setAsunto(asunto);
+                    correoTmp->setContenido(contenido);
+                    correoTmp->setCopiaCarbon(copiaCarbon);
+                    correoTmp->setDestinatario(dest);
+                    correoTmp->setCopiaCarbonCiega(copiaCarbonCiega);
                     
                     // Se guarda el objeto en el archivo biario en la siguiente clase
                     crear(correoTmp, id);
@@ -139,7 +138,7 @@ void LectorCorreo::menu()
             case LEER_ID:
             {
                 size_t id;
-                Correo* mostrar;
+                Correo* mostrar = new Correo;
                 cout << " Ingrese el ID del correo a buscar: ";
                 cin >> id;
                 if (id < 1 || id > 10)
@@ -151,7 +150,7 @@ void LectorCorreo::menu()
                          << endl;
                 else
                 {
-                    mostrar = leer(id);
+                    *mostrar = leer(id);
                     cout << endl
                          << " ID: " << mostrar->getIdentificador() << endl
                          << " Remitente: " << mostrar->getRem() << endl
@@ -162,6 +161,7 @@ void LectorCorreo::menu()
                          << " CCCiega: " << mostrar->getCopiaCarbonCiega() << endl
                          << " Asunto: " << mostrar->getAsunto() << endl
                          << " Contenido: " << mostrar->getContenido() << endl;
+                    delete mostrar;
                 }
                 cin.ignore();
             }
@@ -184,7 +184,8 @@ void LectorCorreo::menu()
                 else
                 {   
                     // Variables temporales para copiar los datos de la clase y mostrarlos
-                    Correo* correoTmp = leer(id);
+                    Correo* correoTmp = new Correo;
+                    *correoTmp = leer(id);
                     char dest[50];
                     char rem[50];
                     char copiaCarbon[100];
@@ -216,6 +217,7 @@ void LectorCorreo::menu()
                     correoTmp->setDestinatario(dest);
                     correoTmp->setCopiaCarbonCiega(copiaCarbonCiega);
                     
+                    cout << "dafasdfasf" << endl;cin.get();
                     modificar(id, correoTmp);
                     cout << endl
                          << " Los cambios se han realizado con éxito" << endl;
@@ -240,7 +242,7 @@ void LectorCorreo::menu()
     }while (opc != SALIR);
 }
 
-void LectorCorreo::crear(Correo &correo, size_t id)
+void LectorCorreo::crear(Correo* correo, size_t id)
 {
     fstream archivo("datos.bin", ios::out | ios::binary | ios::in);
     if (!archivo.is_open())
@@ -259,20 +261,20 @@ void LectorCorreo::crear(Correo &correo, size_t id)
     long pos = sizeof(Datos) + (id - 1) * sizeof(Correo);
     archivo.seekp(pos);
     // Se almacena el correo nuevo
-    archivo.write((char*)&correo, sizeof(Correo));
-
+    archivo.write((char*)correo, sizeof(Correo));
     archivo.close();
+    delete correo;
 }
 
- Correo *LectorCorreo::leer(size_t id)
+ Correo LectorCorreo::leer(size_t id)
 {
-    Correo* tmp = new Correo;
+    Correo tmp;
     fstream archivo("datos.bin", ios::in | ios::out | ios::binary);
     if (!archivo.is_open())
         cout << " Error al abrir el archivo" << endl;
     long pos = sizeof(Datos) + (id - 1) * sizeof(Correo);
     archivo.seekg(pos);
-    archivo.read((char*)tmp, sizeof(Correo));
+    archivo.read((char*)&tmp, sizeof(Correo));
     return tmp;
 }
 
@@ -292,6 +294,7 @@ void LectorCorreo::modificar(size_t id, Correo* correo)
 
     archivo.write((char*)correo, sizeof(Correo));
     archivo.close();
+    delete correo;
 }
 
 void LectorCorreo::modificar(const char *remitente)
