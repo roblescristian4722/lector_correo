@@ -144,7 +144,8 @@ void MainWindow::on_modificar_clicked()
 void MainWindow::on_tableWidget_cellDoubleClicked(int row, int column)
 {
     Correo* correo = new Correo;
-    *correo = m_lector.leer(row + 1);
+    QString index = ui->tableWidget->item(row, 0)->text();
+    *correo = m_lector.leer(index.toInt());
     vistaprevia* v = new vistaprevia(correo);
     v->setModal(true);
     v->exec();

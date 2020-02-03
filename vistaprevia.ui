@@ -48,14 +48,17 @@
      <height>231</height>
     </rect>
    </property>
+   <property name="textInteractionFlags">
+    <set>Qt::NoTextInteraction</set>
+   </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>20</y>
-     <width>231</width>
-     <height>311</height>
+     <x>10</x>
+     <y>10</y>
+     <width>241</width>
+     <height>341</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -122,58 +125,30 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QLabel" name="id_res">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <widget class="QTextBrowser" name="id_res"/>
       </item>
       <item>
-       <widget class="QLabel" name="rem_res">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <widget class="QTextBrowser" name="rem_res"/>
       </item>
       <item>
-       <widget class="QLabel" name="des_res">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <widget class="QTextBrowser" name="des_res"/>
       </item>
       <item>
-       <widget class="QLabel" name="asunto_res">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <widget class="QTextBrowser" name="asunto_res"/>
       </item>
       <item>
-       <widget class="QLabel" name="cc_res">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <widget class="QTextBrowser" name="cc_res"/>
       </item>
       <item>
-       <widget class="QLabel" name="ccc_res">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <widget class="QTextBrowser" name="ccc_res"/>
       </item>
       <item>
-       <widget class="QLabel" name="horaEnvio_res">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <widget class="QTextBrowser" name="horaEnvio_res"/>
       </item>
       <item>
-       <widget class="QLabel" name="fechaEnvio_res">
-        <property name="text">
-         <string/>
+       <widget class="QTextBrowser" name="fechaEnvio_res">
+        <property name="textInteractionFlags">
+         <set>Qt::NoTextInteraction</set>
         </property>
        </widget>
       </item>
