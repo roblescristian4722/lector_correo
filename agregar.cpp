@@ -21,6 +21,7 @@ void agregar::on_guardar_clicked()
     char horaEnvio[9];
     QString id, des, rem, cc, ccc, asunto, cont;
     Correo correo;
+    Correo* tmp;
 
     // Se obtiene la fecha del sistema
     time_t now = time(0);
@@ -36,9 +37,13 @@ void agregar::on_guardar_clicked()
     ccc = ui->copiaCarbonCiega_linea->text();
     asunto = ui->asunto_linea->text();
     cont = ui->contenido_caja->toPlainText();
+    tmp = m_lector->leer(id.toULongLong());
 
     if (id.toULongLong() < 1 || id.toULongLong() > 9999999999)
         QMessageBox::warning(this, "ID no válido", "ID fuera del rango (1 - 9999999999)");
+    else if (atoll(tmp->getIdentificador()) == id.toLongLong())
+        QMessageBox::warning(this, "ID en uso",
+                             "El ID está en uso, utilice uno nuevo o modifique el ya existente");
     else if (!id.isEmpty() && !des.isEmpty() && !rem.isEmpty())
     {
         correo.setHoraEnvio(horaEnvio);
