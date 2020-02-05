@@ -3,52 +3,16 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow),
+      m_tmp(nullptr)
 {
-    QStringList col;
-    Correo *tmp = new Correo;
 
     // Se inicializa la interfaz y todos sus atributos
     ui->setupUi(this);
 
     // Se escoge el nombre para la ventana principal
     this->setWindowTitle("Yi Mail");
-
-    // Se especifica la cantidad de columas que tendrá la tabla
-    // Para luego insgresar los nombres de cada una
-    ui->tableWidget->setColumnCount(8);
-    col << "ID" << "De:" << "Para:" << "Asunto" << "CC" << "CC Ciega" << "Fecha" << "Hora" ;
-    ui->tableWidget->setHorizontalHeaderLabels(col);
-
-    // Dentro de este ciclo se recuperará cada uno de los datos
-    // del archivo binario previamente realizado y se añadiran
-    // de uno en uno a la tabla
-    for (size_t i = 0; i < 10; i++)
-    {
-        if (m_lector.getPosicion(i))
-        {
-            *tmp = m_lector.leer(i + 1);
-            ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-            int fila = ui->tableWidget->rowCount() - 1;
-            ui->tableWidget->setItem(fila, COL_ID,
-                                     new QTableWidgetItem(QString::number(tmp->getIdentificador())));
-            ui->tableWidget->setItem(fila, COL_REM,
-                                     new QTableWidgetItem(tmp->getRem()));
-            ui->tableWidget->setItem(fila, COL_DES,
-                                     new QTableWidgetItem(tmp->getDestinatario()));
-            ui->tableWidget->setItem(fila, COL_ASUNTO,
-                                     new QTableWidgetItem(tmp->getAsunto()));
-            ui->tableWidget->setItem(fila, COL_CC,
-                                     new QTableWidgetItem(tmp->getCopiaCarbon()));
-            ui->tableWidget->setItem(fila, COL_CCC,
-                                     new QTableWidgetItem(tmp->getCopiaCarbonCiega()));
-            ui->tableWidget->setItem(fila, COL_FECHA,
-                                     new QTableWidgetItem(tmp->getFechaEnvio()));
-            ui->tableWidget->setItem(fila, COL_HORA,
-                                     new QTableWidgetItem(tmp->getHoraEnvio()));
-        }
-    }
-    delete tmp;
+    ui->Resultado->setText("Correo seleccionado:\n\nAún no se ha seleccionado un correo...");
 }
 
 MainWindow::~MainWindow()
@@ -58,41 +22,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_agregar_clicked()
 {
-    Correo *tmp = new Correo;
-    bool *escribir = new bool(false);
-    agregar a(tmp, escribir, m_lector.getPosicion());
+    agregar a(&m_lector);
     a.setModal(true);
     a.exec();
-    if (*escribir)
-    {
-        m_lector.crear(tmp, tmp->getIdentificador());
-        ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-        int fila = ui->tableWidget->rowCount() - 1;
-        ui->tableWidget->setItem(fila, COL_ID,
-                                 new QTableWidgetItem(QString::number(tmp->getIdentificador())));
-        ui->tableWidget->setItem(fila, COL_REM,
-                                 new QTableWidgetItem(tmp->getRem()));
-        ui->tableWidget->setItem(fila, COL_DES,
-                                 new QTableWidgetItem(tmp->getDestinatario()));
-        ui->tableWidget->setItem(fila, COL_ASUNTO,
-                                 new QTableWidgetItem(tmp->getAsunto()));
-        ui->tableWidget->setItem(fila, COL_CC,
-                                 new QTableWidgetItem(tmp->getCopiaCarbon()));
-        ui->tableWidget->setItem(fila, COL_CCC,
-                                 new QTableWidgetItem(tmp->getCopiaCarbonCiega()));
-        ui->tableWidget->setItem(fila, COL_FECHA,
-                                 new QTableWidgetItem(tmp->getFechaEnvio()));
-        ui->tableWidget->setItem(fila, COL_HORA,
-                                 new QTableWidgetItem(tmp->getHoraEnvio()));
-        delete tmp;
-        delete escribir;
-    }
-}
-
-void MainWindow::on_tableWidget_cellClicked(int row, int column)
-{
-    m_row = row;
-    m_column = column;
 }
 
 void MainWindow::on_eliminar_clicked()
@@ -102,53 +34,58 @@ void MainWindow::on_eliminar_clicked()
 
 void MainWindow::on_modificar_clicked()
 {
-    if (!ui->tableWidget->rowCount())
-        QMessageBox::warning(this, "Bandeja vacía", "Aún no hay correos. Intente agregar uno primero");
-    else
+    string id;
+    if (m_tmp)
     {
-        Correo *tmp = new Correo;
-        bool *escribir = new bool(false);
-        modificar* a;
-        size_t id = size_t(ui->tableWidget->item(m_row, COL_ID)->text().toInt());
-
-        *tmp = m_lector.leer(id);
-        a = new modificar(tmp, escribir, id);
-        a->exec();
-
-        if (*escribir)
-        {
-            m_lector.crear(tmp, tmp->getIdentificador());
-            ui->tableWidget->setItem(m_row, COL_ID,
-                                     new QTableWidgetItem(QString::number(tmp->getIdentificador())));
-            ui->tableWidget->setItem(m_row, COL_REM,
-                                     new QTableWidgetItem(tmp->getRem()));
-            ui->tableWidget->setItem(m_row, COL_DES,
-                                     new QTableWidgetItem(tmp->getDestinatario()));
-            ui->tableWidget->setItem(m_row, COL_ASUNTO,
-                                     new QTableWidgetItem(tmp->getAsunto()));
-            ui->tableWidget->setItem(m_row, COL_CC,
-                                     new QTableWidgetItem(tmp->getCopiaCarbon()));
-            ui->tableWidget->setItem(m_row, COL_CCC,
-                                     new QTableWidgetItem(tmp->getCopiaCarbonCiega()));
-            ui->tableWidget->setItem(m_row, COL_FECHA,
-                                     new QTableWidgetItem(tmp->getFechaEnvio()));
-            ui->tableWidget->setItem(m_row, COL_HORA,
-                                     new QTableWidgetItem(tmp->getHoraEnvio()));
-            delete tmp;
-            delete escribir;
-        }
-        delete a;
+        modificar m(m_tmp, &m_lector);
+        m.exec();
+        id = m_tmp->getIdentificador();
+        std::string show = "Correo seleccionado: \n\n";
+        show += "ID: " + id + "\n\n"
+             +  "De: " + m_tmp->getRem() + "\n\n"
+             +  "Para: " + m_tmp->getDestinatario() + "\n\n"
+             +  "Asunto: " + m_tmp->getAsunto() + "\n\n"
+             +  "CC: " + m_tmp->getCopiaCarbon() + "\n\n"
+             +  "CCC: " + m_tmp->getCopiaCarbonCiega() + "\n\n"
+             +  "Fecha de envío: " + m_tmp->getFechaEnvio() + "\n\n"
+             +  "Hora de envío: " + m_tmp->getHoraEnvio() + "\n\n"
+             +  "Contenido:" + "\n" + m_tmp->getContenido();
+        ui->Resultado->setText(QString::fromStdString(show));
     }
+    else
+        QMessageBox::warning(this, "Sin correo seleccionado",
+                             "No ha seleccionado ningún correo, para hacerlo busque un ID");
 }
 
-void MainWindow::on_tableWidget_cellDoubleClicked(int row, int column)
+void MainWindow::on_buscar_clicked()
 {
-    Correo* correo = new Correo;
-    QString index = ui->tableWidget->item(row, 0)->text();
-    *correo = m_lector.leer(index.toInt());
-    vistaprevia* v = new vistaprevia(correo);
-    v->setModal(true);
-    v->exec();
-    delete v;
-    delete correo;
+    if (ui->buscar_barra->text().isEmpty())
+        QMessageBox::warning(this, "ID vacío", "Ingrese un ID");
+    else if (ui->buscar_barra->text().toULongLong() < 1 || ui->buscar_barra->text().toStdString().length() > 10)
+    {
+        QMessageBox::warning(this, "ID no válido", "El ID debe de estar en un rango de (1 - 9999999999)");
+        qDebug() << ui->buscar_barra->text().toStdString().length();
+    }
+    else
+    {
+        string id;
+        m_tmp = m_lector.leer(ui->buscar_barra->text().toULong());
+        id = m_tmp->getIdentificador();
+        if (ui->buscar_barra->text().toStdString() == id)
+        {
+            std::string show = "Correo seleccionado: \n\n";
+            show += "ID: " + id + "\n\n"
+                 +  "De: " + m_tmp->getRem() + "\n\n"
+                 +  "Para: " + m_tmp->getDestinatario() + "\n\n"
+                 +  "Asunto: " + m_tmp->getAsunto() + "\n\n"
+                 +  "CC: " + m_tmp->getCopiaCarbon() + "\n\n"
+                 +  "CCC: " + m_tmp->getCopiaCarbonCiega() + "\n\n"
+                 +  "Fecha de envío: " + m_tmp->getFechaEnvio() + "\n\n"
+                 +  "Hora de envío: " + m_tmp->getHoraEnvio() + "\n\n"
+                 +  "Contenido:" + "\n" + m_tmp->getContenido();
+            ui->Resultado->setText(QString::fromStdString(show));
+        }
+        else
+            QMessageBox::warning(this, "ID no encontrado", "No se encontró el ID, primero intente agregarlo");
+    }
 }

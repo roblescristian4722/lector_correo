@@ -10,7 +10,7 @@ vistaprevia::vistaprevia(Correo* correo, QWidget *parent) :
     this->setWindowTitle("Vista Previa");
 
     ui->cc_res->setText(m_correo->getCopiaCarbon());
-    ui->id_res->setText(QString::number(m_correo->getIdentificador()));
+    ui->id_res->setText(m_correo->getIdentificador());
     ui->ccc_res->setText(m_correo->getCopiaCarbonCiega());
     ui->des_res->setText(m_correo->getDestinatario());
     ui->rem_res->setText(m_correo->getRem());

@@ -5,7 +5,6 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <ctime>
-#include "correo.h"
 #include "lectorcorreo.h"
 
 namespace Ui {
@@ -17,7 +16,7 @@ class agregar : public QDialog
     Q_OBJECT
 
 public:
-    explicit agregar(Correo* correo, bool* escribir, bool* pos, QWidget *parent = nullptr);
+    explicit agregar(LectorCorreo* lector, QWidget *parent = nullptr);
     ~agregar();
 
 private slots:
@@ -25,9 +24,7 @@ private slots:
 
 private:
     Ui::agregar *ui;
-    Correo* m_correo;
-    bool* m_pos;
-    bool* m_escribir;
+    LectorCorreo* m_lector;
 };
 
 #endif // AGREGAR_H

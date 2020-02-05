@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include "correo.h"
+#include "lectorcorreo.h"
 
 namespace Ui {
 class modificar;
@@ -15,7 +16,7 @@ class modificar : public QDialog
     Q_OBJECT
 
 public:
-    explicit modificar(Correo* correo, bool* escribir, size_t id, QWidget *parent = nullptr);
+    explicit modificar(Correo* correo, LectorCorreo* lector, QWidget *parent = nullptr);
     ~modificar();
 
 private slots:
@@ -24,8 +25,7 @@ private slots:
 private:
     Ui::modificar *ui;
     Correo* m_correo;
-    bool* m_escribir;
-    size_t m_id;
+    LectorCorreo* m_lector;
 };
 
 #endif // MODIFICAR_H

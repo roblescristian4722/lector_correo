@@ -22,8 +22,9 @@ public:
     virtual ~LectorCorreo();
 
     void menu();
-    void crear(Correo* tmp, size_t id);
-    Correo leer(size_t id);
+    void crear(Correo* tmp);
+    Correo* leer(size_t id);
+    LDL<Correo>* leer(){}
     void modificar(size_t id, Correo* correo);
     Correo& obtenerID(size_t id);
 

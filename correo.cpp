@@ -2,17 +2,17 @@
 
 Correo::Correo()
 {
-    m_identificador = 0;
 }
-
 
 Correo::~Correo()
 {}
 
 // Getters
-size_t Correo::getIdentificador() const
+char* Correo::getIdentificador() const
 {
-    return m_identificador;
+    char* tmp = new char[11];
+    strcpy(tmp, m_identificador);
+    return tmp;
 }
 
 char *Correo::getAsunto() const
@@ -66,9 +66,9 @@ char *Correo::getContenido() const
 }
 
 // Setters
-void Correo::setIdentificador(const size_t &identificador)
+void Correo::setIdentificador(const char* identificador)
 {
-    m_identificador = identificador;
+    strcpy(m_identificador, identificador);
 }
 void Correo::setContenido(const char *contenido)
 {

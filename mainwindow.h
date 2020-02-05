@@ -26,13 +26,11 @@ public:
 private slots:
     void on_agregar_clicked();
 
-    void on_tableWidget_cellClicked(int row, int column);
-
     void on_eliminar_clicked();
 
     void on_modificar_clicked();
 
-    void on_tableWidget_cellDoubleClicked(int row, int column);
+    void on_buscar_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -40,8 +38,7 @@ private:
     // Objeto lector que se encargará de administrar
     // todos los datos de la interfaz
     LectorCorreo m_lector;
-    int m_row;
-    int m_column;
+    Correo* m_tmp;
 
     enum COLUMNAS
     {

@@ -1,12 +1,10 @@
 #include "agregar.h"
 #include "ui_agregar.h"
 
-agregar::agregar(Correo* correo, bool* escribir, bool* pos, QWidget *parent) :
+agregar::agregar(LectorCorreo* lector, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::agregar),
-    m_correo(correo),
-    m_escribir(escribir),
-    m_pos(pos)
+    m_lector(lector)
 {
     ui->setupUi(this);
     this->setWindowTitle("Agregar correo");
@@ -22,6 +20,7 @@ void agregar::on_guardar_clicked()
     char fechaEnvio[11];
     char horaEnvio[9];
     QString id, des, rem, cc, ccc, asunto, cont;
+    Correo correo;
 
     // Se obtiene la fecha del sistema
     time_t now = time(0);
@@ -38,28 +37,21 @@ void agregar::on_guardar_clicked()
     asunto = ui->asunto_linea->text();
     cont = ui->contenido_caja->toPlainText();
 
-    if (id.toInt() < 1 || id.toInt() > 10)
-        QMessageBox::warning(this, "ID no válido", "ID fuera del rango (1 - 10)");
+    if (id.toULongLong() < 1 || id.toULongLong() > 9999999999)
+        QMessageBox::warning(this, "ID no válido", "ID fuera del rango (1 - 9999999999)");
     else if (!id.isEmpty() && !des.isEmpty() && !rem.isEmpty())
     {
-        if (!(m_pos[id.toInt() - 1]))
-        {
-            m_correo->setHoraEnvio(horaEnvio);
-            m_correo->setFechaEnvio(fechaEnvio);
-            m_correo->setRem(rem.toStdString().c_str());
-            m_correo->setAsunto(asunto.toStdString().c_str());
-            m_correo->setContenido(cont.toStdString().c_str());
-            m_correo->setCopiaCarbon(cc.toStdString().c_str());
-            m_correo->setDestinatario(des.toStdString().c_str());
-            m_correo->setIdentificador(id.toUInt());
-            m_correo->setCopiaCarbonCiega(ccc.toStdString().c_str());
-            *m_escribir = true;
-            agregar::close();
-        }
-        else
-        {
-            QMessageBox::warning(this, "ID en uso", "El ID ingresado está en uso, seleccione otro o modifique el actual en el menú principal");
-        }
+        correo.setHoraEnvio(horaEnvio);
+        correo.setFechaEnvio(fechaEnvio);
+        correo.setRem(rem.toStdString().c_str());
+        correo.setAsunto(asunto.toStdString().c_str());
+        correo.setContenido(cont.toStdString().c_str());
+        correo.setCopiaCarbon(cc.toStdString().c_str());
+        correo.setDestinatario(des.toStdString().c_str());
+        correo.setIdentificador(id.toLocal8Bit());
+        correo.setCopiaCarbonCiega(ccc.toStdString().c_str());
+        m_lector->crear(&correo);
+        agregar::close();
     }
     else
         QMessageBox::warning(this, "Campos vacíos", "Los campos que llevan \"*\" son obligatorios");

@@ -13,7 +13,7 @@ public:
     virtual ~Correo();
 
     // Getters
-    size_t getIdentificador() const;
+    char *getIdentificador() const;
     char *getHoraEnvio() const;
     char *getContenido() const;
     char *getAsunto() const;
@@ -25,7 +25,7 @@ public:
 
     // Setters
     void setHoraEnvio(const char *horaEnvio);
-    void setIdentificador(const size_t &identificador);
+    void setIdentificador(const char* identificador);
     void setContenido(const char *contenido);
     void setAsunto(const char *asunto);
     void setCopiaCarbonCiega(const char *copiaCarbonCiega);
@@ -35,7 +35,7 @@ public:
     void setFechaEnvio(const char *fechaEnvio);
 
 private:
-    size_t m_identificador;
+    char m_identificador[11];
     char m_horaEnvio[9];
     char m_fechaEnvio[11];
     char m_destinatario[50];

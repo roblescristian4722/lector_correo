@@ -13,149 +13,133 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QPushButton" name="ok">
-   <property name="geometry">
-    <rect>
-     <x>390</x>
-     <y>310</y>
-     <width>89</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Ok</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="contenido">
-   <property name="geometry">
-    <rect>
-     <x>270</x>
-     <y>10</y>
-     <width>81</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Contenido:</string>
-   </property>
-  </widget>
-  <widget class="QTextBrowser" name="contenido_res">
-   <property name="geometry">
-    <rect>
-     <x>265</x>
-     <y>40</y>
-     <width>221</width>
-     <height>231</height>
-    </rect>
-   </property>
-   <property name="textInteractionFlags">
-    <set>Qt::NoTextInteraction</set>
-   </property>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>241</width>
-     <height>341</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QLabel" name="id">
-        <property name="text">
-         <string>ID:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="rem">
-        <property name="text">
-         <string>De:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="des">
-        <property name="text">
-         <string>Para:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="asunto">
-        <property name="text">
-         <string>Asunto:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="cc">
-        <property name="text">
-         <string>CC:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="ccc">
-        <property name="text">
-         <string>CCC:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="horaEnvio">
-        <property name="text">
-         <string>Hora de envío:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="fechaEnvio">
-        <property name="text">
-         <string>Fecha de envío:</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QTextBrowser" name="id_res"/>
-      </item>
-      <item>
-       <widget class="QTextBrowser" name="rem_res"/>
-      </item>
-      <item>
-       <widget class="QTextBrowser" name="des_res"/>
-      </item>
-      <item>
-       <widget class="QTextBrowser" name="asunto_res"/>
-      </item>
-      <item>
-       <widget class="QTextBrowser" name="cc_res"/>
-      </item>
-      <item>
-       <widget class="QTextBrowser" name="ccc_res"/>
-      </item>
-      <item>
-       <widget class="QTextBrowser" name="horaEnvio_res"/>
-      </item>
-      <item>
-       <widget class="QTextBrowser" name="fechaEnvio_res">
-        <property name="textInteractionFlags">
-         <set>Qt::NoTextInteraction</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-   </layout>
-  </widget>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QLabel" name="id">
+           <property name="text">
+            <string>ID:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="rem">
+           <property name="text">
+            <string>De:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="des">
+           <property name="text">
+            <string>Para:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="asunto">
+           <property name="text">
+            <string>Asunto:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="cc">
+           <property name="text">
+            <string>CC:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="ccc">
+           <property name="text">
+            <string>CCC:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="horaEnvio">
+           <property name="text">
+            <string>Hora de envío:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="fechaEnvio">
+           <property name="text">
+            <string>Fecha de envío:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QTextBrowser" name="id_res"/>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="rem_res"/>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="des_res"/>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="asunto_res"/>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="cc_res"/>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="ccc_res"/>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="horaEnvio_res"/>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="fechaEnvio_res">
+           <property name="textInteractionFlags">
+            <set>Qt::NoTextInteraction</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QLabel" name="contenido">
+         <property name="text">
+          <string>Contenido:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="contenido_res">
+         <property name="textInteractionFlags">
+          <set>Qt::NoTextInteraction</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="ok">
+         <property name="text">
+          <string>Ok</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections>
