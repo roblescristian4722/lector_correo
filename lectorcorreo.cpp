@@ -2,12 +2,7 @@
 
 LectorCorreo::LectorCorreo()
 {
-    // Por defecto el contador de correos se iguala a 0
-    // y cada id a false
-    //m_correos.correos = 0;
-    //for (size_t i = 0; i < 10; i++)
-      //  m_correos.posiciones[i] = false;
-    // Se abre un archivo binario en modo de entrada
+    // Se crea un archivo nuevo en caso de que aún no exista
     fstream entrada("datos.bin", ios::binary | ios::in);
     if (!entrada.is_open())
     {
@@ -23,8 +18,7 @@ LectorCorreo::LectorCorreo()
 }
 
 LectorCorreo::~LectorCorreo()
-{
-}
+{}
 
 void LectorCorreo::crear(Correo* correo)
 {
@@ -32,41 +26,47 @@ void LectorCorreo::crear(Correo* correo)
     if (!archivo.is_open())
         cout << "Error en el achivo" << endl;
 
-    // Se elige la posición en la que se escribirá el correo
-    // A esta se le suman los bytes del size_t para que no sobre
-    // escriba el campo del contador
+    /*
+     Se elige la posición en la que se escribirá el correo
+     con ayuda del id
+    */
     long pos = (atoll(correo->getIdentificador()) - 1) * sizeof(Correo);
     archivo.seekp(pos);
-    // Se almacena el correo nuevo
+
+    // Se almacena el correo nuevo y se cierra el achivo
     archivo.write((char*)correo, sizeof(Correo));
     archivo.close();
 }
 
  Correo* LectorCorreo::leer(size_t id)
 {
+     /*
+      * Se crea un Correo temporal en memoria dinámica
+      * que guardará los datos almacenados en el archivo
+      * de texto en una posición determinada y luego se
+      * pasará dicho correo a las ventanas
+    */
     Correo* tmp = new Correo;
+    /*
+     * Se abre el archivo en modo de lectura y escritura al mismo
+     * tiempo para evitar que se sobrescriban los datos del archivo
+     * de texto
+    */
     fstream archivo("datos.bin", ios::in | ios::out | ios::binary);
     if (!archivo.is_open())
         cout << " Error al abrir el archivo" << endl;
+    /*
+     * Se calcula la posición en la que se leerá, luego se pone el
+     * apuntador en esa posición con seekg, luego se guardan los datos
+     * en la variable temporal y el puntero que guarda su dirección se
+     * retorna
+    */
     long pos = (id - 1) * sizeof(Correo);
     archivo.seekg(pos);
     archivo.read((char*)tmp, sizeof(Correo));
     return tmp;
 }
 
-void LectorCorreo::modificar(size_t id, Correo* correo)
-{
-    fstream archivo("datos.bin", ios::in | ios::out | ios::binary);
-    if (!archivo.is_open())
-        cout << " Error en el archivo de entrada" << endl;
-    
-    long pos = (id - 1) * sizeof(Correo);
-    archivo.seekp(pos);
-
-    archivo.write((char*)correo, sizeof(Correo));
-    archivo.close();
-    delete correo;
-}
 
 bool LectorCorreo::getPosicion(int index)
 {

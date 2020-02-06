@@ -46,6 +46,11 @@ void agregar::on_guardar_clicked()
                              "El ID está en uso, utilice uno nuevo o modifique el ya existente");
     else if (!id.isEmpty() && !des.isEmpty() && !rem.isEmpty())
     {
+        /*
+         * Se guarda toda la información en el correo temporal
+         * y luego se escribe dicho correo en el archivo binario
+         * con el método "crear()" del lector
+        */
         correo.setHoraEnvio(horaEnvio);
         correo.setFechaEnvio(fechaEnvio);
         correo.setRem(rem.toStdString().c_str());

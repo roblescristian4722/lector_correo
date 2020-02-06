@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Se escoge el nombre para la ventana principal
     this->setWindowTitle("Yi Mail");
+
+    // Se coloca este mensaje para indicar que no se ha buscado ningún correo
     ui->Resultado->setText("Correo seleccionado:\n\nAún no se ha seleccionado un correo...");
 }
 
@@ -69,10 +71,14 @@ void MainWindow::on_buscar_clicked()
     else
     {
         string id;
-        m_tmp = m_lector.leer(ui->buscar_barra->text().toULong());
-        id = m_tmp->getIdentificador();
-        if (ui->buscar_barra->text().toStdString() == id)
+        Correo* tmp;
+        tmp = m_lector.leer(ui->buscar_barra->text().toULongLong());
+        if (atoll(tmp->getIdentificador()) != ui->buscar_barra->text().toULongLong())
+            QMessageBox::warning(this, "ID no encontrado", "No se encontró el ID, primero intente agregarlo");
+        else
         {
+            m_tmp = tmp;
+            id = m_tmp->getIdentificador();
             std::string show = "Correo seleccionado: \n\n";
             show += "ID: " + id + "\n\n"
                  +  "De: " + m_tmp->getRem() + "\n\n"
@@ -85,7 +91,5 @@ void MainWindow::on_buscar_clicked()
                  +  "Contenido:" + "\n" + m_tmp->getContenido();
             ui->Resultado->setText(QString::fromStdString(show));
         }
-        else
-            QMessageBox::warning(this, "ID no encontrado", "No se encontró el ID, primero intente agregarlo");
     }
 }

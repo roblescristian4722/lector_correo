@@ -24,6 +24,10 @@ private slots:
 
 private:
     Ui::agregar *ui;
+    /*
+     * Puntero utilizado para acceder al
+     * lector principal y métodos de creación de archivos
+    */
     LectorCorreo* m_lector;
 };
 

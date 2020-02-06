@@ -24,7 +24,18 @@ private slots:
 
 private:
     Ui::modificar *ui;
+
+    /*
+     * Correo temporal que se utiliza para enviar la
+     * información modificada del correo a la ventana
+     * principal
+    */
     Correo* m_correo;
+
+    /*
+     * Puntero utilizado para acceder al
+     * lector principal y métodos de creación de archivos
+    */
     LectorCorreo* m_lector;
 };
 

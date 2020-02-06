@@ -5,7 +5,6 @@
 #include <fstream>
 #include <ctime>
 #include "correo.h"
-#include "ldl.h"
 
 #if defined(_WIN32) || defined(_WIN64)
     #define CLEAR std::system("cls")
@@ -24,7 +23,6 @@ public:
     void menu();
     void crear(Correo* tmp);
     Correo* leer(size_t id);
-    LDL<Correo>* leer(){}
     void modificar(size_t id, Correo* correo);
     Correo& obtenerID(size_t id);
 

@@ -36,7 +36,6 @@ void modificar::on_guardar_clicked()
 
     if (!des.isEmpty() && !rem.isEmpty())
     {
-        //m_correo->setIdentificador(m_id.toLoc);
         m_correo->setRem(rem.toStdString().c_str());
         m_correo->setAsunto(asunto.toStdString().c_str());
         m_correo->setContenido(cont.toStdString().c_str());

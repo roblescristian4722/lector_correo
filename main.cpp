@@ -1,5 +1,8 @@
-    #include "mainwindow.h"
-
+/*
+ * Robles Perez Cristian Ismael
+ * SSP de Estructuras de Datos II
+*/
+#include "mainwindow.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

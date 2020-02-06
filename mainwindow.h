@@ -6,8 +6,6 @@
 #include "agregar.h"
 #include "modificar.h"
 #include "agregar.h"
-#include "vistaprevia.h"
-#include "ldl.h"
 #include "correo.h"
 #include "lectorcorreo.h"
 
@@ -35,9 +33,15 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    // Objeto lector que se encargará de administrar
-    // todos los datos de la interfaz
+    /*
+     * Objeto lector que se encargará de administrar
+     * todos los datos de la interfaz
+    */
     LectorCorreo m_lector;
+    /*
+     * Correo temporal que guardará la información de cada
+     * correo obtenido al buscar con un ID
+    */
     Correo* m_tmp;
 
     enum COLUMNAS
