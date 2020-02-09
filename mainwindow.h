@@ -30,6 +30,10 @@ private slots:
 
     void on_buscar_clicked();
 
+    void on_mostrarTodo_clicked();
+
+    void on_bandejaTabla_cellClicked(int row, int column);
+
 private:
     Ui::MainWindow *ui;
 
@@ -42,7 +46,9 @@ private:
      * Correo temporal que guardará la información de cada
      * correo obtenido al buscar con un ID
     */
-    Correo* m_tmp;
+
+    LDL<Correo> m_lista;
+    unsigned long m_fila;
 
     enum COLUMNAS
     {

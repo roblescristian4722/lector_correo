@@ -20,22 +20,39 @@ LectorCorreo::LectorCorreo()
 LectorCorreo::~LectorCorreo()
 {}
 
+void LectorCorreo::eliminar(size_t id)
+{
+    Correo tmp;
+    tmp.setIdentificador("");
+    fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
+    if (!archivo.is_open())
+        cout << "Error en el archivo" << endl;
+    else
+    {
+        unsigned long pos = (id - 1) * sizeof(Correo);
+        archivo.seekp(pos);
+        archivo.write((char*)&tmp, sizeof(Correo));
+    }
+}
+
 void LectorCorreo::crear(Correo* correo)
 {
     fstream archivo("datos.bin", ios::out | ios::binary | ios::in);
     if (!archivo.is_open())
         cout << "Error en el achivo" << endl;
+    else
+    {
+        /*
+         Se elige la posición en la que se escribirá el correo
+         con ayuda del id
+        */
+        long pos = (atoll(correo->getIdentificador()) - 1) * sizeof(Correo);
+        archivo.seekp(pos);
 
-    /*
-     Se elige la posición en la que se escribirá el correo
-     con ayuda del id
-    */
-    long pos = (atoll(correo->getIdentificador()) - 1) * sizeof(Correo);
-    archivo.seekp(pos);
-
-    // Se almacena el correo nuevo y se cierra el achivo
-    archivo.write((char*)correo, sizeof(Correo));
-    archivo.close();
+        // Se almacena el correo nuevo y se cierra el achivo
+        archivo.write((char*)correo, sizeof(Correo));
+        archivo.close();
+    }
 }
 
  Correo* LectorCorreo::leer(size_t id)
@@ -67,6 +84,21 @@ void LectorCorreo::crear(Correo* correo)
     return tmp;
 }
 
+void LectorCorreo::leer(LDL<Correo>* lista)
+{
+    Correo tmp;
+    fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
+    archivo.seekg(ios::beg);
+    for (unsigned long i = 0; !archivo.eof(); i++)
+    {
+        unsigned long pos = i * sizeof(Correo);
+        archivo.seekg(pos);
+        archivo.read((char*)&tmp, sizeof(Correo));
+        if (atol(tmp.getIdentificador()) == i + 1)
+            lista->push_back(tmp);
+    }
+    archivo.close();
+}
 
 bool LectorCorreo::getPosicion(int index)
 {
