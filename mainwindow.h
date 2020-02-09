@@ -28,11 +28,13 @@ private slots:
 
     void on_modificar_clicked();
 
-    void on_buscar_clicked();
-
     void on_mostrarTodo_clicked();
 
     void on_bandejaTabla_cellClicked(int row, int column);
+
+    void on_idBuscarPB_clicked();
+
+    void on_remBuscarPB_clicked();
 
 private:
     Ui::MainWindow *ui;
