@@ -167,11 +167,12 @@ void MainWindow::on_remBuscarPB_clicked()
         QMessageBox::warning(this, "ID vacío", "Ingrese un ID");
     else
     {
+        unsigned int i;
         Correo correoTmp;
         m_lista.clear();
         ui->bandejaTabla->setRowCount(0);
         m_lector.leerRem(&m_lista, ui->remLE->text().toStdString().c_str());
-        for (unsigned int i = 0; i < m_lista.size(); i++)
+        for (i = 0; i < m_lista.size(); i++)
         {
             ui->bandejaTabla->insertRow(ui->bandejaTabla->rowCount());
             int fila = ui->bandejaTabla->rowCount() - 1;
@@ -193,4 +194,14 @@ void MainWindow::on_remBuscarPB_clicked()
                                     new QTableWidgetItem(m_lista[i].getHoraEnvio()));
         }
     }
+}
+
+void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
+{
+    Q_UNUSED(column);
+    Q_UNUSED(row);
+    Correo* tmp = m_lector.leer(ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong());
+    vistaPrevia p(*tmp);
+    p.setModal(true);
+    p.exec();
 }

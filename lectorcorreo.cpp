@@ -102,18 +102,20 @@ void LectorCorreo::leer(LDL<Correo>* lista)
 
 void LectorCorreo::leerRem(LDL<Correo>* lista, const char* rem)
 {
-    Correo tmp;
+    Correo correoTmp;
+    string strTmp;
+    unsigned long long i;
     fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
     archivo.seekg(ios::beg);
-    for (unsigned long i = 0; !archivo.eof(); i++)
+    for (i = 0; !archivo.eof(); i++)
     {
-        unsigned long pos = i * sizeof(Correo);
+        unsigned long long pos = i * sizeof(Correo);
         archivo.seekg(pos);
-        archivo.read((char*)&tmp, sizeof(Correo));
-        if (!strcmp(rem, tmp.getRem()))
-            lista->push_back(tmp);
+        archivo.read((char*)&correoTmp, sizeof(Correo));
+        strTmp = correoTmp.getRem();
+        if (strTmp == rem)
+            lista->push_back(correoTmp);
     }
-    archivo.close();
 }
 
 bool LectorCorreo::getPosicion(int index)

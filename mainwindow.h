@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 #include <QtDebug>
+#include "string.h"
 #include "agregar.h"
+#include "vistaprevia.h"
 #include "modificar.h"
 #include "agregar.h"
 #include "correo.h"
@@ -35,6 +37,8 @@ private slots:
     void on_idBuscarPB_clicked();
 
     void on_remBuscarPB_clicked();
+
+    void on_bandejaTabla_cellDoubleClicked(int row, int column);
 
 private:
     Ui::MainWindow *ui;
