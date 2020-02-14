@@ -106,6 +106,8 @@ void LectorCorreo::leerRem(LDL<Correo>* lista, const char* rem)
     string strTmp;
     unsigned long long i;
     fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
+    if (!archivo.is_open())
+        cout << "error en archivo binario" << endl;
     archivo.seekg(ios::beg);
     for (i = 0; !archivo.eof(); i++)
     {
@@ -116,6 +118,63 @@ void LectorCorreo::leerRem(LDL<Correo>* lista, const char* rem)
         if (strTmp == rem)
             lista->push_back(correoTmp);
     }
+}
+
+void LectorCorreo::crearCopiaSeguridad()
+{
+    Correo correoTmp;
+    char contenidoTmp[500] = {0};
+    fstream binario("datos.bin", ios::in | ios::binary);
+    if (!binario.is_open())
+        cout << "error en binario" << endl;
+    ofstream csv("respaldo.csv", ios::out | ios::binary);
+    if (!csv.is_open())
+        cout << "error en csv" << endl;
+
+    csv << "ID," << "Fecha de envío, " << "Hora de envío,"
+        << "Remitente," << "Destinatario," << "Copia Carbón,"
+        << "Copia Carbón Ciega," << "Asunto," << "Contenido"
+        << endl;
+
+    for (unsigned long i = 0; !binario.eof(); i++)
+    {
+        char contenidoTmp[500];
+        unsigned long pos = i * sizeof(Correo);
+        binario.seekg(pos);
+        binario.read((char*)&correoTmp, sizeof(Correo));
+        if (atol(correoTmp.getIdentificador()) == i + 1)
+        {
+            int i = 0;
+            int matches = 0;
+            for (i; !(*(correoTmp.getContenido() + i) == '|'
+                        && *(correoTmp.getContenido() + i + 1) == '~'
+                        && *(correoTmp.getContenido() + i + 2) == '|'); i++)
+            {
+                if (*(correoTmp.getContenido() + i) == '"')
+                {
+                    contenidoTmp[i + matches] = *(correoTmp.getContenido() + i);
+                    ++matches;
+                    contenidoTmp[i + matches] = '"';
+                }
+                else
+                    contenidoTmp[i + matches] = *(correoTmp.getContenido() + i);
+            }
+            contenidoTmp[i + matches] = '\0';
+            cout << contenidoTmp << endl;
+            csv << '"' << correoTmp.getIdentificador() << '"' << ','
+                << '"' << correoTmp.getFechaEnvio() << '"' << ','
+                << '"' << correoTmp.getHoraEnvio() << '"' << ','
+                << '"' << correoTmp.getRem() << '"' << ','
+                << '"' << correoTmp.getDestinatario() << '"' << ','
+                << '"' << correoTmp.getCopiaCarbon() << '"' << ','
+                << '"' << correoTmp.getCopiaCarbonCiega() << '"' << ','
+                << '"' << correoTmp.getAsunto() << '"' << ','
+                << '"' << contenidoTmp << '"' << endl;
+        }
+    }
+    cout << contenidoTmp << endl;
+    binario.close();
+    csv.close();
 }
 
 bool LectorCorreo::getPosicion(int index)

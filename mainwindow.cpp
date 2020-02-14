@@ -15,7 +15,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Se inicializa la tabla
     ui->bandejaTabla->setColumnCount(8);
-    columnas << "ID" << "De:" << "Para:" << "Asunto" << "CC" << "CC Ciega" << "Fecha" << "Hora" ;
+    columnas << "ID" << "Fecha de envío" << "Hora de envío"
+             << "Remitente" << "Destinatario" << "CC" << "CCC"
+             << "Asunto";
     ui->bandejaTabla->setHorizontalHeaderLabels(columnas);
 
     /*
@@ -44,6 +46,7 @@ void MainWindow::on_eliminar_clicked()
 {
     unsigned long id;
     unsigned long idElim = 0;
+    this->setCursor(Qt::WaitCursor);
     if (!ui->bandejaTabla->rowCount())
     {
         QMessageBox::warning(this, "Sin correo seleccionado",
@@ -56,6 +59,7 @@ void MainWindow::on_eliminar_clicked()
             break;
     m_lista.erase(idElim);
     m_lector.eliminar(id);
+    this->setCursor(Qt::ArrowCursor);
     on_mostrarTodo_clicked();
 }
 
@@ -83,9 +87,11 @@ void MainWindow::on_modificar_clicked()
 
 void MainWindow::on_mostrarTodo_clicked()
 {
+    this->setCursor(Qt::WaitCursor);
     ui->bandejaTabla->setRowCount(0);
     m_lista.clear();
     m_lector.leer(&m_lista);
+
     // Se añaden los datos recuperados a la tabla
     for (size_t i = 0; i < m_lista.size(); i++)
     {
@@ -109,6 +115,7 @@ void MainWindow::on_mostrarTodo_clicked()
                                 new QTableWidgetItem(m_lista[i].getHoraEnvio()));
         ui->bandejaTabla->resizeColumnToContents(fila);
     }
+    this->setCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::on_bandejaTabla_cellClicked(int row, int column)
@@ -169,6 +176,7 @@ void MainWindow::on_remBuscarPB_clicked()
     {
         unsigned int i;
         Correo correoTmp;
+        this->setCursor(Qt::WaitCursor);
         m_lista.clear();
         ui->bandejaTabla->setRowCount(0);
         m_lector.leerRem(&m_lista, ui->remLE->text().toStdString().c_str());
@@ -193,6 +201,7 @@ void MainWindow::on_remBuscarPB_clicked()
             ui->bandejaTabla->setItem(fila, COL_HORA,
                                     new QTableWidgetItem(m_lista[i].getHoraEnvio()));
         }
+        this->setCursor(Qt::ArrowCursor);
     }
 }
 
@@ -204,4 +213,12 @@ void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
     vistaPrevia p(*tmp);
     p.setModal(true);
     p.exec();
+}
+
+void MainWindow::on_crearCopiaPB_clicked()
+{
+    this->setCursor(Qt::WaitCursor);
+    m_lector.crearCopiaSeguridad();
+    this->setCursor(Qt::ArrowCursor);
+    QMessageBox::information(this, "Copia creada", "Copia de seguridad creada exitosamente");
 }

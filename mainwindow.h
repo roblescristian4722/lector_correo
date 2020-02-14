@@ -40,6 +40,8 @@ private slots:
 
     void on_bandejaTabla_cellDoubleClicked(int row, int column);
 
+    void on_crearCopiaPB_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -59,13 +61,13 @@ private:
     enum COLUMNAS
     {
         COL_ID,
+        COL_FECHA,
+        COL_HORA,
         COL_REM,
         COL_DES,
-        COL_ASUNTO,
         COL_CC,
         COL_CCC,
-        COL_FECHA,
-        COL_HORA
+        COL_ASUNTO
     };
 };
 #endif // MAINWINDOW_H

@@ -28,6 +28,7 @@ public:
     void leerRem(LDL<Correo>* lista, const char* rem);
     void modificar(size_t id, Correo* correo);
     void eliminar(size_t id);
+    void crearCopiaSeguridad();
     Correo& obtenerID(size_t id);
 
     bool getPosicion(int index);
