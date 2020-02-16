@@ -212,6 +212,7 @@ void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
     Correo* tmp = m_lector.leer(ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong());
     vistaPrevia p(*tmp);
     p.setModal(true);
+    p.setWindowTitle("Vista previa");
     p.exec();
 }
 
