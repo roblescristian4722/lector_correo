@@ -123,7 +123,7 @@ void LectorCorreo::leerRem(LDL<Correo>* lista, const char* rem)
 void LectorCorreo::crearCopiaSeguridad()
 {
     Correo correoTmp;
-    char contenidoTmp[500] = {0};
+    char contenidoTmp[500];
     fstream binario("datos.bin", ios::in | ios::binary);
     if (!binario.is_open())
         cout << "error en binario" << endl;
@@ -139,40 +139,76 @@ void LectorCorreo::crearCopiaSeguridad()
     for (unsigned long i = 0; !binario.eof(); i++)
     {
         char contenidoTmp[500];
+        char asuntoTmp[200];
+        bool asuntoComillas = false;
+        bool contenidoComillas = false;
         unsigned long pos = i * sizeof(Correo);
         binario.seekg(pos);
         binario.read((char*)&correoTmp, sizeof(Correo));
+
         if (atol(correoTmp.getIdentificador()) == i + 1)
         {
             int i = 0;
-            int matches = 0;
-            for (i; !(*(correoTmp.getContenido() + i) == '|'
-                        && *(correoTmp.getContenido() + i + 1) == '~'
-                        && *(correoTmp.getContenido() + i + 2) == '|'); i++)
+            int matchesContenido = 0;
+
+            // Se validan las comillas dobles en contenido
+            for (i; !(*(correoTmp.getContenido() + i) == '\0'); i++)
             {
                 if (*(correoTmp.getContenido() + i) == '"')
                 {
-                    contenidoTmp[i + matches] = *(correoTmp.getContenido() + i);
-                    ++matches;
-                    contenidoTmp[i + matches] = '"';
+                    contenidoTmp[i + matchesContenido] = *(correoTmp.getContenido() + i);
+                    ++matchesContenido;
+                    contenidoTmp[i + matchesContenido] = '"';
+                    asuntoComillas = true;
                 }
                 else
-                    contenidoTmp[i + matches] = *(correoTmp.getContenido() + i);
+                    contenidoTmp[i + matchesContenido] = *(correoTmp.getContenido() + i);
+                if (*(correoTmp.getContenido() + i) == ','
+                         || *(correoTmp.getContenido() + i) == '\n')
+                    contenidoComillas = true;
             }
-            contenidoTmp[i + matches] = '\0';
-            cout << contenidoTmp << endl;
-            csv << '"' << correoTmp.getIdentificador() << '"' << ','
-                << '"' << correoTmp.getFechaEnvio() << '"' << ','
-                << '"' << correoTmp.getHoraEnvio() << '"' << ','
-                << '"' << correoTmp.getRem() << '"' << ','
-                << '"' << correoTmp.getDestinatario() << '"' << ','
-                << '"' << correoTmp.getCopiaCarbon() << '"' << ','
-                << '"' << correoTmp.getCopiaCarbonCiega() << '"' << ','
-                << '"' << correoTmp.getAsunto() << '"' << ','
-                << '"' << contenidoTmp << '"' << endl;
+            contenidoTmp[i + matchesContenido] = '\0';
+
+            // Se validan las comillas dobles en el asunto
+            i = 0;
+            int matchesAsunto = 0;
+            for (i; !(*(correoTmp.getAsunto() + i) == '\0'); i++)
+            {
+                if (*(correoTmp.getAsunto() + i) == '"')
+                {
+                    asuntoTmp[i + matchesAsunto] = *(correoTmp.getAsunto() + i);
+                    ++matchesAsunto;
+                    asuntoTmp[i + matchesAsunto] = '"';
+                    asuntoComillas = true;
+                }
+                else
+                    asuntoTmp[i + matchesAsunto] = *(correoTmp.getAsunto() + i);
+                if (*(correoTmp.getAsunto() + i) == ','
+                    || *(correoTmp.getAsunto() + i) == '\n')
+                    asuntoComillas = true;
+            }
+            asuntoTmp[i + matchesAsunto] = '\0';
+
+            // Se guarda todo en el csv
+            csv << correoTmp.getIdentificador() << ','
+                << correoTmp.getFechaEnvio() << ','
+                << correoTmp.getHoraEnvio() << ','
+                << correoTmp.getRem() << ','
+                << correoTmp.getDestinatario() << ','
+                << correoTmp.getCopiaCarbon() << ','
+                << correoTmp.getCopiaCarbonCiega() << ',';
+
+            if (asuntoComillas)
+                csv << '"' << asuntoTmp << '"' << ',';
+            else
+                csv << asuntoTmp << ',';
+
+            if (contenidoComillas)
+                csv << '"' << contenidoTmp << '"' << endl;
+            else
+                csv << contenidoTmp << endl;
         }
     }
-    cout << contenidoTmp << endl;
     binario.close();
     csv.close();
 }

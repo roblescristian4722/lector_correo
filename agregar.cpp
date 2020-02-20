@@ -39,7 +39,6 @@ void agregar::on_guardar_clicked()
     ccc = ui->copiaCarbonCiega_linea->text();
     asunto = ui->asunto_linea->text();
     cont = ui->contenido_caja->toPlainText();
-    cont += "|~|";
     tmp = m_lector->leer(id.toULongLong());
 
     strcpy(idVer, id.toStdString().c_str());

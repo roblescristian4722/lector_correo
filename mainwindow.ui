@@ -29,6 +29,9 @@
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
       </property>
+      <property name="tabKeyNavigation">
+       <bool>false</bool>
+      </property>
       <property name="dragEnabled">
        <bool>false</bool>
       </property>
@@ -202,6 +205,19 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>buscar_barra</tabstop>
+  <tabstop>idBuscarPB</tabstop>
+  <tabstop>remLE</tabstop>
+  <tabstop>remBuscarPB</tabstop>
+  <tabstop>bandejaTabla</tabstop>
+  <tabstop>agregar</tabstop>
+  <tabstop>recuperarCopiaPB</tabstop>
+  <tabstop>crearCopiaPB</tabstop>
+  <tabstop>eliminar</tabstop>
+  <tabstop>modificar</tabstop>
+  <tabstop>mostrarTodo</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

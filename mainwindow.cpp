@@ -46,9 +46,9 @@ void MainWindow::on_eliminar_clicked()
 {
     unsigned long id;
     unsigned long idElim = 0;
-    this->setCursor(Qt::WaitCursor);
     if (!ui->bandejaTabla->rowCount())
     {
+        m_fila = 0;
         QMessageBox::warning(this, "Sin correo seleccionado",
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
@@ -59,7 +59,6 @@ void MainWindow::on_eliminar_clicked()
             break;
     m_lista.erase(idElim);
     m_lector.eliminar(id);
-    this->setCursor(Qt::ArrowCursor);
     on_mostrarTodo_clicked();
 }
 
@@ -70,6 +69,7 @@ void MainWindow::on_modificar_clicked()
     unsigned long id;
     if (!ui->bandejaTabla->rowCount())
     {
+        m_fila = 0;
         QMessageBox::warning(this, "Sin correo seleccionado",
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
@@ -212,7 +212,6 @@ void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
     Correo* tmp = m_lector.leer(ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong());
     vistaPrevia p(*tmp);
     p.setModal(true);
-    p.setWindowTitle("Vista previa");
     p.exec();
 }
 

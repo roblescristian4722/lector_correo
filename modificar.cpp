@@ -11,22 +11,12 @@ modificar::modificar(LDL<Correo>* lista, LectorCorreo* lector, unsigned long ind
     ui->setupUi(this);
     this->setWindowTitle("Modificar correo");
 
-    char contenidoTmp[500];
-    strcpy(contenidoTmp, (*m_lista)[index].getContenido());
-    for(int i = 0; i < 500; i++)
-        if (contenidoTmp[i] == '|' && contenidoTmp[i + 1] == '~'
-            && contenidoTmp[i + 2] == '|')
-        {
-            contenidoTmp[i] = '\0';
-            break;
-        }
-
     ui->des_linea->setText((*m_lista)[index].getDestinatario());
     ui->rem_linea->setText((*m_lista)[index].getRem());
     ui->asunto_linea->setText((*m_lista)[index].getAsunto());
-    ui->contenido_caja->setPlainText(contenidoTmp);
     ui->copiaCarbon_linea->setText((*m_lista)[index].getCopiaCarbon());
     ui->copiaCarbonCiega_linea->setText((*m_lista)[index].getCopiaCarbonCiega());
+    ui->contenido_caja->setPlainText((*m_lista)[index].getContenido());
 }
 
 modificar::~modificar()
@@ -45,7 +35,6 @@ void modificar::on_guardar_clicked()
     ccc = ui->copiaCarbonCiega_linea->text();
     asunto = ui->asunto_linea->text();
     cont = ui->contenido_caja->toPlainText();
-    cont += "|~|";
 
     if (!des.isEmpty() && !rem.isEmpty())
     {
