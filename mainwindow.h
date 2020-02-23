@@ -10,6 +10,8 @@
 #include "agregar.h"
 #include "correo.h"
 #include "lectorcorreo.h"
+#include "parser.h"
+#include "sobrescribir.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,6 +24,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    int busqueda_binaria(int dato);
 
 private slots:
     void on_agregar_clicked();
@@ -42,6 +46,7 @@ private slots:
 
     void on_crearCopiaPB_clicked();
 
+    void on_recuperarCopiaPB_clicked();
 private:
     Ui::MainWindow *ui;
 

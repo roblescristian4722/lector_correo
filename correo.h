@@ -34,6 +34,10 @@ public:
     void setRem(const char *value);
     void setFechaEnvio(const char *fechaEnvio);
 
+    // Sobrecarga de operadores
+    bool operator ==(Correo& correo2);
+    bool operator !=(Correo& correo2);
+
 private:
     char m_identificador[11];
     char m_horaEnvio[9];

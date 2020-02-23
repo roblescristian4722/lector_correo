@@ -131,7 +131,7 @@ void LectorCorreo::crearCopiaSeguridad()
     if (!csv.is_open())
         cout << "error en csv" << endl;
 
-    csv << "ID," << "Fecha de envío, " << "Hora de envío,"
+    csv << "ID," << "Fecha de envío," << "Hora de envío,"
         << "Remitente," << "Destinatario," << "Copia Carbón,"
         << "Copia Carbón Ciega," << "Asunto," << "Contenido"
         << endl;

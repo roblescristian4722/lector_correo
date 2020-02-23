@@ -64,7 +64,6 @@ void MainWindow::on_eliminar_clicked()
 
 void MainWindow::on_modificar_clicked()
 {
-    Correo* mod = new Correo;
     unsigned long idMod = 0;
     unsigned long id;
     if (!ui->bandejaTabla->rowCount())
@@ -81,6 +80,7 @@ void MainWindow::on_modificar_clicked()
         if (atol(m_lista[idMod].getIdentificador()) == id)
             break;
     modificar m(&m_lista, &m_lector, idMod);
+    m.setModal(true);
     m.exec();
     on_mostrarTodo_clicked();
 }
@@ -221,4 +221,74 @@ void MainWindow::on_crearCopiaPB_clicked()
     m_lector.crearCopiaSeguridad();
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Copia creada", "Copia de seguridad creada exitosamente");
+}
+
+void MainWindow::on_recuperarCopiaPB_clicked()
+{
+    Parser parser;
+    Correo correoActual;
+    Correo correoCopia;
+    LDL<string> *copiaDatos = new LDL<string>;
+    int res;
+
+    // Se almacenan los datos de la copia de seguridad en una lista
+    // de strings cuyos valores se copiarán luego a un correo temporal
+    parser.getData("respaldo.csv", copiaDatos);
+
+    for (int i = 0; i < copiaDatos->size(); i += 9)
+    {
+        /* res guardará el índice de la lista que coincida con
+        * el correo leído de la copia de seguridad. En caso de
+        * que no se hayan encontrado coincidencias regresa un -1
+        */
+        res = busqueda_binaria(stoi((*copiaDatos)[i]));
+
+        correoCopia.setIdentificador((*copiaDatos)[i].c_str());
+        correoCopia.setFechaEnvio((*copiaDatos)[i + 1].c_str());
+        correoCopia.setHoraEnvio((*copiaDatos)[i + 2].c_str());
+        correoCopia.setRem((*copiaDatos)[i + 3].c_str());
+        correoCopia.setDestinatario((*copiaDatos)[i + 4].c_str());
+        correoCopia.setCopiaCarbon((*copiaDatos)[i + 5].c_str());
+        correoCopia.setCopiaCarbonCiega((*copiaDatos)[i + 6].c_str());
+        correoCopia.setAsunto((*copiaDatos)[i + 7].c_str());
+        correoCopia.setContenido((*copiaDatos)[i + 8].c_str());
+
+        if (res == -1)
+        {
+            m_lista.push_back(correoCopia);
+            m_lector.crear(&correoCopia);
+        }
+        // En caso de que uno de los correos tenga el mismo ID que
+        // uno de los almacenadosen el programa
+        else
+        {
+            correoActual = m_lista[res];
+
+            if (correoActual != correoCopia)
+            {
+                Sobrescribir sob(&m_lector, &m_lista, &correoCopia, res);
+                sob.setModal(true);
+                sob.exec();
+            }
+        }
+    }
+    on_mostrarTodo_clicked();
+    QMessageBox::information(this, "Copia de seguridad restaurada", "Copia de seguridad restaurada con éxito");
+}
+
+int MainWindow::busqueda_binaria(int dato)
+{
+    int l = 0;
+    int r = m_lista.size() - 1;
+    while (l <= r)
+    {
+        int m = (l + r) / 2;
+        if (dato == stoi(m_lista[m].getIdentificador()))
+            return m;
+        else if (dato < stoi(m_lista[m].getIdentificador()))
+            r = m - 1;
+        else
+            l = m + 1;
+    }
+    return -1;
 }

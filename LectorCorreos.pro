@@ -22,6 +22,8 @@ SOURCES += \
     correo.cpp \
     lectorcorreo.cpp \
     modificar.cpp \
+    parser.cpp \
+    sobrescribir.cpp \
     vistaprevia.cpp
 
 HEADERS += \
@@ -31,12 +33,15 @@ HEADERS += \
     ldl.h \
     lectorcorreo.h \
     modificar.h \
+    parser.h \
+    sobrescribir.h \
     vistaprevia.h
 
 FORMS += \
     agregar.ui \
     mainwindow.ui \
     modificar.ui \
+    sobrescribir.ui \
     vistaprevia.ui
 
 # Default rules for deployment.

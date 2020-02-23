@@ -98,6 +98,42 @@ void Correo::setFechaEnvio(const char *fechaEnvio)
 {
     strcpy(m_fechaEnvio, fechaEnvio);
 }
+
+bool Correo::operator ==(Correo &correo2)
+{
+    if (!strcmp(this->getIdentificador(), correo2.getIdentificador()))
+        if (!strcmp(this->getFechaEnvio(), correo2.getFechaEnvio()))
+            if(!strcmp(this->getHoraEnvio(), correo2.getHoraEnvio()))
+                if(!strcmp(this->getRem(), correo2.getRem()))
+                    if(!strcmp(this->getDestinatario(), correo2.getDestinatario()))
+                        if (!strcmp(this->getCopiaCarbon(), correo2.getCopiaCarbon()))
+                            if (!strcmp(this->getCopiaCarbonCiega(), correo2.getCopiaCarbonCiega()))
+                                if (!strcmp(this->getAsunto(), correo2.getAsunto()))
+                                    if (!strcmp(this->getContenido(), correo2.getContenido()))
+                                        return true;
+    return false;
+}
+
+bool Correo::operator !=(Correo &correo2)
+{
+    if (strcmp(this->getFechaEnvio(), correo2.getFechaEnvio()))
+        return true;
+    if(strcmp(this->getHoraEnvio(), correo2.getHoraEnvio()))
+        return true;
+    if(strcmp(this->getRem(), correo2.getRem()))
+        return true;
+    if(strcmp(this->getDestinatario(), correo2.getDestinatario()))
+        return true;
+    if (strcmp(this->getCopiaCarbon(), correo2.getCopiaCarbon()))
+        return true;
+    if (strcmp(this->getCopiaCarbonCiega(), correo2.getCopiaCarbonCiega()))
+        return true;
+    if (strcmp(this->getAsunto(), correo2.getAsunto()))
+        return true;
+    if (strcmp(this->getContenido(), correo2.getContenido()))
+        return true;
+    return false;
+}
 void Correo::setHoraEnvio(const char *horaEnvio)
 {
     strcpy(m_horaEnvio, horaEnvio);
