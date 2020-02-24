@@ -39,11 +39,10 @@ void agregar::on_guardar_clicked()
     ccc = ui->copiaCarbonCiega_linea->text();
     asunto = ui->asunto_linea->text();
     cont = ui->contenido_caja->toPlainText();
+
     tmp = m_lector->leer(id.toULongLong());
 
-    strcpy(idVer, id.toStdString().c_str());
-
-    if (id.toULongLong() < 1 || id.toULongLong() > 9999999999 || idVer[0] == '0')
+    if (id.toULongLong() < 1 || id.toULongLong() > 9999999999 || id[0] == '0')
         QMessageBox::warning(this, "ID no válido", "ID fuera del rango (1 - 9999999999)");
     else if (atoll(tmp->getIdentificador()) == id.toLongLong())
         QMessageBox::warning(this, "ID en uso",

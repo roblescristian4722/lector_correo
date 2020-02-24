@@ -12,6 +12,8 @@
 #include "lectorcorreo.h"
 #include "parser.h"
 #include "sobrescribir.h"
+#include "modificar_copia.h"
+#include "eliminar_copia.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -47,6 +49,10 @@ private slots:
     void on_crearCopiaPB_clicked();
 
     void on_recuperarCopiaPB_clicked();
+    void on_modificarCopiaPB_clicked();
+
+    void on_eliminarCopiaPB_clicked();
+
 private:
     Ui::MainWindow *ui;
 

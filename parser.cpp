@@ -57,7 +57,7 @@ void Parser::getData(const char* fileName, LDL<string>* data)
 
     // En caso de que al final se añada un dato de
     // más aquí se elimina
-    if (data->size() % m_size)
+    while(data->size() % m_size != 0)
         data->pop_back();
 
     // Este for borra el header

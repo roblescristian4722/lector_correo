@@ -2,8 +2,10 @@
 #define LECTORCORREO_H
 
 #include <iostream>
+#include <cstdio>
 #include <fstream>
 #include <ctime>
+#include <string>
 #include "correo.h"
 #include "ldl.h"
 
@@ -23,27 +25,17 @@ public:
 
     void menu();
     void crear(Correo* tmp);
-    Correo* leer(size_t id);
+    Correo* leer(unsigned long id);
     void leer(LDL<Correo>* lista);
-    void leerRem(LDL<Correo>* lista, const char* rem);
-    void modificar(size_t id, Correo* correo);
-    void eliminar(size_t id);
-    void crearCopiaSeguridad();
-    Correo& obtenerID(size_t id);
-
-    bool getPosicion(int index);
-    bool* getPosicion();
+    void leer_rem(LDL<Correo>* lista, const char* rem);
+    void modificar(unsigned long id, Correo* correo);
+    void eliminar(unsigned long id);
+    void crear_copia_seguridad();
+    void modificar_copia(Correo* correo, LDL<string> idRegistrados);
+    void validar_comillas(Correo* correo);
+    void eliminar_copia_seguridad(string id, LDL<string> idRegistrados);
 
 private:
-    struct Datos
-    {
-        size_t correos;
-        bool posiciones[10];
-    };
-
-    // Estructura que gestiona los id usados
-    // y la cantidad de correos ingresados
-    Datos m_correos;
 };
 
 #endif // LECTORCORREO_H

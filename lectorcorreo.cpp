@@ -9,18 +9,12 @@ LectorCorreo::LectorCorreo()
         entrada.open("datos.bin", ios::binary | ios::out);
         entrada.close();
     }
-    else
-    {
-        entrada.seekg(0);
-        entrada.read((char*)&m_correos, sizeof(Datos));
-        entrada.close();
-    }
 }
 
 LectorCorreo::~LectorCorreo()
 {}
 
-void LectorCorreo::eliminar(size_t id)
+void LectorCorreo::eliminar(unsigned long id)
 {
     Correo tmp;
     tmp.setIdentificador("");
@@ -55,7 +49,7 @@ void LectorCorreo::crear(Correo* correo)
     }
 }
 
- Correo* LectorCorreo::leer(size_t id)
+ Correo* LectorCorreo::leer(unsigned long id)
 {
      /*
       * Se crea un Correo temporal en memoria dinámica
@@ -100,7 +94,7 @@ void LectorCorreo::leer(LDL<Correo>* lista)
     archivo.close();
 }
 
-void LectorCorreo::leerRem(LDL<Correo>* lista, const char* rem)
+void LectorCorreo::leer_rem(LDL<Correo>* lista, const char* rem)
 {
     Correo correoTmp;
     string strTmp;
@@ -120,10 +114,9 @@ void LectorCorreo::leerRem(LDL<Correo>* lista, const char* rem)
     }
 }
 
-void LectorCorreo::crearCopiaSeguridad()
+void LectorCorreo::crear_copia_seguridad()
 {
     Correo correoTmp;
-    char contenidoTmp[500];
     fstream binario("datos.bin", ios::in | ios::binary);
     if (!binario.is_open())
         cout << "error en binario" << endl;
@@ -138,10 +131,7 @@ void LectorCorreo::crearCopiaSeguridad()
 
     for (unsigned long i = 0; !binario.eof(); i++)
     {
-        char contenidoTmp[500];
-        char asuntoTmp[200];
-        bool asuntoComillas = false;
-        bool contenidoComillas = false;
+
         unsigned long pos = i * sizeof(Correo);
         binario.seekg(pos);
         binario.read((char*)&correoTmp, sizeof(Correo));
@@ -151,43 +141,7 @@ void LectorCorreo::crearCopiaSeguridad()
             int i = 0;
             int matchesContenido = 0;
 
-            // Se validan las comillas dobles en contenido
-            for (i; !(*(correoTmp.getContenido() + i) == '\0'); i++)
-            {
-                if (*(correoTmp.getContenido() + i) == '"')
-                {
-                    contenidoTmp[i + matchesContenido] = *(correoTmp.getContenido() + i);
-                    ++matchesContenido;
-                    contenidoTmp[i + matchesContenido] = '"';
-                    asuntoComillas = true;
-                }
-                else
-                    contenidoTmp[i + matchesContenido] = *(correoTmp.getContenido() + i);
-                if (*(correoTmp.getContenido() + i) == ','
-                         || *(correoTmp.getContenido() + i) == '\n')
-                    contenidoComillas = true;
-            }
-            contenidoTmp[i + matchesContenido] = '\0';
-
-            // Se validan las comillas dobles en el asunto
-            i = 0;
-            int matchesAsunto = 0;
-            for (i; !(*(correoTmp.getAsunto() + i) == '\0'); i++)
-            {
-                if (*(correoTmp.getAsunto() + i) == '"')
-                {
-                    asuntoTmp[i + matchesAsunto] = *(correoTmp.getAsunto() + i);
-                    ++matchesAsunto;
-                    asuntoTmp[i + matchesAsunto] = '"';
-                    asuntoComillas = true;
-                }
-                else
-                    asuntoTmp[i + matchesAsunto] = *(correoTmp.getAsunto() + i);
-                if (*(correoTmp.getAsunto() + i) == ','
-                    || *(correoTmp.getAsunto() + i) == '\n')
-                    asuntoComillas = true;
-            }
-            asuntoTmp[i + matchesAsunto] = '\0';
+            validar_comillas(&correoTmp);
 
             // Se guarda todo en el csv
             csv << correoTmp.getIdentificador() << ','
@@ -196,29 +150,199 @@ void LectorCorreo::crearCopiaSeguridad()
                 << correoTmp.getRem() << ','
                 << correoTmp.getDestinatario() << ','
                 << correoTmp.getCopiaCarbon() << ','
-                << correoTmp.getCopiaCarbonCiega() << ',';
-
-            if (asuntoComillas)
-                csv << '"' << asuntoTmp << '"' << ',';
-            else
-                csv << asuntoTmp << ',';
-
-            if (contenidoComillas)
-                csv << '"' << contenidoTmp << '"' << endl;
-            else
-                csv << contenidoTmp << endl;
+                << correoTmp.getCopiaCarbonCiega() << ','
+                << correoTmp.getAsunto() << ','
+                << correoTmp.getContenido() << '\n';
         }
     }
     binario.close();
     csv.close();
 }
 
-bool LectorCorreo::getPosicion(int index)
+void LectorCorreo::modificar_copia(Correo* correo, LDL<string> idRegistrados)
 {
-    return m_correos.posiciones[index];
+    string aux;
+    string auxID = "";
+    fstream csv("respaldo.csv", ios::in);
+    fstream tmp("respaldo.tmp", ios::out);
+
+    if (!tmp.is_open())
+        cout << "No abierto" << endl;
+
+    while (!csv.eof())
+    {
+        getline(csv, aux);
+        auxID = "";
+        for (int i = 0; aux[i] != ','; ++i)
+            auxID += aux[i];
+
+        if (auxID == correo->getIdentificador())
+        {
+            validar_comillas(correo);
+            tmp << correo->getIdentificador() << ','
+                << correo->getFechaEnvio() << ','
+                << correo->getHoraEnvio() << ','
+                << correo->getRem() << ','
+                << correo->getDestinatario() << ','
+                << correo->getCopiaCarbon() << ','
+                << correo->getCopiaCarbonCiega() << ','
+                << correo->getAsunto() << ','
+                << correo->getContenido() << '\n';
+            idRegistrados.pop_front();
+
+            do
+            {
+                getline(csv, aux);
+                auxID = "";
+                for (int i = 0; aux[i] != ','; ++i)
+                    auxID += aux[i];
+            }while(auxID != idRegistrados.front());
+            tmp << aux << '\n';
+        }
+        else if (auxID == idRegistrados.front())
+        {
+            idRegistrados.pop_front();
+            tmp << aux << '\n';
+        }
+        else
+            tmp << aux << '\n';
+    }
+    csv.close();
+    tmp.close();
+
+    remove("respaldo.csv");
+    rename("respaldo.tmp", "respaldo.csv");
 }
 
-bool* LectorCorreo::getPosicion()
+void LectorCorreo::validar_comillas(Correo *correo)
 {
-    return m_correos.posiciones;
+    char contenidoTmp[500];
+    char asuntoTmp[200];
+    bool asuntoComillas = false;
+    bool contenidoComillas = false;
+    int i = 0;
+    int matchesContenido = 0;
+
+    // Se validan las comillas dobles en contenido
+    for (i; *(correo->getContenido() + i) != '\0'; i++)
+    {
+        if (*(correo->getContenido() + i) == '"')
+        {
+            contenidoTmp[i + matchesContenido] = *(correo->getContenido() + i);
+            ++matchesContenido;
+            contenidoTmp[i + matchesContenido] = '"';
+            asuntoComillas = true;
+        }
+        else
+            contenidoTmp[i + matchesContenido] = *(correo->getContenido() + i);
+        if (*(correo->getContenido() + i) == ','
+                 || *(correo->getContenido() + i) == '\n')
+            contenidoComillas = true;
+    }
+    contenidoTmp[i + matchesContenido] = '\0';
+    correo->setContenido(contenidoTmp);
+
+    // Se validan las comillas dobles en el asunto
+    i = 0;
+    int matchesAsunto = 0;
+    for (i; *(correo->getAsunto() + i) != '\0'; i++)
+    {
+        if (*(correo->getAsunto() + i) == '"')
+        {
+            asuntoTmp[i + matchesAsunto] = *(correo->getAsunto() + i);
+            ++matchesAsunto;
+            asuntoTmp[i + matchesAsunto] = '"';
+            asuntoComillas = true;
+        }
+        else
+            asuntoTmp[i + matchesAsunto] = *(correo->getAsunto() + i);
+        if (*(correo->getAsunto() + i) == ','
+            || *(correo->getAsunto() + i) == '\n')
+            asuntoComillas = true;
+    }
+
+    asuntoTmp[i + matchesAsunto] = '\0';
+    if (asuntoComillas)
+    {
+        string asuntoComillas = "\"";
+        asuntoComillas += asuntoTmp;
+        asuntoComillas += "\"";
+        correo->setAsunto(asuntoComillas.c_str());
+    }
+    else
+        correo->setAsunto(asuntoTmp);
+
+    if (contenidoComillas)
+    {
+        string contenidoComillas = "\"";
+        contenidoComillas += contenidoTmp;
+        contenidoComillas += "\"";
+        correo->setContenido(contenidoComillas.c_str());
+    }
+    else
+        correo->setContenido(contenidoTmp);
 }
+
+void LectorCorreo::eliminar_copia_seguridad(string id, LDL<string> idRegistrados)
+{
+    fstream csv("respaldo.csv", ios::in);
+    fstream tmp("respaldo.tmp", ios::out);
+    string aux;
+    string auxID;
+
+    if (!tmp.is_open())
+        cout << "No abierto" << endl;
+
+    while (!csv.eof())
+    {
+        getline(csv, aux);
+        auxID = "";
+        for (int i = 0; aux[i] != ','; ++i)
+            auxID += aux[i];
+
+        if (auxID == id)
+        {
+            /* Si se encuentra el ID en el archivo se
+             * elimina de la lista de id's y no se ecribe
+             * nada en el tmp hasta encontrar otro ID
+            */
+            idRegistrados.pop_front();
+            do
+            {
+                /*
+                 * Una vez que se encuentra otro ID
+                 * se sale del ciclo y se escribe en
+                 * el archivo
+                 */
+
+                getline(csv, aux);
+                auxID = "";
+                for (int i = 0; aux[i] != ','; ++i)
+                    auxID += aux[i];
+            }while(auxID != idRegistrados.front());
+            tmp << aux << '\n';
+        }
+        /*
+         * Cualquier ID que se encuentre se borrará
+         * de la lista de ID's y además se escribirá
+         * la línea en el archivo
+        */
+        else if (auxID == idRegistrados.front())
+        {
+            idRegistrados.pop_front();
+            tmp << aux << '\n';
+        }
+        /*
+         * Cualquier otra línea se va a escribir
+         * en el archivo de texto
+        */
+        else
+            tmp << aux << '\n';
+    }
+    csv.close();
+    tmp.close();
+
+    remove("respaldo.csv");
+    rename("respaldo.tmp", "respaldo.csv");
+}
+

@@ -179,7 +179,7 @@ void MainWindow::on_remBuscarPB_clicked()
         this->setCursor(Qt::WaitCursor);
         m_lista.clear();
         ui->bandejaTabla->setRowCount(0);
-        m_lector.leerRem(&m_lista, ui->remLE->text().toStdString().c_str());
+        m_lector.leer_rem(&m_lista, ui->remLE->text().toStdString().c_str());
         for (i = 0; i < m_lista.size(); i++)
         {
             ui->bandejaTabla->insertRow(ui->bandejaTabla->rowCount());
@@ -218,7 +218,7 @@ void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
 void MainWindow::on_crearCopiaPB_clicked()
 {
     this->setCursor(Qt::WaitCursor);
-    m_lector.crearCopiaSeguridad();
+    m_lector.crear_copia_seguridad();
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Copia creada", "Copia de seguridad creada exitosamente");
 }
@@ -291,4 +291,18 @@ int MainWindow::busqueda_binaria(int dato)
             l = m + 1;
     }
     return -1;
+}
+
+void MainWindow::on_modificarCopiaPB_clicked()
+{
+    modificar_copia mod(&m_lector);
+    mod.setModal(true);
+    mod.exec();
+}
+
+void MainWindow::on_eliminarCopiaPB_clicked()
+{
+    eliminar_copia elim(&m_lector);
+    elim.setModal(true);
+    elim.exec();
 }

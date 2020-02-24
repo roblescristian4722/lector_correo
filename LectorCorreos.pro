@@ -17,30 +17,36 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     agregar.cpp \
+    eliminar_copia.cpp \
     main.cpp \
     mainwindow.cpp \
     correo.cpp \
     lectorcorreo.cpp \
     modificar.cpp \
+    modificar_copia.cpp \
     parser.cpp \
     sobrescribir.cpp \
     vistaprevia.cpp
 
 HEADERS += \
     agregar.h \
+    eliminar_copia.h \
     mainwindow.h \
     correo.h \
     ldl.h \
     lectorcorreo.h \
     modificar.h \
+    modificar_copia.h \
     parser.h \
     sobrescribir.h \
     vistaprevia.h
 
 FORMS += \
     agregar.ui \
+    eliminar_copia.ui \
     mainwindow.ui \
     modificar.ui \
+    modificar_copia.ui \
     sobrescribir.ui \
     vistaprevia.ui
 
