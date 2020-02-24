@@ -190,22 +190,29 @@ void LectorCorreo::modificar_copia(Correo* correo, LDL<string> idRegistrados)
                 << correo->getContenido() << '\n';
             idRegistrados.pop_front();
 
-            do
+            if (idRegistrados.size())
             {
-                getline(csv, aux);
-                auxID = "";
-                for (int i = 0; aux[i] != ','; ++i)
-                    auxID += aux[i];
-            }while(auxID != idRegistrados.front());
-            tmp << aux << '\n';
+                do
+                {
+                    getline(csv, aux);
+                    auxID = "";
+                    for (int i = 0; aux[i] != ','; ++i)
+                        auxID += aux[i];
+                }while(auxID != idRegistrados.front());
+                tmp << aux << '\n';
+            }
         }
-        else if (auxID == idRegistrados.front())
+        else if (idRegistrados.size())
         {
-            idRegistrados.pop_front();
-            tmp << aux << '\n';
+            if (auxID == idRegistrados.front())
+            {
+                idRegistrados.pop_front();
+                tmp << aux << '\n';
+            }
+            else
+                tmp << aux << '\n';
         }
-        else
-            tmp << aux << '\n';
+        cout << aux;
     }
     csv.close();
     tmp.close();
@@ -307,37 +314,44 @@ void LectorCorreo::eliminar_copia_seguridad(string id, LDL<string> idRegistrados
              * nada en el tmp hasta encontrar otro ID
             */
             idRegistrados.pop_front();
-            do
-            {
-                /*
-                 * Una vez que se encuentra otro ID
-                 * se sale del ciclo y se escribe en
-                 * el archivo
-                 */
 
-                getline(csv, aux);
-                auxID = "";
-                for (int i = 0; aux[i] != ','; ++i)
-                    auxID += aux[i];
-            }while(auxID != idRegistrados.front());
-            tmp << aux << '\n';
+            if (idRegistrados.size())
+            {
+                do
+                {
+                    /*
+                     * Una vez que se encuentra otro ID
+                     * se sale del ciclo y se escribe en
+                     * el archivo
+                     */
+
+                    getline(csv, aux);
+                    auxID = "";
+                    for (int i = 0; aux[i] != ','; ++i)
+                        auxID += aux[i];
+                }while(auxID != idRegistrados.front());
+                tmp << aux << '\n';
+            }
         }
         /*
          * Cualquier ID que se encuentre se borrará
          * de la lista de ID's y además se escribirá
          * la línea en el archivo
         */
-        else if (auxID == idRegistrados.front())
+        if (idRegistrados.size())
         {
-            idRegistrados.pop_front();
-            tmp << aux << '\n';
+            if (auxID == idRegistrados.front())
+            {
+                idRegistrados.pop_front();
+                tmp << aux << '\n';
+            }
+            /*
+             * Cualquier otra línea se va a escribir
+             * en el archivo de texto
+            */
+            else
+                tmp << aux << '\n';
         }
-        /*
-         * Cualquier otra línea se va a escribir
-         * en el archivo de texto
-        */
-        else
-            tmp << aux << '\n';
     }
     csv.close();
     tmp.close();
