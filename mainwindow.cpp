@@ -44,6 +44,8 @@ void MainWindow::on_agregar_clicked()
 
 void MainWindow::on_eliminar_clicked()
 {
+    if (m_fila > ui->bandejaTabla->rowCount())
+        m_fila = 0;
     unsigned long id;
     unsigned long idElim = 0;
     if (!ui->bandejaTabla->rowCount())
@@ -64,6 +66,8 @@ void MainWindow::on_eliminar_clicked()
 
 void MainWindow::on_modificar_clicked()
 {
+    if (m_fila > ui->bandejaTabla->rowCount())
+        m_fila = 0;
     unsigned long idMod = 0;
     unsigned long id;
     if (!ui->bandejaTabla->rowCount())

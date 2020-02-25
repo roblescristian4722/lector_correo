@@ -22,18 +22,17 @@ void Parser::getData(const char* fileName, LDL<string>* data)
         {
             file.get(auxChar);
 
-            if (auxChar == '"' && !quotes)
+            if (auxChar == '"')
             {
-                quotes = true;
-                ++quotesCont;
-            }
-            else if (auxChar == '"')
-            {
-                quotesCont ++;
-                if (quotesCont % 2)
+                if (!quotes)
+                    quotes = true;
+                else
+                    ++quotesCont;
+
+                if (quotesCont % 2 == 0 && quotesCont > 0)
                     auxString += auxChar;
             }
-            else if ((auxChar == ',' || auxChar == '\n') && quotes && !(quotesCont % 2))
+            else if ((auxChar == ',' || auxChar == '\n') && quotes && quotesCont % 2)
             {
                 quotes = false;
                 quotesCont = 0;
