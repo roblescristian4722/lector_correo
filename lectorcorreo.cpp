@@ -189,30 +189,27 @@ void LectorCorreo::modificar_copia(Correo* correo, LDL<string> idRegistrados)
                 << correo->getAsunto() << ','
                 << correo->getContenido() << '\n';
             idRegistrados.pop_front();
-
-            if (idRegistrados.size())
+            if (idRegistrados.empty())
             {
-                do
-                {
-                    getline(csv, aux);
-                    auxID = "";
-                    for (int i = 0; aux[i] != ','; ++i)
-                        auxID += aux[i];
-                }while(auxID != idRegistrados.front());
-                tmp << aux << '\n';
+                csv.seekg(ios::end);
+                break;
             }
+            do
+            {
+                getline(csv, aux);
+                auxID = "";
+                for (int i = 0; aux[i] != ','; ++i)
+                    auxID += aux[i];
+            }while(auxID != idRegistrados.front());
+            tmp << aux << '\n';
         }
-        else if (idRegistrados.size())
+        else if (auxID == idRegistrados.front())
         {
-            if (auxID == idRegistrados.front())
-            {
-                idRegistrados.pop_front();
-                tmp << aux << '\n';
-            }
-            else
-                tmp << aux << '\n';
+            idRegistrados.pop_front();
+            tmp << aux << '\n';
         }
-        cout << aux;
+        else
+            tmp << aux << '\n';
     }
     csv.close();
     tmp.close();
@@ -296,6 +293,7 @@ void LectorCorreo::eliminar_copia_seguridad(string id, LDL<string> idRegistrados
     fstream tmp("respaldo.tmp", ios::out);
     string aux;
     string auxID;
+    bool eof = false;
 
     if (!tmp.is_open())
         cout << "No abierto" << endl;
@@ -314,9 +312,9 @@ void LectorCorreo::eliminar_copia_seguridad(string id, LDL<string> idRegistrados
              * nada en el tmp hasta encontrar otro ID
             */
             idRegistrados.pop_front();
-
             if (idRegistrados.size())
             {
+                cout << "asdf" << endl;
                 do
                 {
                     /*
@@ -332,26 +330,28 @@ void LectorCorreo::eliminar_copia_seguridad(string id, LDL<string> idRegistrados
                 }while(auxID != idRegistrados.front());
                 tmp << aux << '\n';
             }
+            else
+            {
+                csv.seekg(ios::end);
+                break;
+            }
         }
         /*
          * Cualquier ID que se encuentre se borrará
          * de la lista de ID's y además se escribirá
          * la línea en el archivo
         */
-        if (idRegistrados.size())
+        else if (auxID == idRegistrados.front())
         {
-            if (auxID == idRegistrados.front())
-            {
-                idRegistrados.pop_front();
-                tmp << aux << '\n';
-            }
-            /*
-             * Cualquier otra línea se va a escribir
-             * en el archivo de texto
-            */
-            else
-                tmp << aux << '\n';
+            idRegistrados.pop_front();
+            tmp << aux << '\n';
         }
+        /*
+         * Cualquier otra línea se va a escribir
+         * en el archivo de texto
+        */
+        else
+            tmp << aux << '\n';
     }
     csv.close();
     tmp.close();
