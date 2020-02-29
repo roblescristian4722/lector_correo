@@ -457,7 +457,8 @@ bool LectorCorreo::eliminar_copia_propietario(long id)
     int i;
     char tam;
     char aux;
-    char auxString[500];
+    char auxString[500] = "\0";
+
     fstream tmp("respaldo.tmp", ios::out | ios::binary);
     fstream prop("respaldo.dat", ios::in | ios::binary);
     if (!prop.is_open())
@@ -467,6 +468,10 @@ bool LectorCorreo::eliminar_copia_propietario(long id)
         while (!prop.eof())
         {
             prop.read((char*)&tam, sizeof(tam));
+
+            if (prop.eof())
+                break;
+
             for (i = 0; i < int(tam); ++i)
             {
                 prop.get(aux);
@@ -479,21 +484,17 @@ bool LectorCorreo::eliminar_copia_propietario(long id)
                 encontrado = true;
                 borrar = true;
             }
-
-            else if (cont == TOTAL_CAMPOS && borrar)
-            {
-                borrar = false;
-                cont = 0;
-            }
-            else if (cont == TOTAL_CAMPOS)
-                cont = 0;
-
-            if (!borrar)
+            else if (!borrar)
             {
                 tmp.write((char*)&tam, sizeof(tam));
                 for (i = 0; i < int(tam); ++i)
                     tmp << auxString[i];
             }
+
+            if (cont == TOTAL_CAMPOS && borrar)
+                borrar = false;
+
+            cont %= TOTAL_CAMPOS;
         }
         prop.close();
         remove("respaldo.dat");
