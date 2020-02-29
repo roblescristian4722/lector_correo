@@ -14,6 +14,7 @@
 #include "sobrescribir.h"
 #include "modificar_copia.h"
 #include "eliminar_copia.h"
+#include "eliminar_propietario.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -55,6 +56,8 @@ private slots:
     void on_actionEliminar_correo_en_copia_de_seguridad_triggered();
 
     void on_actionExportar_copia_de_propietario_triggered();
+
+    void on_actionEliminar_correo_triggered();
 
 private:
     Ui::MainWindow *ui;

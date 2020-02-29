@@ -1,4 +1,5 @@
 #include "lectorcorreo.h"
+#define TOTAL_CAMPOS 9
 
 LectorCorreo::LectorCorreo()
 {
@@ -372,7 +373,7 @@ void LectorCorreo::crear_copia_propietario()
     else
     {
         bin.seekg(ios::beg);
-        for(int i = 0; !bin.eof(); ++i)
+        while(!bin.eof())
         {
             // se lee del binario
             bin.read((char*)&correoTmp, sizeof (Correo));
@@ -382,61 +383,122 @@ void LectorCorreo::crear_copia_propietario()
 
             // Se escribe en la copia de propietario
             // ID
-            tam = strlen(correoTmp.getIdentificador());
-            cout << int(tam) << endl;
-            prop.write((char*)&tam, sizeof(tam));
-            for (int i = 0; i < int(tam); ++i)
-                prop.write((char*)correoTmp.getIdentificador() + i, sizeof(char));
+            tam = char(strlen(correoTmp.getIdentificador()));
+            // Si el ID está vacío entonces no se guarda
+            if (tam)
+            {
+                prop.write((char*)&tam, sizeof(tam));
+                for (int i = 0; i < int(tam); ++i)
+                    prop.write((char*)correoTmp.getIdentificador() + i, sizeof(char));
 
-            // Fecha
-            tam = strlen(correoTmp.getFechaEnvio());
-            prop.write((char*)&tam, sizeof(tam));
-            for (int i = 0; i < tam; i++)
-                prop.write((char*)correoTmp.getFechaEnvio() + i, sizeof(char));
+                // Fecha
+                tam = char(strlen(correoTmp.getFechaEnvio()));
+                prop.write((char*)&tam, sizeof(tam));
+                for (int i = 0; i < tam; i++)
+                    prop.write((char*)correoTmp.getFechaEnvio() + i, sizeof(char));
 
-            // Hora
-            tam = strlen(correoTmp.getHoraEnvio());
-            prop.write((char*)&tam, sizeof(tam));
-            for (int i = 0; i < tam; i++)
-                prop.write((char*)correoTmp.getHoraEnvio() + i, sizeof(char));
+                // Hora
+                tam = char(strlen(correoTmp.getHoraEnvio()));
+                prop.write((char*)&tam, sizeof(tam));
+                for (int i = 0; i < tam; i++)
+                    prop.write((char*)correoTmp.getHoraEnvio() + i, sizeof(char));
 
-            // Remitente
-            tam = strlen(correoTmp.getRem());
-            prop.write((char*)&tam, sizeof(tam));
-            for (int i = 0; i < tam; i++)
-                prop.write((char*)correoTmp.getRem() + i, sizeof(char));
+                // Remitente
+                tam = char(strlen(correoTmp.getRem()));
+                prop.write((char*)&tam, sizeof(tam));
+                for (int i = 0; i < tam; i++)
+                    prop.write((char*)correoTmp.getRem() + i, sizeof(char));
 
-            // Destinatario
-            tam = strlen(correoTmp.getDestinatario());
-            prop.write((char*)&tam, sizeof(tam));
-            for (int i = 0; i < tam; i++)
-                prop.write((char*)correoTmp.getDestinatario() + i, sizeof(char));
+                // Destinatario
+                tam = char(strlen(correoTmp.getDestinatario()));
+                prop.write((char*)&tam, sizeof(tam));
+                for (int i = 0; i < tam; i++)
+                    prop.write((char*)correoTmp.getDestinatario() + i, sizeof(char));
 
-            // CC
-            tam = strlen(correoTmp.getCopiaCarbon());
-            prop.write((char*)&tam, sizeof(tam));
-            for (int i = 0; i < tam; i++)
-                prop.write((char*)correoTmp.getCopiaCarbon() + i, sizeof(char));
+                // CC
+                tam = char(strlen(correoTmp.getCopiaCarbon()));
+                prop.write((char*)&tam, sizeof(tam));
+                for (int i = 0; i < tam; i++)
+                    prop.write((char*)correoTmp.getCopiaCarbon() + i, sizeof(char));
 
-            // CCC
-            tam = strlen(correoTmp.getCopiaCarbonCiega());
-            prop.write((char*)&tam, sizeof(tam));
-            for (int i = 0; i < tam; i++)
-                prop.write((char*)correoTmp.getCopiaCarbonCiega() + i, sizeof(char));
+                // CCC
+                tam = char(strlen(correoTmp.getCopiaCarbonCiega()));
+                prop.write((char*)&tam, sizeof(tam));
+                for (int i = 0; i < tam; i++)
+                    prop.write((char*)correoTmp.getCopiaCarbonCiega() + i, sizeof(char));
 
-            // Asunto
-            tam = strlen(correoTmp.getAsunto());
-            prop.write((char*)&tam, sizeof(tam));
-            for (int i = 0; i < tam; i++)
-                prop.write((char*)correoTmp.getAsunto() + i, sizeof(char));
+                // Asunto
+                tam = char(strlen(correoTmp.getAsunto()));
+                prop.write((char*)&tam, sizeof(tam));
+                for (int i = 0; i < tam; i++)
+                    prop.write((char*)correoTmp.getAsunto() + i, sizeof(char));
 
-            // Contenido
-            tam = strlen(correoTmp.getContenido());
-            prop.write((char*)&tam, sizeof(tam));
-            for (int i = 0; i < tam; i++)
-                prop.write((char*)correoTmp.getContenido() + i, sizeof(char));
+                // Contenido
+                tam = char(strlen(correoTmp.getContenido()));
+                prop.write((char*)&tam, sizeof(tam));
+                for (int i = 0; i < tam; i++)
+                    prop.write((char*)correoTmp.getContenido() + i, sizeof(char));
+            }
         }
         bin.close();
     }
+}
+
+void LectorCorreo::modificar_copia_propietario()
+{
+
+}
+
+bool LectorCorreo::eliminar_copia_propietario(long id)
+{
+    bool encontrado = false;
+    bool borrar = false;
+    int cont = 0;
+    int i;
+    char tam;
+    char aux;
+    char auxString[500];
+    fstream tmp("respaldo.tmp", ios::out | ios::binary);
+    fstream prop("respaldo.dat", ios::in | ios::binary);
+    if (!prop.is_open())
+        cout << "Error en el archivo de entrada" << endl;
+    else
+    {
+        while (!prop.eof())
+        {
+            prop.read((char*)&tam, sizeof(tam));
+            for (i = 0; i < int(tam); ++i)
+            {
+                prop.get(aux);
+                auxString[i] = aux;
+            }
+            auxString[i] = '\0';
+            ++cont;
+            if (cont == 1 && atoi(auxString) == id)
+            {
+                encontrado = true;
+                borrar = true;
+            }
+
+            else if (cont == TOTAL_CAMPOS && borrar)
+            {
+                borrar = false;
+                cont = 0;
+            }
+            else if (cont == TOTAL_CAMPOS)
+                cont = 0;
+
+            if (!borrar)
+            {
+                tmp.write((char*)&tam, sizeof(tam));
+                for (i = 0; i < int(tam); ++i)
+                    tmp << auxString[i];
+            }
+        }
+        prop.close();
+        remove("respaldo.dat");
+        rename("respaldo.tmp", "respaldo.dat");
+    }
+    return encontrado;
 }
 

@@ -312,3 +312,10 @@ void MainWindow::on_actionExportar_copia_de_propietario_triggered()
     m_lector.crear_copia_propietario();
     QMessageBox::information(this, "Copia creada", "Copia de propietario creada con éxito");
 }
+
+void MainWindow::on_actionEliminar_correo_triggered()
+{
+    eliminar_propietario elim(&m_lector);
+    elim.setModal(true);
+    elim.exec();
+}

@@ -107,7 +107,7 @@
           <bool>false</bool>
          </property>
          <attribute name="horizontalHeaderVisible">
-          <bool>true</bool>
+          <bool>false</bool>
          </attribute>
          <attribute name="horizontalHeaderCascadingSectionResizes">
           <bool>true</bool>
@@ -214,7 +214,7 @@
      <x>0</x>
      <y>0</y>
      <width>1219</width>
-     <height>24</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuCSV">
@@ -234,6 +234,7 @@
      <string>Copia de propietario</string>
     </property>
     <addaction name="actionExportar_copia_de_propietario"/>
+    <addaction name="actionEliminar_correo"/>
    </widget>
    <addaction name="menuCSV"/>
    <addaction name="menuCopia_de_propietario"/>
@@ -260,7 +261,12 @@
   </action>
   <action name="actionExportar_copia_de_propietario">
    <property name="text">
-    <string>Exportar copia de propietario</string>
+    <string>Crear copia de seguridad</string>
+   </property>
+  </action>
+  <action name="actionEliminar_correo">
+   <property name="text">
+    <string>Eliminar correo</string>
    </property>
   </action>
  </widget>

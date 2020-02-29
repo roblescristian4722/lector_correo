@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     agregar.cpp \
     eliminar_copia.cpp \
+    eliminar_propietario.cpp \
     main.cpp \
     mainwindow.cpp \
     correo.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
 HEADERS += \
     agregar.h \
     eliminar_copia.h \
+    eliminar_propietario.h \
     mainwindow.h \
     correo.h \
     ldl.h \
@@ -44,6 +46,7 @@ HEADERS += \
 FORMS += \
     agregar.ui \
     eliminar_copia.ui \
+    eliminar_propietario.ui \
     mainwindow.ui \
     modificar.ui \
     modificar_copia.ui \
