@@ -21,7 +21,51 @@
        <string/>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="3" column="0" rowspan="4" colspan="6">
+       <item row="0" column="0" colspan="5">
+        <widget class="QLabel" name="titulo">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+           <weight>75</weight>
+           <italic>true</italic>
+           <bold>true</bold>
+           <underline>false</underline>
+          </font>
+         </property>
+         <property name="text">
+          <string>Yi Mail</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="remL">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Remitente:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="3">
+        <widget class="QLineEdit" name="remLE"/>
+       </item>
+       <item row="2" column="4">
+        <widget class="QPushButton" name="remBuscarPB">
+         <property name="text">
+          <string>Buscar</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" rowspan="4" colspan="5">
         <widget class="QTableWidget" name="bandejaTabla">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -63,7 +107,7 @@
           <bool>false</bool>
          </property>
          <attribute name="horizontalHeaderVisible">
-          <bool>false</bool>
+          <bool>true</bool>
          </attribute>
          <attribute name="horizontalHeaderCascadingSectionResizes">
           <bool>true</bool>
@@ -76,111 +120,8 @@
          </attribute>
         </widget>
        </item>
-       <item row="2" column="1" colspan="4">
-        <widget class="QLineEdit" name="remLE"/>
-       </item>
-       <item row="1" column="5">
-        <widget class="QPushButton" name="idBuscarPB">
-         <property name="text">
-          <string>Buscar</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1" colspan="4">
+       <item row="1" column="1" colspan="3">
         <widget class="QLineEdit" name="buscar_barra"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="remL">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Remitente:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="4" colspan="2">
-        <widget class="QPushButton" name="agregar">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>1</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Agregar</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="4" colspan="2">
-        <widget class="QPushButton" name="modificar">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>1</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Modificar</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0" colspan="4">
-        <widget class="QPushButton" name="mostrarTodo">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Mostrar Todo</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="6">
-        <widget class="QLabel" name="titulo">
-         <property name="font">
-          <font>
-           <pointsize>14</pointsize>
-           <weight>75</weight>
-           <italic>true</italic>
-           <bold>true</bold>
-           <underline>false</underline>
-          </font>
-         </property>
-         <property name="text">
-          <string>Yi Mail</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="4" colspan="2">
-        <widget class="QPushButton" name="eliminar">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>1</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Eliminar</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="5">
-        <widget class="QPushButton" name="remBuscarPB">
-         <property name="text">
-          <string>Buscar</string>
-         </property>
-        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="id_text">
@@ -203,31 +144,62 @@
          </property>
         </widget>
        </item>
-       <item row="9" column="2" colspan="2">
-        <widget class="QPushButton" name="crearCopiaPB">
+       <item row="1" column="4">
+        <widget class="QPushButton" name="idBuscarPB">
          <property name="text">
-          <string>Crear copia de seguraidad</string>
+          <string>Buscar</string>
          </property>
         </widget>
        </item>
-       <item row="9" column="0" colspan="2">
-        <widget class="QPushButton" name="recuperarCopiaPB">
+       <item row="8" column="4">
+        <widget class="QPushButton" name="modificar">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
-          <string>Recuperar copia de seguridad</string>
+          <string>Modificar</string>
          </property>
         </widget>
        </item>
-       <item row="10" column="0" colspan="2">
-        <widget class="QPushButton" name="modificarCopiaPB">
+       <item row="8" column="3">
+        <widget class="QPushButton" name="eliminar">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
-          <string>Modificar correo de copia de seguridad</string>
+          <string>Eliminar</string>
          </property>
         </widget>
        </item>
-       <item row="10" column="2" colspan="2">
-        <widget class="QPushButton" name="eliminarCopiaPB">
+       <item row="8" column="2">
+        <widget class="QPushButton" name="agregar">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
-          <string>Eliminar correo de copia de seguridad</string>
+          <string>Agregar</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0" colspan="2">
+        <widget class="QPushButton" name="mostrarTodo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Mostrar Todo</string>
          </property>
         </widget>
        </item>
@@ -236,6 +208,61 @@
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1219</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuCSV">
+    <property name="title">
+     <string>CSV</string>
+    </property>
+    <addaction name="actionRecuperar_copia_de_seguridad"/>
+    <addaction name="separator"/>
+    <addaction name="actionCrear_copia_de_seguridad"/>
+    <addaction name="separator"/>
+    <addaction name="actionEliminar_correo_en_copia_de_seguridad"/>
+    <addaction name="separator"/>
+    <addaction name="actionModificar_correo_en_copia_de_seguridad"/>
+   </widget>
+   <widget class="QMenu" name="menuCopia_de_propietario">
+    <property name="title">
+     <string>Copia de propietario</string>
+    </property>
+    <addaction name="actionExportar_copia_de_propietario"/>
+   </widget>
+   <addaction name="menuCSV"/>
+   <addaction name="menuCopia_de_propietario"/>
+  </widget>
+  <action name="actionRecuperar_copia_de_seguridad">
+   <property name="text">
+    <string>Recuperar copia de seguridad</string>
+   </property>
+  </action>
+  <action name="actionCrear_copia_de_seguridad">
+   <property name="text">
+    <string>Crear copia de seguridad</string>
+   </property>
+  </action>
+  <action name="actionModificar_correo_en_copia_de_seguridad">
+   <property name="text">
+    <string>Modificar correo en copia de seguridad</string>
+   </property>
+  </action>
+  <action name="actionEliminar_correo_en_copia_de_seguridad">
+   <property name="text">
+    <string>Eliminar correo en copia de seguridad</string>
+   </property>
+  </action>
+  <action name="actionExportar_copia_de_propietario">
+   <property name="text">
+    <string>Exportar copia de propietario</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>remLE</tabstop>

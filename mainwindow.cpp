@@ -215,15 +215,24 @@ void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
     p.exec();
 }
 
-void MainWindow::on_crearCopiaPB_clicked()
+int MainWindow::busqueda_binaria(int dato)
 {
-    this->setCursor(Qt::WaitCursor);
-    m_lector.crear_copia_seguridad();
-    this->setCursor(Qt::ArrowCursor);
-    QMessageBox::information(this, "Copia creada", "Copia de seguridad creada exitosamente");
+    int l = 0;
+    int r = m_lista.size() - 1;
+    while (l <= r)
+    {
+        int m = (l + r) / 2;
+        if (dato == stoi(m_lista[m].getIdentificador()))
+            return m;
+        else if (dato < stoi(m_lista[m].getIdentificador()))
+            r = m - 1;
+        else
+            l = m + 1;
+    }
+    return -1;
 }
 
-void MainWindow::on_recuperarCopiaPB_clicked()
+void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
 {
     Parser parser;
     Correo correoActual;
@@ -276,33 +285,30 @@ void MainWindow::on_recuperarCopiaPB_clicked()
     QMessageBox::information(this, "Copia de seguridad restaurada", "Copia de seguridad restaurada con éxito");
 }
 
-int MainWindow::busqueda_binaria(int dato)
+void MainWindow::on_actionCrear_copia_de_seguridad_triggered()
 {
-    int l = 0;
-    int r = m_lista.size() - 1;
-    while (l <= r)
-    {
-        int m = (l + r) / 2;
-        if (dato == stoi(m_lista[m].getIdentificador()))
-            return m;
-        else if (dato < stoi(m_lista[m].getIdentificador()))
-            r = m - 1;
-        else
-            l = m + 1;
-    }
-    return -1;
+    this->setCursor(Qt::WaitCursor);
+    m_lector.crear_copia_seguridad();
+    this->setCursor(Qt::ArrowCursor);
+    QMessageBox::information(this, "Copia creada", "Copia de seguridad creada exitosamente");
 }
 
-void MainWindow::on_modificarCopiaPB_clicked()
+void MainWindow::on_actionModificar_correo_en_copia_de_seguridad_triggered()
 {
     modificar_copia mod(&m_lector);
     mod.setModal(true);
     mod.exec();
 }
 
-void MainWindow::on_eliminarCopiaPB_clicked()
+void MainWindow::on_actionEliminar_correo_en_copia_de_seguridad_triggered()
 {
     eliminar_copia elim(&m_lector);
     elim.setModal(true);
     elim.exec();
+}
+
+void MainWindow::on_actionExportar_copia_de_propietario_triggered()
+{
+    m_lector.crear_copia_propietario();
+    QMessageBox::information(this, "Copia creada", "Copia de propietario creada con éxito");
 }

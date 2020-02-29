@@ -46,12 +46,15 @@ private slots:
 
     void on_bandejaTabla_cellDoubleClicked(int row, int column);
 
-    void on_crearCopiaPB_clicked();
+    void on_actionRecuperar_copia_de_seguridad_triggered();
 
-    void on_recuperarCopiaPB_clicked();
-    void on_modificarCopiaPB_clicked();
+    void on_actionCrear_copia_de_seguridad_triggered();
 
-    void on_eliminarCopiaPB_clicked();
+    void on_actionModificar_correo_en_copia_de_seguridad_triggered();
+
+    void on_actionEliminar_correo_en_copia_de_seguridad_triggered();
+
+    void on_actionExportar_copia_de_propietario_triggered();
 
 private:
     Ui::MainWindow *ui;

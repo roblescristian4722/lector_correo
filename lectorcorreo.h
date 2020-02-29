@@ -30,10 +30,17 @@ public:
     void leer_rem(LDL<Correo>* lista, const char* rem);
     void modificar(unsigned long id, Correo* correo);
     void eliminar(unsigned long id);
+
+    // Copia de seguridad (CSV)
     void crear_copia_seguridad();
     void modificar_copia(Correo* correo, LDL<string> idRegistrados);
     void validar_comillas(Correo* correo);
     void eliminar_copia_seguridad(string id, LDL<string> idRegistrados);
+
+    // Copia de seguridad de propietario
+    void crear_copia_propietario();
+    void modificar_copia_propietario();
+    void eliminar_copia_propietario();
 
 private:
 };

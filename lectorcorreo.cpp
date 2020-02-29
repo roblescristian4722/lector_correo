@@ -360,3 +360,83 @@ void LectorCorreo::eliminar_copia_seguridad(string id, LDL<string> idRegistrados
     rename("respaldo.tmp", "respaldo.csv");
 }
 
+void LectorCorreo::crear_copia_propietario()
+{
+    long posLec = 0;
+    Correo correoTmp;
+    char tam;
+    fstream bin("datos.bin", ios::in | ios::out | ios::binary);
+    fstream prop("respaldo.dat", ios::binary | ios::out);
+    if (!bin.is_open())
+        cout << "Error en el archivo de entrada" << endl;
+    else
+    {
+        bin.seekg(ios::beg);
+        for(int i = 0; !bin.eof(); ++i)
+        {
+            // se lee del binario
+            bin.read((char*)&correoTmp, sizeof (Correo));
+
+            if (bin.eof())
+                break;
+
+            // Se escribe en la copia de propietario
+            // ID
+            tam = strlen(correoTmp.getIdentificador());
+            cout << int(tam) << endl;
+            prop.write((char*)&tam, sizeof(tam));
+            for (int i = 0; i < int(tam); ++i)
+                prop.write((char*)correoTmp.getIdentificador() + i, sizeof(char));
+
+            // Fecha
+            tam = strlen(correoTmp.getFechaEnvio());
+            prop.write((char*)&tam, sizeof(tam));
+            for (int i = 0; i < tam; i++)
+                prop.write((char*)correoTmp.getFechaEnvio() + i, sizeof(char));
+
+            // Hora
+            tam = strlen(correoTmp.getHoraEnvio());
+            prop.write((char*)&tam, sizeof(tam));
+            for (int i = 0; i < tam; i++)
+                prop.write((char*)correoTmp.getHoraEnvio() + i, sizeof(char));
+
+            // Remitente
+            tam = strlen(correoTmp.getRem());
+            prop.write((char*)&tam, sizeof(tam));
+            for (int i = 0; i < tam; i++)
+                prop.write((char*)correoTmp.getRem() + i, sizeof(char));
+
+            // Destinatario
+            tam = strlen(correoTmp.getDestinatario());
+            prop.write((char*)&tam, sizeof(tam));
+            for (int i = 0; i < tam; i++)
+                prop.write((char*)correoTmp.getDestinatario() + i, sizeof(char));
+
+            // CC
+            tam = strlen(correoTmp.getCopiaCarbon());
+            prop.write((char*)&tam, sizeof(tam));
+            for (int i = 0; i < tam; i++)
+                prop.write((char*)correoTmp.getCopiaCarbon() + i, sizeof(char));
+
+            // CCC
+            tam = strlen(correoTmp.getCopiaCarbonCiega());
+            prop.write((char*)&tam, sizeof(tam));
+            for (int i = 0; i < tam; i++)
+                prop.write((char*)correoTmp.getCopiaCarbonCiega() + i, sizeof(char));
+
+            // Asunto
+            tam = strlen(correoTmp.getAsunto());
+            prop.write((char*)&tam, sizeof(tam));
+            for (int i = 0; i < tam; i++)
+                prop.write((char*)correoTmp.getAsunto() + i, sizeof(char));
+
+            // Contenido
+            tam = strlen(correoTmp.getContenido());
+            prop.write((char*)&tam, sizeof(tam));
+            for (int i = 0; i < tam; i++)
+                prop.write((char*)correoTmp.getContenido() + i, sizeof(char));
+        }
+        bin.close();
+    }
+}
+
