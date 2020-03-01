@@ -39,8 +39,8 @@ public:
 
     // Copia de seguridad de propietario
     void crear_copia_propietario();
-    void modificar_copia_propietario();
-    bool eliminar_copia_propietario(long);
+    bool modificar_copia_propietario(Correo* correo);
+    bool eliminar_copia_propietario(long id);
 
 private:
 };

@@ -52,6 +52,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>idLE</tabstop>
+  <tabstop>cancelarPB</tabstop>
+  <tabstop>eliminarPB</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

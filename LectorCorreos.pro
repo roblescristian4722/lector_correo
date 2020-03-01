@@ -25,6 +25,7 @@ SOURCES += \
     lectorcorreo.cpp \
     modificar.cpp \
     modificar_copia.cpp \
+    modificar_propietario.cpp \
     parser.cpp \
     sobrescribir.cpp \
     vistaprevia.cpp
@@ -39,6 +40,7 @@ HEADERS += \
     lectorcorreo.h \
     modificar.h \
     modificar_copia.h \
+    modificar_propietario.h \
     parser.h \
     sobrescribir.h \
     vistaprevia.h
@@ -50,6 +52,7 @@ FORMS += \
     mainwindow.ui \
     modificar.ui \
     modificar_copia.ui \
+    modificar_propietario.ui \
     sobrescribir.ui \
     vistaprevia.ui
 

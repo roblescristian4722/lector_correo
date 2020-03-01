@@ -7,6 +7,7 @@ eliminar_propietario::eliminar_propietario(LectorCorreo *lector, QWidget *parent
     ui(new Ui::eliminar_propietario)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Eliminar correo (copia de propietario)");
 }
 
 eliminar_propietario::~eliminar_propietario()
@@ -27,7 +28,7 @@ void eliminar_propietario::on_eliminarPB_clicked()
         if (found)
             QMessageBox::information(this, "Correo eliminado", "Correo eliminado con éxito");
         else
-            QMessageBox::information(this, "Correo no encontrado", "El ID solicitado no se encuentra en el archivo");
+            QMessageBox::warning(this, "Correo no encontrado", "El ID solicitado no se encuentra en el archivo");
         this->close();
     }
     else

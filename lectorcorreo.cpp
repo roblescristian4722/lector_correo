@@ -372,7 +372,6 @@ void LectorCorreo::crear_copia_propietario()
         cout << "Error en el archivo de entrada" << endl;
     else
     {
-        bin.seekg(ios::beg);
         while(!bin.eof())
         {
             // se lee del binario
@@ -444,9 +443,98 @@ void LectorCorreo::crear_copia_propietario()
     }
 }
 
-void LectorCorreo::modificar_copia_propietario()
+bool LectorCorreo::modificar_copia_propietario(Correo* correo)
 {
+    char aux;
+    char auxString[500];
+    char tam = 1;
+    long cont = 0;
+    int i = 0;
+    bool found = false;
+    bool match = false;
+    fstream prop("respaldo.dat", ios::in | ios::binary);
+    fstream tmp("respaldo.tmp", ios::out | ios::binary);
+    if (!prop.is_open())
+        cout << "Error en el archivo de entrada" << endl;
+    else
+    {
+        while(!prop.eof())
+        {
+            prop.read((char*)&tam, sizeof(tam));
 
+            if (prop.eof())
+                break;
+
+            for (i = 0; i < int(tam); ++i)
+            {
+                prop.get(aux);
+                auxString[i] = aux;
+            }
+
+            auxString[i] = '\0';
+            ++cont;
+
+            if (!match || (match && (cont == 2 || cont == 3)))
+            {
+                tmp.write((char*)&tam, sizeof(tam));
+                for (i = 0; i < int(tam); ++i)
+                    tmp << auxString[i];
+                // En caso de encontrar el ID se activa ésta bandera
+                if (!strcmp(auxString, correo->getIdentificador()) && cont == 1)
+                    match = true;
+            }
+            else if (match)
+            {
+                switch(cont)
+                {
+                    case 4:
+                        tam = strlen(correo->getRem());
+                        tmp.write((char*)&tam, sizeof(tam));
+                        for (i = 0; i < int(tam); ++i)
+                            tmp << correo->getRem()[i];
+                    break;
+                    case 5:
+                        tam = strlen(correo->getDestinatario());
+                        tmp.write((char*)&tam, sizeof(tam));
+                        for (i = 0; i < int(tam); ++i)
+                            tmp << correo->getDestinatario()[i];
+                    break;
+                    case 6:
+                        tam = strlen(correo->getCopiaCarbon());
+                        tmp.write((char*)&tam, sizeof(tam));
+                        for (i = 0; i < int(tam); ++i)
+                            tmp << correo->getCopiaCarbon()[i];
+                    break;
+                    case 7:
+                        tam = strlen(correo->getCopiaCarbonCiega());
+                        tmp.write((char*)&tam, sizeof(tam));
+                        for (i = 0; i < int(tam); ++i)
+                            tmp << correo->getCopiaCarbonCiega()[i];
+                    break;
+                    case 8:
+                        tam = strlen(correo->getAsunto());
+                        tmp.write((char*)&tam, sizeof(tam));
+                        for (i = 0; i < int(tam); ++i)
+                            tmp << correo->getAsunto()[i];
+                    break;
+                    case 9:
+                        tam = strlen(correo->getContenido());
+                        tmp.write((char*)&tam, sizeof(tam));
+                        for (i = 0; i < int(tam); ++i)
+                            tmp << correo->getContenido()[i];
+                        match = false;
+                        found = true;
+                    break;
+                }
+            }
+            cont %= TOTAL_CAMPOS;
+        }
+        prop.close();
+        tmp.close();
+    }
+    remove("respaldo.dat");
+    rename("respaldo.tmp", "respaldo.dat");
+    return found;
 }
 
 bool LectorCorreo::eliminar_copia_propietario(long id)
@@ -497,6 +585,7 @@ bool LectorCorreo::eliminar_copia_propietario(long id)
             cont %= TOTAL_CAMPOS;
         }
         prop.close();
+        tmp.close();
         remove("respaldo.dat");
         rename("respaldo.tmp", "respaldo.dat");
     }

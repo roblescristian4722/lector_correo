@@ -107,7 +107,7 @@
           <bool>false</bool>
          </property>
          <attribute name="horizontalHeaderVisible">
-          <bool>false</bool>
+          <bool>true</bool>
          </attribute>
          <attribute name="horizontalHeaderCascadingSectionResizes">
           <bool>true</bool>
@@ -234,7 +234,10 @@
      <string>Copia de propietario</string>
     </property>
     <addaction name="actionExportar_copia_de_propietario"/>
+    <addaction name="separator"/>
     <addaction name="actionEliminar_correo"/>
+    <addaction name="separator"/>
+    <addaction name="actionModificar_Correo"/>
    </widget>
    <addaction name="menuCSV"/>
    <addaction name="menuCopia_de_propietario"/>
@@ -267,6 +270,11 @@
   <action name="actionEliminar_correo">
    <property name="text">
     <string>Eliminar correo</string>
+   </property>
+  </action>
+  <action name="actionModificar_Correo">
+   <property name="text">
+    <string>Modificar correo</string>
    </property>
   </action>
  </widget>

@@ -7,6 +7,7 @@ eliminar_copia::eliminar_copia(LectorCorreo* lector, QWidget *parent) :
     ui(new Ui::eliminar_copia)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Eliminar correo (copia de seguridad csv)");
 }
 
 eliminar_copia::~eliminar_copia()

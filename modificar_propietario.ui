@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>modificar_copia</class>
- <widget class="QDialog" name="modificar_copia">
+ <class>modificar_propietario</class>
+ <widget class="QDialog" name="modificar_propietario">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>598</width>
-    <height>404</height>
+    <width>607</width>
+    <height>431</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_3">
-   <item row="0" column="1">
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string/>
@@ -100,19 +100,6 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="2">
-       <widget class="QPushButton" name="descartar_2">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Descartar</string>
-        </property>
-       </widget>
-      </item>
       <item row="7" column="3">
        <widget class="QPushButton" name="guardar_2">
         <property name="sizePolicy">
@@ -179,6 +166,19 @@
         </property>
        </widget>
       </item>
+      <item row="7" column="2">
+       <widget class="QPushButton" name="descartar_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Descartar</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -200,16 +200,16 @@
   <connection>
    <sender>descartar_2</sender>
    <signal>clicked()</signal>
-   <receiver>modificar_copia</receiver>
+   <receiver>modificar_propietario</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>356</x>
-     <y>368</y>
+     <x>379</x>
+     <y>389</y>
     </hint>
     <hint type="destinationlabel">
-     <x>326</x>
-     <y>399</y>
+     <x>357</x>
+     <y>431</y>
     </hint>
    </hints>
   </connection>

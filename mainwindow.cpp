@@ -319,3 +319,10 @@ void MainWindow::on_actionEliminar_correo_triggered()
     elim.setModal(true);
     elim.exec();
 }
+
+void MainWindow::on_actionModificar_Correo_triggered()
+{
+    modificar_propietario mod(&m_lector);
+    mod.setModal(true);
+    mod.exec();
+}
