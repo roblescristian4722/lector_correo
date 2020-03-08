@@ -24,8 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
      * Se recuperan los datos del archivo binario en la
      * lista doblemente ligada que forma parte de la clase
     */
-    m_lector.leer(&m_lista);
 
+    m_ultimoLeido = 1;
     on_mostrarTodo_clicked();
 }
 
@@ -36,7 +36,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_agregar_clicked()
 {
-    agregar a(&m_lector, &m_lista);
+    agregar a(&m_lector);
     a.setModal(true);
     a.exec();
     on_mostrarTodo_clicked();
@@ -45,7 +45,6 @@ void MainWindow::on_agregar_clicked()
 void MainWindow::on_eliminar_clicked()
 {
     unsigned long id;
-    unsigned long idElim = 0;
     if (!ui->bandejaTabla->rowCount())
     {
         m_fila = 0;
@@ -53,18 +52,18 @@ void MainWindow::on_eliminar_clicked()
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
     }
+    else if (m_fila >= m_ids.size() || m_fila < 0)
+        m_fila = 0;
+
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong();
-    for (idElim; idElim < m_lista.size(); idElim++)
-        if (id == atol(m_lista[idElim].getIdentificador()))
-            break;
-    m_lista.erase(idElim);
+
+    m_ids.erase(m_fila);
     m_lector.eliminar(id);
     on_mostrarTodo_clicked();
 }
 
 void MainWindow::on_modificar_clicked()
 {
-    unsigned long idMod = 0;
     unsigned long id;
     if (!ui->bandejaTabla->rowCount())
     {
@@ -73,13 +72,12 @@ void MainWindow::on_modificar_clicked()
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
     }
+    else if (m_fila >= m_ids.size() || m_fila < 0)
+        m_fila = 0;
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong();
 
-    for(idMod = 0; idMod < m_lista.size(); idMod++)
-        if (atol(m_lista[idMod].getIdentificador()) == id)
-            break;
-    modificar m(&m_lista, &m_lector, idMod);
+    modificar m(&m_lector, id);
     m.setModal(true);
     m.exec();
     on_mostrarTodo_clicked();
@@ -87,32 +85,36 @@ void MainWindow::on_modificar_clicked()
 
 void MainWindow::on_mostrarTodo_clicked()
 {
+    Correo correoTmp;
+
     this->setCursor(Qt::WaitCursor);
     ui->bandejaTabla->setRowCount(0);
-    m_lista.clear();
-    m_lector.leer(&m_lista);
+
+    m_ids.clear();
+    m_lector.leer(&m_ids);
 
     // Se añaden los datos recuperados a la tabla
-    for (size_t i = 0; i < m_lista.size(); i++)
+    for (size_t i = 0; i < m_ids.size(); i++)
     {
+        correoTmp = m_lector.leer(m_ids[i]);
         ui->bandejaTabla->insertRow(ui->bandejaTabla->rowCount());
         int fila = ui->bandejaTabla->rowCount() - 1;
         ui->bandejaTabla->setItem(fila, COL_ID,
-                                new QTableWidgetItem(m_lista[i].getIdentificador()));
+                                new QTableWidgetItem(correoTmp.getIdentificador()));
         ui->bandejaTabla->setItem(fila, COL_REM,
-                                new QTableWidgetItem(m_lista[i].getRem()));
+                                new QTableWidgetItem(correoTmp.getRem()));
         ui->bandejaTabla->setItem(fila, COL_DES,
-                                new QTableWidgetItem(m_lista[i].getDestinatario()));
+                                new QTableWidgetItem(correoTmp.getDestinatario()));
         ui->bandejaTabla->setItem(fila, COL_ASUNTO,
-                                new QTableWidgetItem(m_lista[i].getAsunto()));
+                                new QTableWidgetItem(correoTmp.getAsunto()));
         ui->bandejaTabla->setItem(fila, COL_CC,
-                                new QTableWidgetItem(m_lista[i].getCopiaCarbon()));
+                                new QTableWidgetItem(correoTmp.getCopiaCarbon()));
         ui->bandejaTabla->setItem(fila, COL_CCC,
-                                new QTableWidgetItem(m_lista[i].getCopiaCarbonCiega()));
+                                new QTableWidgetItem(correoTmp.getCopiaCarbonCiega()));
         ui->bandejaTabla->setItem(fila, COL_FECHA,
-                                new QTableWidgetItem(m_lista[i].getFechaEnvio()));
+                                new QTableWidgetItem(correoTmp.getFechaEnvio()));
         ui->bandejaTabla->setItem(fila, COL_HORA,
-                                new QTableWidgetItem(m_lista[i].getHoraEnvio()));
+                                new QTableWidgetItem(correoTmp.getHoraEnvio()));
         ui->bandejaTabla->resizeColumnToContents(fila);
     }
     this->setCursor(Qt::ArrowCursor);
@@ -135,32 +137,32 @@ void MainWindow::on_idBuscarPB_clicked()
         QMessageBox::warning(this, "ID no válido", "El ID debe de estar en un rango de (1 - 9999999999)");
     else
     {
-        Correo *correoTmp = new Correo;
-        m_lista.clear();
+        Correo correoTmp;
+        m_ids.clear();
         ui->bandejaTabla->setRowCount(0);
         correoTmp = m_lector.leer(ui->buscar_barra->text().toULong());
-        if (atol(correoTmp->getIdentificador()) == ui->buscar_barra->text().toLong())
+        if (atol(correoTmp.getIdentificador()) == ui->buscar_barra->text().toLong())
         {
-            m_lista.push_back(*correoTmp);
+            m_ids.push_back(atol(correoTmp.getIdentificador()));
             ui->bandejaTabla->insertRow(ui->bandejaTabla->rowCount());
 
             int fila = ui->bandejaTabla->rowCount() - 1;
             ui->bandejaTabla->setItem(fila, COL_ID,
-                                    new QTableWidgetItem(correoTmp->getIdentificador()));
+                                    new QTableWidgetItem(correoTmp.getIdentificador()));
             ui->bandejaTabla->setItem(fila, COL_REM,
-                                    new QTableWidgetItem(correoTmp->getRem()));
+                                    new QTableWidgetItem(correoTmp.getRem()));
             ui->bandejaTabla->setItem(fila, COL_DES,
-                                    new QTableWidgetItem(correoTmp->getDestinatario()));
+                                    new QTableWidgetItem(correoTmp.getDestinatario()));
             ui->bandejaTabla->setItem(fila, COL_ASUNTO,
-                                    new QTableWidgetItem(correoTmp->getAsunto()));
+                                    new QTableWidgetItem(correoTmp.getAsunto()));
             ui->bandejaTabla->setItem(fila, COL_CC,
-                                    new QTableWidgetItem(correoTmp->getCopiaCarbon()));
+                                    new QTableWidgetItem(correoTmp.getCopiaCarbon()));
             ui->bandejaTabla->setItem(fila, COL_CCC,
-                                    new QTableWidgetItem(correoTmp->getCopiaCarbonCiega()));
+                                    new QTableWidgetItem(correoTmp.getCopiaCarbonCiega()));
             ui->bandejaTabla->setItem(fila, COL_FECHA,
-                                    new QTableWidgetItem(correoTmp->getFechaEnvio()));
+                                    new QTableWidgetItem(correoTmp.getFechaEnvio()));
             ui->bandejaTabla->setItem(fila, COL_HORA,
-                                    new QTableWidgetItem(correoTmp->getHoraEnvio()));
+                                    new QTableWidgetItem(correoTmp.getHoraEnvio()));
             ui->bandejaTabla->resizeColumnToContents(fila);
         }
     }
@@ -171,35 +173,39 @@ void MainWindow::on_remBuscarPB_clicked()
     char idTmp[10];
     strcpy(idTmp, ui->idBuscarPB->text().toStdString().c_str());
     if (ui->remLE->text().isEmpty())
-        QMessageBox::warning(this, "Remitente vacío", "Ingrese un remitente");
+        QMessageBox::warning(this, "ID vacío", "Ingrese un ID");
     else
     {
         unsigned int i;
         Correo correoTmp;
+
         this->setCursor(Qt::WaitCursor);
-        m_lista.clear();
+        m_ids.clear();
         ui->bandejaTabla->setRowCount(0);
-        m_lector.leer_rem(&m_lista, ui->remLE->text().toStdString().c_str());
-        for (i = 0; i < m_lista.size(); i++)
+        m_lector.leer_rem(&m_ids, ui->remLE->text().toStdString().c_str());
+
+        for (i = 0; i < m_ids.size(); i++)
         {
+            correoTmp = m_lector.leer(m_ids[i]);
+
             ui->bandejaTabla->insertRow(ui->bandejaTabla->rowCount());
             int fila = ui->bandejaTabla->rowCount() - 1;
             ui->bandejaTabla->setItem(fila, COL_ID,
-                                    new QTableWidgetItem(m_lista[i].getIdentificador()));
+                                    new QTableWidgetItem(correoTmp.getIdentificador()));
             ui->bandejaTabla->setItem(fila, COL_REM,
-                                    new QTableWidgetItem(m_lista[i].getRem()));
+                                    new QTableWidgetItem(correoTmp.getRem()));
             ui->bandejaTabla->setItem(fila, COL_DES,
-                                    new QTableWidgetItem(m_lista[i].getDestinatario()));
+                                    new QTableWidgetItem(correoTmp.getDestinatario()));
             ui->bandejaTabla->setItem(fila, COL_ASUNTO,
-                                    new QTableWidgetItem(m_lista[i].getAsunto()));
+                                    new QTableWidgetItem(correoTmp.getAsunto()));
             ui->bandejaTabla->setItem(fila, COL_CC,
-                                    new QTableWidgetItem(m_lista[i].getCopiaCarbon()));
+                                    new QTableWidgetItem(correoTmp.getCopiaCarbon()));
             ui->bandejaTabla->setItem(fila, COL_CCC,
-                                    new QTableWidgetItem(m_lista[i].getCopiaCarbonCiega()));
+                                    new QTableWidgetItem(correoTmp.getCopiaCarbonCiega()));
             ui->bandejaTabla->setItem(fila, COL_FECHA,
-                                    new QTableWidgetItem(m_lista[i].getFechaEnvio()));
+                                    new QTableWidgetItem(correoTmp.getFechaEnvio()));
             ui->bandejaTabla->setItem(fila, COL_HORA,
-                                    new QTableWidgetItem(m_lista[i].getHoraEnvio()));
+                                    new QTableWidgetItem(correoTmp.getHoraEnvio()));
         }
         this->setCursor(Qt::ArrowCursor);
     }
@@ -209,8 +215,8 @@ void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
 {
     Q_UNUSED(column);
     Q_UNUSED(row);
-    Correo* tmp = m_lector.leer(ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong());
-    vistaPrevia p(*tmp);
+    Correo tmp = m_lector.leer(ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong());
+    vistaPrevia p(tmp);
     p.setModal(true);
     p.exec();
 }
@@ -218,35 +224,35 @@ void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
 int MainWindow::busqueda_binaria(int dato)
 {
     int l = 0;
-    int r = m_lista.size() - 1;
-    while (l <= r)
-    {
-        int m = (l + r) / 2;
-        if (dato == stoi(m_lista[m].getIdentificador()))
-            return m;
-        else if (dato < stoi(m_lista[m].getIdentificador()))
-            r = m - 1;
-        else
-            l = m + 1;
-    }
-    return -1;
+        int r = m_ids.size() - 1;
+        while (l <= r)
+        {
+            int m = (l + r) / 2;
+            if (dato == m_ids[m])
+                return m;
+            else if (dato < m_ids[m])
+                r = m - 1;
+            else
+                l = m + 1;
+        }
+        return -1;
 }
 
 int MainWindow::busqueda_binaria(Vector<Correo>* vec, QString dato)
 {
     int l = 0;
-    int r = vec->size() - 1;
-    while (l <= r)
-    {
-        int m = (l + r) / 2;
-        if (dato == QString((*vec)[m].getRem()))
-            return m;
-        else if (dato < QString((*vec)[m].getRem()))
-            r = m - 1;
-        else
-            l = m + 1;
-    }
-    return -1;
+        int r = vec->size() - 1;
+        while (l <= r)
+        {
+            int m = (l + r) / 2;
+            if (dato == QString((*vec)[m].getRem()))
+                return m;
+            else if (dato < QString((*vec)[m].getRem()))
+                r = m - 1;
+            else
+                l = m + 1;
+        }
+        return -1;
 }
 
 void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
@@ -281,18 +287,18 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
 
         if (res == -1)
         {
-            m_lista.push_back(correoCopia);
+            m_ids.push_back(atol(correoCopia.getIdentificador()));
             m_lector.crear(&correoCopia);
         }
         // En caso de que uno de los correos tenga el mismo ID que
         // uno de los almacenadosen el programa
         else
         {
-            correoActual = m_lista[res];
+            correoActual = m_lector.leer(m_ids[res]);
 
             if (correoActual != correoCopia)
             {
-                Sobrescribir sob(&m_lector, &m_lista, &correoCopia, res);
+                Sobrescribir sob(&m_lector, &correoActual, &correoCopia, res);
                 sob.setModal(true);
                 sob.exec();
             }
@@ -352,8 +358,11 @@ void MainWindow::on_remRAMPB_clicked()
     else
     {
         Vector<Correo> *vec = new Vector<Correo>;
+        // Se obtiene el vector
         m_lector.leerRAM(vec);
+        // Se ordena
         shell_sort(vec->size(), vec);
+        // Se busca el dato con búsqueda binaria
         res = busqueda_binaria(vec, ui->remRAMLE->text());
 
         if (res == -1)

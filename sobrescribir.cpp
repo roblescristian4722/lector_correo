@@ -1,16 +1,16 @@
 #include "sobrescribir.h"
 #include "ui_sobrescribir.h"
 
-Sobrescribir::Sobrescribir(LectorCorreo* lector, LDL<Correo>* actual, Correo* copia, int index, QWidget *parent) :
+Sobrescribir::Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia, int index, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Sobrescribir)
 {
     ui->setupUi(this);
     this->setWindowTitle("Correo duplicado");
 
-    m_actual = actual;
     m_index = index;
     m_copia = copia;
+    m_actual = actual;
 
     ui->idLE_copia->setText(copia->getIdentificador());
     ui->fechaLE_copia->setText(copia->getFechaEnvio());
@@ -22,15 +22,15 @@ Sobrescribir::Sobrescribir(LectorCorreo* lector, LDL<Correo>* actual, Correo* co
     ui->asuntoLE_copia->setText(copia->getAsunto());
     ui->contenidoLE_copia->setText(copia->getContenido());
 
-    ui->idLE_actual->setText((*actual)[index].getIdentificador());
-    ui->fechaLE_actual->setText((*actual)[index].getFechaEnvio());
-    ui->horaLE_actual->setText((*actual)[index].getHoraEnvio());
-    ui->remLE_actual->setText((*actual)[index].getRem());
-    ui->desLE_actual->setText((*actual)[index].getDestinatario());
-    ui->CCLE_actual->setText((*actual)[index].getCopiaCarbon());
-    ui->CCCLE_actual->setText((*actual)[index].getCopiaCarbonCiega());
-    ui->asuntoLE_actual->setText((*actual)[index].getAsunto());
-    ui->contenidoLE_actual->setText((*actual)[index].getContenido());
+    ui->idLE_actual->setText(actual->getIdentificador());
+    ui->fechaLE_actual->setText(actual->getFechaEnvio());
+    ui->horaLE_actual->setText(actual->getHoraEnvio());
+    ui->remLE_actual->setText(actual->getRem());
+    ui->desLE_actual->setText(actual->getDestinatario());
+    ui->CCLE_actual->setText(actual->getCopiaCarbon());
+    ui->CCCLE_actual->setText(actual->getCopiaCarbonCiega());
+    ui->asuntoLE_actual->setText(actual->getAsunto());
+    ui->contenidoLE_actual->setText(actual->getContenido());
 }
 
 Sobrescribir::~Sobrescribir()
@@ -45,8 +45,6 @@ void Sobrescribir::on_actualPB_clicked()
 
 void Sobrescribir::on_copiaPB_clicked()
 {
-    m_actual->erase(m_index);
-    m_actual->insert(*m_copia, m_index);
     m_lector->crear(m_copia);
     this->close();
 }

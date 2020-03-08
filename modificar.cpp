@@ -1,8 +1,7 @@
 #include "modificar.h"
 #include "ui_modificar.h"
 
-modificar::modificar(LDL<Correo>* lista, LectorCorreo* lector, unsigned long index, QWidget *parent) :
-    m_lista(lista),
+modificar::modificar(LectorCorreo* lector, unsigned long index, QWidget *parent) :
     m_lector(lector),
     m_index(index),
     QDialog(parent),
@@ -11,12 +10,13 @@ modificar::modificar(LDL<Correo>* lista, LectorCorreo* lector, unsigned long ind
     ui->setupUi(this);
     this->setWindowTitle("Modificar correo");
 
-    ui->des_linea->setText((*m_lista)[index].getDestinatario());
-    ui->rem_linea->setText((*m_lista)[index].getRem());
-    ui->asunto_linea->setText((*m_lista)[index].getAsunto());
-    ui->copiaCarbon_linea->setText((*m_lista)[index].getCopiaCarbon());
-    ui->copiaCarbonCiega_linea->setText((*m_lista)[index].getCopiaCarbonCiega());
-    ui->contenido_caja->setPlainText((*m_lista)[index].getContenido());
+    m_correoTmp = m_lector->leer(index);
+    ui->des_linea->setText(m_correoTmp.getDestinatario());
+    ui->rem_linea->setText(m_correoTmp.getRem());
+    ui->asunto_linea->setText(m_correoTmp.getAsunto());
+    ui->copiaCarbon_linea->setText(m_correoTmp.getCopiaCarbon());
+    ui->copiaCarbonCiega_linea->setText(m_correoTmp.getCopiaCarbonCiega());
+    ui->contenido_caja->setPlainText(m_correoTmp.getContenido());
 }
 
 modificar::~modificar()
@@ -27,7 +27,6 @@ modificar::~modificar()
 void modificar::on_guardar_clicked()
 {
     QString des, rem, cc, ccc, asunto, cont;
-    Correo tmp = (*m_lista)[m_index];
 
     des = ui->des_linea->text();
     rem = ui->rem_linea->text();
@@ -38,15 +37,14 @@ void modificar::on_guardar_clicked()
 
     if (!des.isEmpty() && !rem.isEmpty())
     {
-        tmp.setRem(rem.toStdString().c_str());
-        tmp.setAsunto(asunto.toStdString().c_str());
-        tmp.setContenido(cont.toStdString().c_str());
-        tmp.setCopiaCarbon(cc.toStdString().c_str());
-        tmp.setDestinatario(des.toStdString().c_str());
-        tmp.setCopiaCarbonCiega(ccc.toStdString().c_str());
-        (*m_lista).erase(m_index);
-        (*m_lista).insert(tmp, m_index);
-        m_lector->crear(&tmp);
+        m_correoTmp.setRem(rem.toStdString().c_str());
+        m_correoTmp.setAsunto(asunto.toStdString().c_str());
+        m_correoTmp.setContenido(cont.toStdString().c_str());
+        m_correoTmp.setCopiaCarbon(cc.toStdString().c_str());
+        m_correoTmp.setDestinatario(des.toStdString().c_str());
+        m_correoTmp.setCopiaCarbonCiega(ccc.toStdString().c_str());
+
+        m_lector->crear(&m_correoTmp);
         modificar::close();
     }
     else

@@ -50,7 +50,7 @@ void LectorCorreo::crear(Correo* correo)
     }
 }
 
- Correo* LectorCorreo::leer(unsigned long id)
+Correo LectorCorreo::leer(unsigned long id)
 {
      /*
       * Se crea un Correo temporal en memoria dinámica
@@ -58,7 +58,7 @@ void LectorCorreo::crear(Correo* correo)
       * de texto en una posición determinada y luego se
       * pasará dicho correo a las ventanas
     */
-    Correo* tmp = new Correo;
+    Correo tmp;
     /*
      * Se abre el archivo en modo de lectura y escritura al mismo
      * tiempo para evitar que se sobrescriban los datos del archivo
@@ -73,13 +73,16 @@ void LectorCorreo::crear(Correo* correo)
      * en la variable temporal y el puntero que guarda su dirección se
      * retorna
     */
-    long pos = (id - 1) * sizeof(Correo);
-    archivo.seekg(pos);
-    archivo.read((char*)tmp, sizeof(Correo));
-    return tmp;
+    else
+    {
+        unsigned long pos = (id - 1) * sizeof(Correo);
+        archivo.seekg(pos);
+        archivo.read((char*)&tmp, sizeof(Correo));
+        return tmp;
+    }
 }
 
-void LectorCorreo::leer(LDL<Correo>* lista)
+void LectorCorreo::leer(LDL<unsigned long>* ids)
 {
     Correo tmp;
     fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
@@ -90,19 +93,21 @@ void LectorCorreo::leer(LDL<Correo>* lista)
         archivo.seekg(pos);
         archivo.read((char*)&tmp, sizeof(Correo));
         if (atol(tmp.getIdentificador()) == i + 1)
-            lista->push_back(tmp);
+            ids->push_back(atol(tmp.getIdentificador()));
     }
     archivo.close();
 }
 
-void LectorCorreo::leer_rem(LDL<Correo>* lista, const char* rem)
+void LectorCorreo::leer_rem(LDL<unsigned long>* lista, const char* rem)
 {
     Correo correoTmp;
     string strTmp;
     unsigned long long i;
     fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
+
     if (!archivo.is_open())
         cout << "error en archivo binario" << endl;
+
     archivo.seekg(ios::beg);
     for (i = 0; !archivo.eof(); i++)
     {
@@ -111,7 +116,7 @@ void LectorCorreo::leer_rem(LDL<Correo>* lista, const char* rem)
         archivo.read((char*)&correoTmp, sizeof(Correo));
         strTmp = correoTmp.getRem();
         if (strTmp == rem)
-            lista->push_back(correoTmp);
+            lista->push_back(atol(correoTmp.getIdentificador()));
     }
 }
 

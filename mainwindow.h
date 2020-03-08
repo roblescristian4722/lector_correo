@@ -80,8 +80,9 @@ private:
      * correo obtenido al buscar con un ID
     */
 
-    LDL<Correo> m_lista;
     unsigned long m_fila;
+    unsigned long m_ultimoLeido;
+    LDL<unsigned long> m_ids;
 
     enum COLUMNAS
     {

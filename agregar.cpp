@@ -1,9 +1,8 @@
 #include "agregar.h"
 #include "ui_agregar.h"
 
-agregar::agregar(LectorCorreo* lector, LDL<Correo>* lista, QWidget *parent) :
+agregar::agregar(LectorCorreo* lector, QWidget *parent) :
     QDialog(parent),
-    m_lista(lista),
     ui(new Ui::agregar),
     m_lector(lector)
 {
@@ -23,7 +22,7 @@ void agregar::on_guardar_clicked()
     char idVer[10];
     QString id, des, rem, cc, ccc, asunto, cont;
     Correo correo;
-    Correo* tmp;
+    Correo tmp;
 
     // Se obtiene la fecha del sistema
     time_t now = time(0);
@@ -44,7 +43,7 @@ void agregar::on_guardar_clicked()
 
     if (id.toULongLong() < 1 || id.toULongLong() > 9999999999 || id[0] == '0')
         QMessageBox::warning(this, "ID no válido", "ID fuera del rango (1 - 9999999999)");
-    else if (atoll(tmp->getIdentificador()) == id.toLongLong())
+    else if (atoll(tmp.getIdentificador()) == id.toLongLong())
         QMessageBox::warning(this, "ID en uso",
                              "El ID está en uso, utilice uno nuevo o modifique el ya existente");
     else if (!id.isEmpty() && !des.isEmpty() && !rem.isEmpty())
@@ -63,7 +62,6 @@ void agregar::on_guardar_clicked()
         correo.setDestinatario(des.toStdString().c_str());
         correo.setIdentificador(id.toLocal8Bit());
         correo.setCopiaCarbonCiega(ccc.toStdString().c_str());
-        m_lista->push_back(correo);
         m_lector->crear(&correo);
         agregar::close();
     }

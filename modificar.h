@@ -16,7 +16,7 @@ class modificar : public QDialog
     Q_OBJECT
 
 public:
-    explicit modificar(LDL<Correo>* lista, LectorCorreo* lector, unsigned long index, QWidget *parent = nullptr);
+    explicit modificar(LectorCorreo* lector, unsigned long index, QWidget *parent = nullptr);
     ~modificar();
 
 private slots:
@@ -26,18 +26,11 @@ private:
     Ui::modificar *ui;
 
     /*
-     * Correo temporal que se utiliza para enviar la
-     * información modificada del correo a la ventana
-     * principal
-    */
-    LDL<Correo>* m_lista;
-
-    /*
      * Puntero utilizado para acceder al
      * lector principal y métodos de creación de archivos
     */
     LectorCorreo* m_lector;
-
+    Correo m_correoTmp;
     unsigned long m_index;
 };
 

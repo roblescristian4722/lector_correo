@@ -26,9 +26,9 @@ public:
 
     void menu();
     void crear(Correo* tmp);
-    Correo* leer(unsigned long id);
-    void leer(LDL<Correo>* lista);
-    void leer_rem(LDL<Correo>* lista, const char* rem);
+    Correo leer(unsigned long id);
+    void leer(LDL<unsigned long>* ids);
+    void leer_rem(LDL<unsigned long>* lista, const char* rem);
     void modificar(unsigned long id, Correo* correo);
     void eliminar(unsigned long id);
 
