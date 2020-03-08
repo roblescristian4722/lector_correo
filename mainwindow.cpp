@@ -239,7 +239,6 @@ int MainWindow::busqueda_binaria(Vector<Correo>* vec, QString dato)
     while (l <= r)
     {
         int m = (l + r) / 2;
-        qDebug() << dato << " | " << QString((*vec)[m].getRem()) << endl;
         if (dato == QString((*vec)[m].getRem()))
             return m;
         else if (dato < QString((*vec)[m].getRem()))
@@ -354,6 +353,7 @@ void MainWindow::on_remRAMPB_clicked()
     {
         Vector<Correo> *vec = new Vector<Correo>;
         m_lector.leerRAM(vec);
+        shell_sort(vec->size(), vec);
         res = busqueda_binaria(vec, ui->remRAMLE->text());
 
         if (res == -1)
@@ -382,5 +382,28 @@ void MainWindow::on_remRAMPB_clicked()
             ui->bandejaTabla->setItem(fila, COL_HORA,
                                     new QTableWidgetItem((*vec)[res].getHoraEnvio()));
         }
+        delete vec;
+    }
+}
+
+void MainWindow::shell_sort(size_t n, Vector<Correo>* vec)
+{
+    char tmp[50];
+    int brecha = n / 2;
+    int j;
+    while (brecha > 0)
+    {
+        for (int i = brecha; i < n; ++i)
+        {
+            strcpy(tmp, (*vec)[i].getRem());
+            j = i;
+            while (j >= brecha && strcmp((*vec)[j - brecha].getRem(), tmp) > 0)
+            {
+                (*vec)[j].setRem((*vec)[j - brecha].getRem());
+                j -= brecha;
+            }
+            (*vec)[j].setRem(tmp);
+        }
+        brecha /= 2;
     }
 }

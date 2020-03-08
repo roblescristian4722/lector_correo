@@ -65,6 +65,8 @@ private slots:
 
     void on_remRAMPB_clicked();
 
+    void shell_sort(size_t n, Vector<Correo>* vec);
+
 private:
     Ui::MainWindow *ui;
 
