@@ -30,6 +30,7 @@ public:
     ~MainWindow();
 
     int busqueda_binaria(int dato);
+    int busqueda_binaria(Vector<Correo>* vec, QString dato);
 
 private slots:
     void on_agregar_clicked();
@@ -61,6 +62,8 @@ private slots:
     void on_actionEliminar_correo_triggered();
 
     void on_actionModificar_Correo_triggered();
+
+    void on_remRAMPB_clicked();
 
 private:
     Ui::MainWindow *ui;

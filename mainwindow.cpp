@@ -171,7 +171,7 @@ void MainWindow::on_remBuscarPB_clicked()
     char idTmp[10];
     strcpy(idTmp, ui->idBuscarPB->text().toStdString().c_str());
     if (ui->remLE->text().isEmpty())
-        QMessageBox::warning(this, "ID vacío", "Ingrese un ID");
+        QMessageBox::warning(this, "Remitente vacío", "Ingrese un remitente");
     else
     {
         unsigned int i;
@@ -225,6 +225,24 @@ int MainWindow::busqueda_binaria(int dato)
         if (dato == stoi(m_lista[m].getIdentificador()))
             return m;
         else if (dato < stoi(m_lista[m].getIdentificador()))
+            r = m - 1;
+        else
+            l = m + 1;
+    }
+    return -1;
+}
+
+int MainWindow::busqueda_binaria(Vector<Correo>* vec, QString dato)
+{
+    int l = 0;
+    int r = vec->size() - 1;
+    while (l <= r)
+    {
+        int m = (l + r) / 2;
+        qDebug() << dato << " | " << QString((*vec)[m].getRem()) << endl;
+        if (dato == QString((*vec)[m].getRem()))
+            return m;
+        else if (dato < QString((*vec)[m].getRem()))
             r = m - 1;
         else
             l = m + 1;
@@ -325,4 +343,44 @@ void MainWindow::on_actionModificar_Correo_triggered()
     modificar_propietario mod(&m_lector);
     mod.setModal(true);
     mod.exec();
+}
+
+void MainWindow::on_remRAMPB_clicked()
+{
+    int res;
+    if (ui->remRAMLE->text().isEmpty())
+        QMessageBox::warning(this, "Remitente vacío", "Ingrese un remitente");
+    else
+    {
+        Vector<Correo> *vec = new Vector<Correo>;
+        m_lector.leerRAM(vec);
+        res = busqueda_binaria(vec, ui->remRAMLE->text());
+
+        if (res == -1)
+            QMessageBox::warning(this, "Remitente no encontrado",
+                                 "No se ha encontrado el remitente proporcionado");
+        else
+        {
+            ui->bandejaTabla->setRowCount(0);
+
+            ui->bandejaTabla->insertRow(ui->bandejaTabla->rowCount());
+            int fila = ui->bandejaTabla->rowCount() - 1;
+            ui->bandejaTabla->setItem(fila, COL_ID,
+                                    new QTableWidgetItem((*vec)[res].getIdentificador()));
+            ui->bandejaTabla->setItem(fila, COL_REM,
+                                    new QTableWidgetItem((*vec)[res].getRem()));
+            ui->bandejaTabla->setItem(fila, COL_DES,
+                                    new QTableWidgetItem((*vec)[res].getDestinatario()));
+            ui->bandejaTabla->setItem(fila, COL_ASUNTO,
+                                    new QTableWidgetItem((*vec)[res].getAsunto()));
+            ui->bandejaTabla->setItem(fila, COL_CC,
+                                    new QTableWidgetItem((*vec)[res].getCopiaCarbon()));
+            ui->bandejaTabla->setItem(fila, COL_CCC,
+                                    new QTableWidgetItem((*vec)[res].getCopiaCarbonCiega()));
+            ui->bandejaTabla->setItem(fila, COL_FECHA,
+                                    new QTableWidgetItem((*vec)[res].getFechaEnvio()));
+            ui->bandejaTabla->setItem(fila, COL_HORA,
+                                    new QTableWidgetItem((*vec)[res].getHoraEnvio()));
+        }
+    }
 }

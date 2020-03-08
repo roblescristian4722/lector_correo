@@ -8,6 +8,7 @@
 #include <string>
 #include "correo.h"
 #include "ldl.h"
+#include "vector.h"
 
 #if defined(_WIN32) || defined(_WIN64)
     #define CLEAR std::system("cls")
@@ -41,6 +42,9 @@ public:
     void crear_copia_propietario();
     bool modificar_copia_propietario(Correo* correo);
     bool eliminar_copia_propietario(long id);
+
+    // Cargar en RAM
+    void leerRAM(Vector<Correo> *vec);
 
 private:
 };

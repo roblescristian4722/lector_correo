@@ -592,3 +592,19 @@ bool LectorCorreo::eliminar_copia_propietario(long id)
     return encontrado;
 }
 
+void LectorCorreo::leerRAM(Vector<Correo> *vec)
+{
+    Correo tmpCorreo;
+    fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
+    archivo.seekg(ios::beg);
+    for (unsigned long i = 0; !archivo.eof(); i++)
+    {
+        unsigned long pos = i * sizeof(Correo);
+        archivo.seekg(pos);
+        archivo.read((char*)&tmpCorreo, sizeof(Correo));
+        if (atol(tmpCorreo.getIdentificador()) == i + 1)
+            vec->push_back(tmpCorreo);
+    }
+    archivo.close();
+}
+

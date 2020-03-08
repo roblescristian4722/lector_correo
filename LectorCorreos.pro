@@ -43,6 +43,7 @@ HEADERS += \
     modificar_propietario.h \
     parser.h \
     sobrescribir.h \
+    vector.h \
     vistaprevia.h
 
 FORMS += \
