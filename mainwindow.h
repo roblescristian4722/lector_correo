@@ -81,7 +81,6 @@ private:
     */
 
     unsigned long m_fila;
-    unsigned long m_ultimoLeido;
     LDL<unsigned long> m_ids;
 
     enum COLUMNAS

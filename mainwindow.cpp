@@ -25,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
      * lista doblemente ligada que forma parte de la clase
     */
 
-    m_ultimoLeido = 1;
     on_mostrarTodo_clicked();
 }
 
@@ -187,6 +186,9 @@ void MainWindow::on_remBuscarPB_clicked()
         for (i = 0; i < m_ids.size(); i++)
         {
             correoTmp = m_lector.leer(m_ids[i]);
+            if (i)
+                if (m_ids[i] == m_ids[i - 1])
+                    break;
 
             ui->bandejaTabla->insertRow(ui->bandejaTabla->rowCount());
             int fila = ui->bandejaTabla->rowCount() - 1;
@@ -360,8 +362,10 @@ void MainWindow::on_remRAMPB_clicked()
         Vector<Correo> *vec = new Vector<Correo>;
         // Se obtiene el vector
         m_lector.leerRAM(vec);
+
         // Se ordena
         shell_sort(vec->size(), vec);
+
         // Se busca el dato con búsqueda binaria
         res = busqueda_binaria(vec, ui->remRAMLE->text());
 
@@ -397,21 +401,21 @@ void MainWindow::on_remRAMPB_clicked()
 
 void MainWindow::shell_sort(size_t n, Vector<Correo>* vec)
 {
-    char tmp[50];
     int brecha = n / 2;
     int j;
+    Correo tmp;
     while (brecha > 0)
     {
         for (int i = brecha; i < n; ++i)
         {
-            strcpy(tmp, (*vec)[i].getRem());
+            tmp = (*vec)[i];
             j = i;
-            while (j >= brecha && strcmp((*vec)[j - brecha].getRem(), tmp) > 0)
+            while (j >= brecha && strcmp((*vec)[j - brecha].getRem(), tmp.getRem()) > 0)
             {
-                (*vec)[j].setRem((*vec)[j - brecha].getRem());
+                (*vec)[j] = (*vec)[j - brecha];
                 j -= brecha;
             }
-            (*vec)[j].setRem(tmp);
+            (*vec)[j] = tmp;
         }
         brecha /= 2;
     }
