@@ -43,9 +43,7 @@ private slots:
 
     void on_bandejaTabla_cellClicked(int row, int column);
 
-    void on_idBuscarPB_clicked();
-
-    void on_remBuscarPB_clicked();
+    void on_buscarPB_clicked();
 
     void on_bandejaTabla_cellDoubleClicked(int row, int column);
 
@@ -62,8 +60,6 @@ private slots:
     void on_actionEliminar_correo_triggered();
 
     void on_actionModificar_Correo_triggered();
-
-    void on_remRAMPB_clicked();
 
     void shell_sort(size_t n, Vector<Correo>* vec);
 
