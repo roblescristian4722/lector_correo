@@ -9,6 +9,7 @@
 #include "correo.h"
 #include "ldl.h"
 #include "vector.h"
+#include "avl_tree.h"
 
 #if defined(_WIN32) || defined(_WIN64)
     #define CLEAR std::system("cls")
@@ -23,6 +24,38 @@ class LectorCorreo
 public:
     LectorCorreo();
     virtual ~LectorCorreo();
+
+    struct Indice
+    {
+        Indice(){}
+        Indice(const char* id, long pos) : referencia(pos)
+        {
+            strcpy(llave, id);
+        }
+
+        bool operator < (const Indice &other)
+        {
+            return atol(this->llave) < atol(other.llave);
+        }
+
+        bool operator > (const Indice &other)
+        {
+            return atol(this->llave) > atol(other.llave);
+        }
+
+        bool operator == (const long llave)
+        {
+            return atol(this->llave) == llave;
+        }
+
+        bool operator == (const Indice &other)
+        {
+            return atol(this->llave) == atol(other.llave);
+        }
+
+        char llave[10];
+        long referencia;
+    };
 
     void menu();
     void crear(Correo* tmp);
@@ -45,6 +78,9 @@ public:
 
     // Cargar en RAM
     void leerRAM(Vector<Correo> *vec);
+
+    // Búsqueda eficiente con árboles
+    Correo* leerIndicePrimario(AVLTree<LectorCorreo::Indice>& arbol);
 
 private:
 };

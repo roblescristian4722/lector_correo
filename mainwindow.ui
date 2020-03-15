@@ -98,12 +98,17 @@
          </item>
          <item>
           <property name="text">
-           <string>Búsqueda por Remitente</string>
+           <string>Búsqueda por remitente</string>
           </property>
          </item>
          <item>
           <property name="text">
            <string>Búsqueda en memoria (remitente)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Búsqueda por índices (ID)</string>
           </property>
          </item>
         </widget>
@@ -255,7 +260,14 @@
   </action>
  </widget>
  <tabstops>
+  <tabstop>opcCB</tabstop>
+  <tabstop>buscar_barra</tabstop>
+  <tabstop>buscarPB</tabstop>
   <tabstop>bandejaTabla</tabstop>
+  <tabstop>mostrarTodo</tabstop>
+  <tabstop>agregar</tabstop>
+  <tabstop>eliminar</tabstop>
+  <tabstop>modificar</tabstop>
  </tabstops>
  <resources/>
  <connections/>

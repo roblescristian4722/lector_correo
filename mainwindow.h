@@ -16,6 +16,7 @@
 #include "eliminar_copia.h"
 #include "eliminar_propietario.h"
 #include "modificar_propietario.h"
+#include "avl_tree.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

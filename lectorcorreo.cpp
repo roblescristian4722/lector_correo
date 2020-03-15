@@ -613,3 +613,17 @@ void LectorCorreo::leerRAM(Vector<Correo> *vec)
     archivo.close();
 }
 
+Correo *LectorCorreo::leerIndicePrimario(AVLTree<LectorCorreo::Indice>& arbol)
+{
+    Correo tmpCorreo;
+    fstream bin("datos.bin", ios::in | ios::binary);
+    for(long i = 1; !bin.eof(); ++i)
+    {
+        bin.read((char*)&tmpCorreo, sizeof(Correo));
+        if (atol(tmpCorreo.getIdentificador()) == i)
+        {
+            LectorCorreo::Indice tmpIndice(tmpCorreo.getIdentificador(), bin.tellg());
+            arbol.insertData(tmpIndice);
+        }
+    }
+}

@@ -32,6 +32,7 @@ SOURCES += \
 
 HEADERS += \
     agregar.h \
+    avl_tree.h \
     eliminar_copia.h \
     eliminar_propietario.h \
     mainwindow.h \

@@ -134,7 +134,7 @@ void MainWindow::on_buscarPB_clicked()
     if (!ui->buscar_barra->text().size() && ui->opcCB->currentIndex())
         QMessageBox::warning(this, "Campo vacío", "Ingrese el ID o remitente a buscar");
     else if ((ui->buscar_barra->text().toULongLong() < 1 || ui->buscar_barra->text().toStdString().length() > 10
-             || idTmp[0] == '0') && ui->opcCB->currentIndex() == 0)
+             || idTmp[0] == '0') && (!ui->opcCB->currentIndex() || ui->opcCB->currentIndex() == 3))
         QMessageBox::warning(this, "ID no válido", "El ID debe de estar en un rango de (1 - 9999999999)");
     else
     {
@@ -145,6 +145,7 @@ void MainWindow::on_buscarPB_clicked()
         m_ids.clear();
         ui->bandejaTabla->setRowCount(0);
 
+        // BÚSQUEDA EN MEMORIA RAM POR REMITENTE
         if (ui->opcCB->currentIndex() == 2)
         {
             int res;
@@ -159,10 +160,7 @@ void MainWindow::on_buscarPB_clicked()
             // Se busca el dato con búsqueda binaria
             res = busqueda_binaria(vec, ui->buscar_barra->text());
 
-            if (res == -1)
-                QMessageBox::warning(this, "Remitente no encontrado",
-                                     "No se ha encontrado el remitente proporcionado");
-            else
+            if (res != -1)
             {
                 ui->bandejaTabla->insertRow(ui->bandejaTabla->rowCount());
                 int fila = ui->bandejaTabla->rowCount() - 1;
@@ -187,14 +185,32 @@ void MainWindow::on_buscarPB_clicked()
         }
         else
         {
+            // BÚSQUEDA POR ID EN ARCHIVO BINARIO
             if (!ui->opcCB->currentIndex())
             {
                 correoTmp = m_lector.leer(ui->buscar_barra->text().toULong());
                 if (atol(correoTmp.getIdentificador()) == ui->buscar_barra->text().toLong())
                     m_ids.push_back(atol(correoTmp.getIdentificador()));
             }
+
+            // BÚSQUEDA POR REMITENTE EN ARCHIVO BINARIO
             else if (ui->opcCB->currentIndex() == 1)
                 m_lector.leer_rem(&m_ids, ui->buscar_barra->text().toStdString().c_str());
+
+            // BÚSQUEDA POR ID EN ÁRBOL BINARIO
+            else if (ui->opcCB->currentIndex() == 3)
+            {
+                AVLTree<LectorCorreo::Indice> arbol;
+                AVLTree<LectorCorreo::Indice>::AVLTreeNode* nodo;
+                LectorCorreo::Indice tmp;
+                strcpy(tmp.llave, ui->buscar_barra->text().toStdString().c_str());
+                m_lector.leerIndicePrimario(arbol);
+
+                nodo = arbol.findData(tmp);
+
+                if (nodo != nullptr)
+                    m_ids.push_back(atol(nodo->dataPtr->llave));
+            }
 
             for (i = 0; i < m_ids.size(); i++)
             {
