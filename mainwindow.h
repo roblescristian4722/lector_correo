@@ -30,6 +30,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void crearFila(Correo& correo);
     int busqueda_binaria(int dato);
     int busqueda_binaria(Vector<Correo>* vec, QString dato);
 
@@ -77,8 +78,8 @@ private:
      * correo obtenido al buscar con un ID
     */
 
-    unsigned long m_fila;
-    LDL<unsigned long> m_ids;
+    unsigned int m_fila;
+    LDL<unsigned int> m_ids;
 
     enum COLUMNAS
     {

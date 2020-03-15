@@ -39,7 +39,7 @@ void agregar::on_guardar_clicked()
     asunto = ui->asunto_linea->text();
     cont = ui->contenido_caja->toPlainText();
 
-    tmp = m_lector->leer(id.toULongLong());
+    tmp = m_lector->leer(id.toStdString().c_str());
 
     if (id.toULongLong() < 1 || id.toULongLong() > 9999999999 || id[0] == '0')
         QMessageBox::warning(this, "ID no válido", "ID fuera del rango (1 - 9999999999)");

@@ -10,7 +10,7 @@ modificar::modificar(LectorCorreo* lector, unsigned long index, QWidget *parent)
     ui->setupUi(this);
     this->setWindowTitle("Modificar correo");
 
-    m_correoTmp = m_lector->leer(index);
+    m_correoTmp = m_lector->leer(to_string(index).c_str());
     ui->des_linea->setText(m_correoTmp.getDestinatario());
     ui->rem_linea->setText(m_correoTmp.getRem());
     ui->asunto_linea->setText(m_correoTmp.getAsunto());

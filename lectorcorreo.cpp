@@ -15,7 +15,7 @@ LectorCorreo::LectorCorreo()
 LectorCorreo::~LectorCorreo()
 {}
 
-void LectorCorreo::eliminar(unsigned long id)
+void LectorCorreo::eliminar(long id)
 {
     Correo tmp;
     tmp.setIdentificador("");
@@ -24,9 +24,9 @@ void LectorCorreo::eliminar(unsigned long id)
         cout << "Error en el archivo" << endl;
     else
     {
-        unsigned long pos = (id - 1) * sizeof(Correo);
+        long pos = (id - 1) * long(sizeof(Correo));
         archivo.seekp(pos);
-        archivo.write((char*)&tmp, sizeof(Correo));
+        archivo.write((char*)&tmp, long(sizeof(Correo)));
     }
 }
 
@@ -41,16 +41,16 @@ void LectorCorreo::crear(Correo* correo)
          Se elige la posición en la que se escribirá el correo
          con ayuda del id
         */
-        long pos = (atoll(correo->getIdentificador()) - 1) * sizeof(Correo);
+        long pos = (atoll(correo->getIdentificador()) - 1) * long(sizeof(Correo));
         archivo.seekp(pos);
 
         // Se almacena el correo nuevo y se cierra el achivo
-        archivo.write((char*)correo, sizeof(Correo));
+        archivo.write((char*)correo, long(sizeof(Correo)));
         archivo.close();
     }
 }
 
-Correo LectorCorreo::leer(unsigned long id)
+Correo LectorCorreo::leer(const char* id)
 {
      /*
       * Se crea un Correo temporal en memoria dinámica
@@ -75,34 +75,48 @@ Correo LectorCorreo::leer(unsigned long id)
     */
     else
     {
-        unsigned long pos = (id - 1) * sizeof(Correo);
+        long pos = (atol(id) - 1) * long(sizeof(Correo));
         archivo.seekg(pos);
-        archivo.read((char*)&tmp, sizeof(Correo));
+        archivo.read((char*)&tmp, long(sizeof(Correo)));
         return tmp;
     }
 }
 
-void LectorCorreo::leer(LDL<unsigned long>* ids)
+Correo* LectorCorreo::leer(long pos)
+{
+    Correo* tmp = new Correo;
+    ifstream archivo("datos.bin", ios::in | ios::binary);
+    if (!archivo.is_open())
+        cout << "Error en el archivo de entrada" << endl;
+    else
+    {
+        archivo.seekg(pos);
+        archivo.read((char*)tmp, long(sizeof(Correo)));
+        return tmp;
+    }
+}
+
+void LectorCorreo::leer(LDL<unsigned int>* ids)
 {
     Correo tmp;
     fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
     archivo.seekg(ios::beg);
-    for (unsigned long i = 0; !archivo.eof(); i++)
+    for (long i = 0; !archivo.eof(); i++)
     {
-        unsigned long pos = i * sizeof(Correo);
+        long pos = i * long(sizeof(Correo));
         archivo.seekg(pos);
-        archivo.read((char*)&tmp, sizeof(Correo));
+        archivo.read((char*)&tmp, long(sizeof(Correo)));
         if (atol(tmp.getIdentificador()) == i + 1)
-            ids->push_back(atol(tmp.getIdentificador()));
+            ids->push_back(atoi(tmp.getIdentificador()));
     }
     archivo.close();
 }
 
-void LectorCorreo::leer_rem(LDL<unsigned long>* lista, const char* rem)
+void LectorCorreo::leer_rem(LDL<unsigned int>* lista, const char* rem)
 {
     Correo correoTmp;
     string strTmp;
-    unsigned long long i;
+    long i;
     fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
 
     if (!archivo.is_open())
@@ -111,9 +125,9 @@ void LectorCorreo::leer_rem(LDL<unsigned long>* lista, const char* rem)
     archivo.seekg(ios::beg);
     for (i = 0; !archivo.eof(); i++)
     {
-        unsigned long long pos = i * sizeof(Correo);
+        long pos = i * long(sizeof(Correo));
         archivo.seekg(pos);
-        archivo.read((char*)&correoTmp, sizeof(Correo));
+        archivo.read((char*)&correoTmp, long(sizeof(Correo)));
         strTmp = correoTmp.getRem();
         if (strTmp == rem)
             lista->push_back(atol(correoTmp.getIdentificador()));
@@ -135,18 +149,15 @@ void LectorCorreo::crear_copia_seguridad()
         << "Copia Carbón Ciega," << "Asunto," << "Contenido"
         << endl;
 
-    for (unsigned long i = 0; !binario.eof(); i++)
+    for (long i = 0; !binario.eof(); i++)
     {
 
-        unsigned long pos = i * sizeof(Correo);
+        long pos = i * long(sizeof(Correo));
         binario.seekg(pos);
-        binario.read((char*)&correoTmp, sizeof(Correo));
+        binario.read((char*)&correoTmp, long(sizeof(Correo)));
 
         if (atol(correoTmp.getIdentificador()) == i + 1)
         {
-            int i = 0;
-            int matchesContenido = 0;
-
             validar_comillas(&correoTmp);
 
             // Se guarda todo en el csv
@@ -368,7 +379,6 @@ void LectorCorreo::eliminar_copia_seguridad(string id, LDL<string> idRegistrados
 
 void LectorCorreo::crear_copia_propietario()
 {
-    long posLec = 0;
     Correo correoTmp;
     char tam;
     fstream bin("datos.bin", ios::in | ios::out | ios::binary);
@@ -493,37 +503,37 @@ bool LectorCorreo::modificar_copia_propietario(Correo* correo)
                 switch(cont)
                 {
                     case 4:
-                        tam = strlen(correo->getRem());
+                        tam = char(strlen(correo->getRem()));
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo->getRem()[i];
                     break;
                     case 5:
-                        tam = strlen(correo->getDestinatario());
+                        tam = char(strlen(correo->getDestinatario()));
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo->getDestinatario()[i];
                     break;
                     case 6:
-                        tam = strlen(correo->getCopiaCarbon());
+                        tam = char(strlen(correo->getCopiaCarbon()));
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo->getCopiaCarbon()[i];
                     break;
                     case 7:
-                        tam = strlen(correo->getCopiaCarbonCiega());
+                        tam = char(strlen(correo->getCopiaCarbonCiega()));
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo->getCopiaCarbonCiega()[i];
                     break;
                     case 8:
-                        tam = strlen(correo->getAsunto());
+                        tam = char(strlen(correo->getAsunto()));
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo->getAsunto()[i];
                     break;
                     case 9:
-                        tam = strlen(correo->getContenido());
+                        tam = char(strlen(correo->getContenido()));
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo->getContenido()[i];
@@ -602,11 +612,11 @@ void LectorCorreo::leerRAM(Vector<Correo> *vec)
     Correo tmpCorreo;
     fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
     archivo.seekg(ios::beg);
-    for (unsigned long i = 0; !archivo.eof(); i++)
+    for (long i = 0; !archivo.eof(); i++)
     {
-        unsigned long pos = i * sizeof(Correo);
+        long pos = i * long(sizeof(Correo));
         archivo.seekg(pos);
-        archivo.read((char*)&tmpCorreo, sizeof(Correo));
+        archivo.read((char*)&tmpCorreo, long(sizeof(Correo)));
         if (atol(tmpCorreo.getIdentificador()) == i + 1)
             vec->push_back(tmpCorreo);
     }
@@ -619,10 +629,11 @@ Correo *LectorCorreo::leerIndicePrimario(AVLTree<LectorCorreo::Indice>& arbol)
     fstream bin("datos.bin", ios::in | ios::binary);
     for(long i = 1; !bin.eof(); ++i)
     {
-        bin.read((char*)&tmpCorreo, sizeof(Correo));
+        bin.read((char*)&tmpCorreo, long(sizeof(Correo)));
         if (atol(tmpCorreo.getIdentificador()) == i)
         {
-            LectorCorreo::Indice tmpIndice(tmpCorreo.getIdentificador(), bin.tellg());
+            long pos = bin.tellg();
+            LectorCorreo::Indice tmpIndice(tmpCorreo.getIdentificador(), pos - long(sizeof(Correo) ));
             arbol.insertData(tmpIndice);
         }
     }

@@ -141,8 +141,8 @@ unsigned int AVLTree<T>::height(AVLTreeNode*& node)
         return 0;
     else if (isLeaf(node))
         return 1;
-    int rightHeight = height(node->right);
-    int leftHeight = height(node->left);
+    unsigned int rightHeight = height(node->right);
+    unsigned int leftHeight = height(node->left);
     return max(rightHeight, leftHeight) + 1;
 }
 
