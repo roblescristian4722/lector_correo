@@ -31,7 +31,24 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    limpiarFilas();
     delete ui;
+}
+
+void MainWindow::limpiarFilas()
+{
+    for (int i = 0; i < ui->bandejaTabla->rowCount(); ++i)
+    {
+        delete ui->bandejaTabla->takeItem(i, COL_ID);
+        delete ui->bandejaTabla->takeItem(i, COL_CC);
+        delete ui->bandejaTabla->takeItem(i, COL_CCC);
+        delete ui->bandejaTabla->takeItem(i, COL_DES);
+        delete ui->bandejaTabla->takeItem(i, COL_REM);
+        delete ui->bandejaTabla->takeItem(i, COL_HORA);
+        delete ui->bandejaTabla->takeItem(i, COL_FECHA);
+        delete ui->bandejaTabla->takeItem(i, COL_ASUNTO);
+    }
+    ui->bandejaTabla->setRowCount(0);
 }
 
 void MainWindow::crearFila(Correo &correo)
@@ -111,10 +128,10 @@ void MainWindow::on_mostrarTodo_clicked()
     Correo correoTmp;
 
     this->setCursor(Qt::WaitCursor);
-    ui->bandejaTabla->setRowCount(0);
+    limpiarFilas();
 
     m_ids.clear();
-    m_lector.leer(&m_ids);
+    m_lector.leer(m_ids);
 
     // Se añaden los datos recuperados a la tabla
     for (size_t i = 0; i < m_ids.size(); i++)
@@ -154,22 +171,19 @@ void MainWindow::on_buscarPB_clicked()
         if (ui->opcCB->currentIndex() == 2)
         {
             int res;
-            Vector<Correo> *vec = new Vector<Correo>;
+            Vector<Correo> vec;
 
             // Se obtiene el vector
             m_lector.leerRAM(vec);
 
             // Se ordena
-            shell_sort(vec->size(), vec);
+            shell_sort(vec.size(), vec);
 
             // Se busca el dato con búsqueda binaria
             res = busqueda_binaria(vec, ui->buscar_barra->text());
 
             if (res != -1)
-            {
-                crearFila((*vec)[res]);
-                delete vec;
-            }
+                crearFila(vec[res]);
         }
 
         // BÚSQUEDA POR ID EN ÁRBOL BINARIO
@@ -185,9 +199,8 @@ void MainWindow::on_buscarPB_clicked()
 
             if (nodo != nullptr)
             {
-                Correo* correoPtr;
-                correoPtr = m_lector.leer(nodo->dataPtr->referencia);
-                crearFila(*correoPtr);
+                correoTmp = m_lector.leer(nodo->dataPtr->referencia);
+                crearFila(correoTmp);
             }
         }
 
@@ -203,7 +216,7 @@ void MainWindow::on_buscarPB_clicked()
 
             // BÚSQUEDA POR REMITENTE EN ARCHIVO BINARIO
             else if (ui->opcCB->currentIndex() == 1)
-                m_lector.leer_rem(&m_ids, ui->buscar_barra->text().toStdString().c_str());
+                m_lector.leer_rem(m_ids, ui->buscar_barra->text().toStdString().c_str());
 
             for (i = 0; i < m_ids.size(); i++)
             {
@@ -248,16 +261,16 @@ int MainWindow::busqueda_binaria(int dato)
         return -1;
 }
 
-int MainWindow::busqueda_binaria(Vector<Correo>* vec, QString dato)
+int MainWindow::busqueda_binaria(Vector<Correo> &vec, QString dato)
 {
     int l = 0;
-        int r = vec->size() - 1;
+        int r = vec.size() - 1;
         while (l <= r)
         {
             int m = (l + r) / 2;
-            if (dato == QString((*vec)[m].getRem()))
+            if (dato == QString(vec[m].getRem()))
                 return m;
-            else if (dato < QString((*vec)[m].getRem()))
+            else if (dato < QString(vec[m].getRem()))
                 r = m - 1;
             else
                 l = m + 1;
@@ -270,30 +283,30 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
     Parser parser;
     Correo correoActual;
     Correo correoCopia;
-    LDL<string> *copiaDatos = new LDL<string>;
+    LDL<string> copiaDatos;
     int res;
 
     // Se almacenan los datos de la copia de seguridad en una lista
     // de strings cuyos valores se copiarán luego a un correo temporal
     parser.getData("respaldo.csv", copiaDatos);
 
-    for (int i = 0; i < copiaDatos->size(); i += 9)
+    for (int i = 0; i < copiaDatos.size(); i += 9)
     {
         /* res guardará el índice de la lista que coincida con
         * el correo leído de la copia de seguridad. En caso de
         * que no se hayan encontrado coincidencias regresa un -1
         */
-        res = busqueda_binaria(stoi((*copiaDatos)[i]));
+        res = busqueda_binaria(stoi(copiaDatos[i]));
 
-        correoCopia.setIdentificador((*copiaDatos)[i].c_str());
-        correoCopia.setFechaEnvio((*copiaDatos)[i + 1].c_str());
-        correoCopia.setHoraEnvio((*copiaDatos)[i + 2].c_str());
-        correoCopia.setRem((*copiaDatos)[i + 3].c_str());
-        correoCopia.setDestinatario((*copiaDatos)[i + 4].c_str());
-        correoCopia.setCopiaCarbon((*copiaDatos)[i + 5].c_str());
-        correoCopia.setCopiaCarbonCiega((*copiaDatos)[i + 6].c_str());
-        correoCopia.setAsunto((*copiaDatos)[i + 7].c_str());
-        correoCopia.setContenido((*copiaDatos)[i + 8].c_str());
+        correoCopia.setIdentificador(copiaDatos[i].c_str());
+        correoCopia.setFechaEnvio(copiaDatos[i + 1].c_str());
+        correoCopia.setHoraEnvio(copiaDatos[i + 2].c_str());
+        correoCopia.setRem(copiaDatos[i + 3].c_str());
+        correoCopia.setDestinatario(copiaDatos[i + 4].c_str());
+        correoCopia.setCopiaCarbon(copiaDatos[i + 5].c_str());
+        correoCopia.setCopiaCarbonCiega(copiaDatos[i + 6].c_str());
+        correoCopia.setAsunto(copiaDatos[i + 7].c_str());
+        correoCopia.setContenido(copiaDatos[i + 8].c_str());
 
         if (res == -1)
         {
@@ -360,7 +373,7 @@ void MainWindow::on_actionModificar_Correo_triggered()
     mod.exec();
 }
 
-void MainWindow::shell_sort(size_t n, Vector<Correo>* vec)
+void MainWindow::shell_sort(size_t n, Vector<Correo> &vec)
 {
     int brecha = n / 2;
     int j;
@@ -369,14 +382,14 @@ void MainWindow::shell_sort(size_t n, Vector<Correo>* vec)
     {
         for (int i = brecha; i < n; ++i)
         {
-            tmp = (*vec)[i];
+            tmp = vec[i];
             j = i;
-            while (j >= brecha && strcmp((*vec)[j - brecha].getRem(), tmp.getRem()) > 0)
+            while (j >= brecha && strcmp(vec[j - brecha].getRem(), tmp.getRem()) > 0)
             {
-                (*vec)[j] = (*vec)[j - brecha];
+                vec[j] = vec[j - brecha];
                 j -= brecha;
             }
-            (*vec)[j] = tmp;
+            vec[j] = tmp;
         }
         brecha /= 2;
     }

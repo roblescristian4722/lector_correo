@@ -22,7 +22,7 @@ void eliminar_copia::on_eliminarPB_clicked()
     LDL<string> data, idString;
     QString id = ui->idLE->text();
 
-    par.getData("respaldo.csv", &data);
+    par.getData("respaldo.csv", data);
 
     for (unsigned int i = 0; i < data.size(); i += 9)
         idString.push_back(data[i]);

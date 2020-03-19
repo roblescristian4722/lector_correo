@@ -5,7 +5,7 @@ Parser::Parser()
 
 Parser::~Parser(){}
 
-void Parser::getData(const char* fileName, LDL<string>* data)
+void Parser::getData(const char* fileName, LDL<string> &data)
 {
     char auxChar;
     string auxString = "";
@@ -15,7 +15,7 @@ void Parser::getData(const char* fileName, LDL<string>* data)
 
     fstream file(fileName, ios::in);
     if (!file.is_open())
-        cerr << "Error opening file" << endl;
+        cout << "Error opening file" << endl;
 
     while(!file.eof())
         do
@@ -36,12 +36,12 @@ void Parser::getData(const char* fileName, LDL<string>* data)
             {
                 quotes = false;
                 quotesCont = 0;
-                data->push_back(auxString);
+                data.push_back(auxString);
                 auxString = "";
             }
             else if ((auxChar == ',' || auxChar == '\n') && !quotes)
             {
-                data->push_back(auxString);
+                data.push_back(auxString);
                 auxString = "";
             }
             else
@@ -50,16 +50,16 @@ void Parser::getData(const char* fileName, LDL<string>* data)
             if (!header && auxChar == '\n')
             {
                 header = true;
-                m_size = data->size();
+                m_size = data.size();
             }
         }while(auxChar != '\n' || quotes);
 
     // En caso de que al final se añada un dato de
     // más aquí se elimina
-    while(data->size() % m_size != 0)
-        data->pop_back();
+    while(data.size() % m_size != 0)
+        data.pop_back();
 
     // Este for borra el header
     for (int i = 0; i < m_size; ++i)
-        data->pop_front();
+        data.pop_front();
 }

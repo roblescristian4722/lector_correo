@@ -18,7 +18,7 @@ modificar_copia::~modificar_copia()
 void modificar_copia::on_guardar_2_clicked()
 {
     QString id, des, rem, cc, ccc, asunto, cont;
-    Correo* correoTmp = new Correo;
+    Correo correoTmp;
     Parser par;
     LDL<string> data, idString;
     bool found =  false;
@@ -32,7 +32,7 @@ void modificar_copia::on_guardar_2_clicked()
     asunto = ui->asunto_linea_2->text();
     cont = ui->contenido_caja->toPlainText();
 
-    par.getData("respaldo.csv", &data);
+    par.getData("respaldo.csv", data);
 
     for (i = 0; i < data.size(); i += 9)
         idString.push_back(data[i]);
@@ -58,26 +58,21 @@ void modificar_copia::on_guardar_2_clicked()
          * y luego se escribe dicho correo en el archivo binario
          * con el método "crear()" del lector
         */
-        correoTmp->setRem(rem.toStdString().c_str());
-        correoTmp->setAsunto(asunto.toStdString().c_str());
-        correoTmp->setContenido(cont.toStdString().c_str());
-        correoTmp->setCopiaCarbon(cc.toStdString().c_str());
-        correoTmp->setDestinatario(des.toStdString().c_str());
-        correoTmp->setIdentificador(id.toLocal8Bit());
-        correoTmp->setCopiaCarbonCiega(ccc.toStdString().c_str());
-        correoTmp->setFechaEnvio(data[i + 1].c_str());
-        correoTmp->setHoraEnvio(data[i + 2].c_str());
+        correoTmp.setRem(rem.toStdString().c_str());
+        correoTmp.setAsunto(asunto.toStdString().c_str());
+        correoTmp.setContenido(cont.toStdString().c_str());
+        correoTmp.setCopiaCarbon(cc.toStdString().c_str());
+        correoTmp.setDestinatario(des.toStdString().c_str());
+        correoTmp.setIdentificador(id.toLocal8Bit());
+        correoTmp.setCopiaCarbonCiega(ccc.toStdString().c_str());
+        correoTmp.setFechaEnvio(data[i + 1].c_str());
+        correoTmp.setHoraEnvio(data[i + 2].c_str());
 
         m_lector->modificar_copia(correoTmp, idString);
 
-
-        delete correoTmp;
-        correoTmp = nullptr;
         QMessageBox::information(this, "Correo modificado", "Correo modificado con éxito");
         modificar_copia::close();
     }
     else
         QMessageBox::warning(this, "Campos vacíos", "Los campos que llevan \"*\" son obligatorios");
-    delete correoTmp;
-    correoTmp = nullptr;
 }

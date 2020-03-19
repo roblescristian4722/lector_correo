@@ -32,7 +32,9 @@ public:
 
     void crearFila(Correo& correo);
     int busqueda_binaria(int dato);
-    int busqueda_binaria(Vector<Correo>* vec, QString dato);
+    int busqueda_binaria(Vector<Correo> &vec, QString dato);
+    void shell_sort(size_t n, Vector<Correo> &vec);
+    void limpiarFilas();
 
 private slots:
     void on_agregar_clicked();
@@ -62,8 +64,6 @@ private slots:
     void on_actionEliminar_correo_triggered();
 
     void on_actionModificar_Correo_triggered();
-
-    void shell_sort(size_t n, Vector<Correo>* vec);
 
 private:
     Ui::MainWindow *ui;

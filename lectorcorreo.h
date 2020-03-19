@@ -60,28 +60,28 @@ public:
     void menu();
     void crear(Correo* tmp);
     Correo leer(const char* id);
-    Correo* leer(long pos);
-    void leer(LDL<unsigned int>* ids);
-    void leer_rem(LDL<unsigned int>* lista, const char* rem);
-    void modificar(long id, Correo* correo);
+    Correo leer(long pos);
+    void leer(LDL<unsigned int>& ids);
+    void leer_rem(LDL<unsigned int>& lista, const char* rem);
+    void modificar(long id, Correo& correo);
     void eliminar(long id);
 
     // Copia de seguridad (CSV)
     void crear_copia_seguridad();
-    void modificar_copia(Correo* correo, LDL<string> idRegistrados);
-    void validar_comillas(Correo* correo);
+    void modificar_copia(Correo &correo, LDL<string> idRegistrados);
+    void validar_comillas(Correo &correo);
     void eliminar_copia_seguridad(string id, LDL<string> idRegistrados);
 
     // Copia de seguridad de propietario
     void crear_copia_propietario();
-    bool modificar_copia_propietario(Correo* correo);
+    bool modificar_copia_propietario(Correo &correo);
     bool eliminar_copia_propietario(long id);
 
     // Cargar en RAM
-    void leerRAM(Vector<Correo> *vec);
+    void leerRAM(Vector<Correo> &vec);
 
     // Búsqueda eficiente con árboles
-    Correo* leerIndicePrimario(AVLTree<LectorCorreo::Indice>& arbol);
+    void leerIndicePrimario(AVLTree<LectorCorreo::Indice>& arbol);
 
 private:
 };

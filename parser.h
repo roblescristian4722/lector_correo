@@ -14,7 +14,7 @@ public:
     Parser();
     ~Parser();
 
-    void getData(const char* fileName, LDL<string>* data);
+    void getData(const char* fileName, LDL<string> &data);
 
 private:
     unsigned int m_size;
