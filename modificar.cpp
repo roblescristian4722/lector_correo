@@ -1,9 +1,10 @@
 #include "modificar.h"
 #include "ui_modificar.h"
 
-modificar::modificar(LectorCorreo* lector, unsigned long index, QWidget *parent) :
+modificar::modificar(LectorCorreo* lector, unsigned long index, AVLTree<LectorCorreo::Indice>* indicesMem, QWidget *parent) :
     m_lector(lector),
     m_index(index),
+    m_indicesMem(indicesMem),
     QDialog(parent),
     ui(new Ui::modificar)
 {
@@ -44,7 +45,7 @@ void modificar::on_guardar_clicked()
         m_correoTmp.setDestinatario(des.toStdString().c_str());
         m_correoTmp.setCopiaCarbonCiega(ccc.toStdString().c_str());
 
-        m_lector->crear(&m_correoTmp);
+        m_lector->crear(&m_correoTmp, m_indicesMem, true);
         modificar::close();
     }
     else

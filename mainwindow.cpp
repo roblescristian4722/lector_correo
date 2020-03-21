@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     QStringList columnas;
 
+    m_lector = new LectorCorreo(&m_indices);
+
     // Se inicializa la interfaz y todos sus atributos
     ui->setupUi(this);
 
@@ -32,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     limpiarFilas();
+    delete m_lector;
     delete ui;
 }
 
@@ -77,7 +80,7 @@ void MainWindow::crearFila(Correo &correo)
 
 void MainWindow::on_agregar_clicked()
 {
-    agregar a(&m_lector);
+    agregar a(m_lector, &m_indices);
     a.setModal(true);
     a.exec();
     on_mostrarTodo_clicked();
@@ -98,7 +101,7 @@ void MainWindow::on_eliminar_clicked()
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong();
 
-    m_lector.eliminar(id);
+    m_lector->eliminar(long(id), &m_indices);
     on_mostrarTodo_clicked();
 }
 
@@ -117,7 +120,7 @@ void MainWindow::on_modificar_clicked()
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong();
 
-    modificar m(&m_lector, id);
+    modificar m(m_lector, id, &m_indices);
     m.setModal(true);
     m.exec();
     on_mostrarTodo_clicked();
@@ -131,12 +134,12 @@ void MainWindow::on_mostrarTodo_clicked()
     limpiarFilas();
 
     m_ids.clear();
-    m_lector.leer(m_ids);
+    m_lector->leer(m_ids);
 
     // Se añaden los datos recuperados a la tabla
     for (size_t i = 0; i < m_ids.size(); i++)
     {
-        correoTmp = m_lector.leer(to_string(m_ids[i]).c_str());
+        correoTmp = m_lector->leer(to_string(m_ids[i]).c_str());
         crearFila(correoTmp);
     }
     this->setCursor(Qt::ArrowCursor);
@@ -144,7 +147,7 @@ void MainWindow::on_mostrarTodo_clicked()
 
 void MainWindow::on_bandejaTabla_cellClicked(int row, int column)
 {
-    Q_UNUSED(column);
+    Q_UNUSED(column)
     m_fila = row;
 }
 
@@ -174,7 +177,7 @@ void MainWindow::on_buscarPB_clicked()
             Vector<Correo> vec;
 
             // Se obtiene el vector
-            m_lector.leerRAM(vec);
+            m_lector->leerRAM(vec);
 
             // Se ordena
             shell_sort(vec.size(), vec);
@@ -189,17 +192,15 @@ void MainWindow::on_buscarPB_clicked()
         // BÚSQUEDA POR ID EN ÁRBOL BINARIO
         else if (ui->opcCB->currentIndex() == 3)
         {
-            AVLTree<LectorCorreo::Indice> arbol;
             AVLTree<LectorCorreo::Indice>::AVLTreeNode* nodo;
             LectorCorreo::Indice tmp;
             strcpy(tmp.llave, ui->buscar_barra->text().toStdString().c_str());
-            m_lector.leerIndicePrimario(arbol);
 
-            nodo = arbol.findData(tmp);
+            nodo = m_indices.findData(tmp);
 
             if (nodo != nullptr)
             {
-                correoTmp = m_lector.leer(nodo->dataPtr->referencia);
+                correoTmp = m_lector->leer(nodo->dataPtr->referencia);
                 crearFila(correoTmp);
             }
         }
@@ -209,18 +210,18 @@ void MainWindow::on_buscarPB_clicked()
             // BÚSQUEDA POR ID EN ARCHIVO BINARIO
             if (!ui->opcCB->currentIndex())
             {
-                correoTmp = m_lector.leer(ui->buscar_barra->text().toStdString().c_str());
+                correoTmp = m_lector->leer(ui->buscar_barra->text().toStdString().c_str());
                 if (atol(correoTmp.getIdentificador()) == ui->buscar_barra->text().toLong())
                     m_ids.push_back(atol(correoTmp.getIdentificador()));
             }
 
             // BÚSQUEDA POR REMITENTE EN ARCHIVO BINARIO
             else if (ui->opcCB->currentIndex() == 1)
-                m_lector.leer_rem(m_ids, ui->buscar_barra->text().toStdString().c_str());
+                m_lector->leer_rem(m_ids, ui->buscar_barra->text().toStdString().c_str());
 
             for (i = 0; i < m_ids.size(); i++)
             {
-                correoTmp = m_lector.leer(to_string(m_ids[i]).c_str());
+                correoTmp = m_lector->leer(to_string(m_ids[i]).c_str());
                 if (i)
                     if (m_ids[i] == m_ids[i - 1])
                         break;
@@ -235,10 +236,10 @@ void MainWindow::on_buscarPB_clicked()
 
 void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
 {
-    Q_UNUSED(column);
-    Q_UNUSED(row);
+    Q_UNUSED(column)
+    Q_UNUSED(row)
     Correo tmp;
-    tmp = m_lector.leer(ui->bandejaTabla->item(m_fila, COL_ID)->text().toStdString().c_str());
+    tmp = m_lector->leer(ui->bandejaTabla->item(m_fila, COL_ID)->text().toStdString().c_str());
     vistaPrevia p(tmp);
     p.setModal(true);
     p.exec();
@@ -247,7 +248,7 @@ void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
 int MainWindow::busqueda_binaria(int dato)
 {
     int l = 0;
-        int r = m_ids.size() - 1;
+        int r = int(m_ids.size() - 1);
         while (l <= r)
         {
             int m = (l + r) / 2;
@@ -264,7 +265,7 @@ int MainWindow::busqueda_binaria(int dato)
 int MainWindow::busqueda_binaria(Vector<Correo> &vec, QString dato)
 {
     int l = 0;
-        int r = vec.size() - 1;
+        int r = int(vec.size() - 1);
         while (l <= r)
         {
             int m = (l + r) / 2;
@@ -311,17 +312,17 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
         if (res == -1)
         {
             m_ids.push_back(atol(correoCopia.getIdentificador()));
-            m_lector.crear(&correoCopia);
+            m_lector->crear(&correoCopia, &m_indices);
         }
         // En caso de que uno de los correos tenga el mismo ID que
         // uno de los almacenadosen el programa
         else
         {
-            correoActual = m_lector.leer(to_string(m_ids[res]).c_str());
+            correoActual = m_lector->leer(to_string(m_ids[res]).c_str());
 
             if (correoActual != correoCopia)
             {
-                Sobrescribir sob(&m_lector, &correoActual, &correoCopia, res);
+                Sobrescribir sob(m_lector, &correoActual, &correoCopia, res, &m_indices);
                 sob.setModal(true);
                 sob.exec();
             }
@@ -334,41 +335,41 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
 void MainWindow::on_actionCrear_copia_de_seguridad_triggered()
 {
     this->setCursor(Qt::WaitCursor);
-    m_lector.crear_copia_seguridad();
+    m_lector->crear_copia_seguridad();
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Copia creada", "Copia de seguridad creada exitosamente");
 }
 
 void MainWindow::on_actionModificar_correo_en_copia_de_seguridad_triggered()
 {
-    modificar_copia mod(&m_lector);
+    modificar_copia mod(m_lector);
     mod.setModal(true);
     mod.exec();
 }
 
 void MainWindow::on_actionEliminar_correo_en_copia_de_seguridad_triggered()
 {
-    eliminar_copia elim(&m_lector);
+    eliminar_copia elim(m_lector);
     elim.setModal(true);
     elim.exec();
 }
 
 void MainWindow::on_actionExportar_copia_de_propietario_triggered()
 {
-    m_lector.crear_copia_propietario();
+    m_lector->crear_copia_propietario();
     QMessageBox::information(this, "Copia creada", "Copia de propietario creada con éxito");
 }
 
 void MainWindow::on_actionEliminar_correo_triggered()
 {
-    eliminar_propietario elim(&m_lector);
+    eliminar_propietario elim(m_lector);
     elim.setModal(true);
     elim.exec();
 }
 
 void MainWindow::on_actionModificar_Correo_triggered()
 {
-    modificar_propietario mod(&m_lector);
+    modificar_propietario mod(m_lector);
     mod.setModal(true);
     mod.exec();
 }

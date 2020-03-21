@@ -15,7 +15,7 @@ class Sobrescribir : public QDialog
     Q_OBJECT
 
 public:
-    explicit Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia, int index, QWidget *parent = nullptr);
+    explicit Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia, int index, AVLTree<LectorCorreo::Indice>* indiceMem, QWidget *parent = nullptr);
     ~Sobrescribir();
 
 private slots:
@@ -28,6 +28,7 @@ private:
     Correo* m_copia;
     Correo* m_actual;
     LectorCorreo* m_lector;
+    AVLTree<LectorCorreo::Indice>* m_indiceMem;
     int m_index;
 };
 

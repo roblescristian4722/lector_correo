@@ -1,10 +1,11 @@
 #include "agregar.h"
 #include "ui_agregar.h"
 
-agregar::agregar(LectorCorreo* lector, QWidget *parent) :
+agregar::agregar(LectorCorreo* lector, AVLTree<LectorCorreo::Indice>* indices, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::agregar),
-    m_lector(lector)
+    m_lector(lector),
+    m_indices(indices)
 {
     ui->setupUi(this);
     this->setWindowTitle("Agregar correo");
@@ -62,7 +63,8 @@ void agregar::on_guardar_clicked()
         correo.setDestinatario(des.toStdString().c_str());
         correo.setIdentificador(id.toLocal8Bit());
         correo.setCopiaCarbonCiega(ccc.toStdString().c_str());
-        m_lector->crear(&correo);
+
+        m_lector->crear(&correo, m_indices);
         agregar::close();
     }
     else

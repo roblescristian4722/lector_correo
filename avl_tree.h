@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
+#include "lectorcorreo.h"
 #include "vector.h"
 using namespace std;
 
@@ -29,8 +31,9 @@ public:
         }
     };
 
-    AVLTree() : m_root(nullptr) {}
-    ~AVLTree(){}
+    AVLTree() : m_root(nullptr){}
+    ~AVLTree()
+    {}
 
     // MODIFY DATA
     void insertData(T& data);
@@ -39,6 +42,7 @@ public:
     void removeAll();
 
     // PARSE
+    void writeFileInOrder();
     void parseInOrder(Vector<T> &vec);
     void parsePreOrder(Vector<T> &vec);
     void parsePostOrder(Vector<T> &vec);
@@ -64,6 +68,7 @@ private:
     void parsePreOrder(AVLTreeNode*& node, Vector<T> &vec);
     void parsePostOrder(AVLTreeNode*& node, Vector<T> &vec);
     void parseInOrder(AVLTreeNode*& node, Vector<T> &vec);
+    void writeFileInOrder(AVLTreeNode*& node);
 
     // PROPERTIES
     unsigned int height(AVLTreeNode*& node);
@@ -91,7 +96,10 @@ template<typename T>
 void AVLTree<T>::insertData(T& data, AVLTreeNode*& node)
 {
     if (node == nullptr)
+    {
         node = new AVLTreeNode(data);
+        cout << "Inserting item \"" <<  *(node->dataPtr) << "\" in AVL Tree" << endl;
+    }
     else if (*(node->dataPtr) == data)
         throw range_error("Data has already been inserted");
     else if (data < *(node->dataPtr))
@@ -99,6 +107,24 @@ void AVLTree<T>::insertData(T& data, AVLTreeNode*& node)
     else
         insertData(data, node->right);
     doBalancing(node);
+}
+
+template<typename T>
+void AVLTree<T>::writeFileInOrder(AVLTreeNode*& node)
+{
+    if (node != nullptr)
+    {
+        writeFileInOrder(node->left);
+
+        cout << "Writing item \"" << *(node->dataPtr) << "\" in index file" << endl;
+        fstream archivoIndices("indices.bin", ios::in | ios::out | ios::binary | ios::app);
+        if (!archivoIndices.is_open())
+            cout << "Couldn't open index file" << endl;
+        archivoIndices.write((char*)node->dataPtr, sizeof(T));
+        archivoIndices.close();
+
+        writeFileInOrder(node->right);
+    }
 }
 
 template<typename T>
@@ -277,6 +303,12 @@ void AVLTree<T>::insertData( T& data)
 }
 
 template<typename T>
+void AVLTree<T>::writeFileInOrder()
+{
+    writeFileInOrder(m_root);
+}
+
+template<typename T>
 void AVLTree<T>::parseInOrder(Vector<T> &vec)
 {
     parseInOrder(m_root, vec);
@@ -319,9 +351,10 @@ typename AVLTree<T>::AVLTreeNode*& AVLTree<T>::highestData()
 }
 
 template<typename T>
-void AVLTree<T>::removeData( T& data)
+void AVLTree<T>::removeData(T& data)
 {
-    AVLTreeNode* aux = findData(data);
+    AVLTreeNode*& aux = findData(data);
+    cout << "Removing item \"" << *(aux->dataPtr) << "\" from AVL Tree" << endl;
     removeNode(aux);
 }
 

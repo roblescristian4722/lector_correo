@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+    #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -68,15 +68,13 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
+    AVLTree<LectorCorreo::Indice> m_indices;
+
     /*
      * Objeto lector que se encargará de administrar
      * todos los datos de la interfaz
     */
-    LectorCorreo m_lector;
-    /*
-     * Correo temporal que guardará la información de cada
-     * correo obtenido al buscar con un ID
-    */
+    LectorCorreo *m_lector;
 
     unsigned int m_fila;
     LDL<unsigned int> m_ids;

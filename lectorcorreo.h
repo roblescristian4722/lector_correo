@@ -22,9 +22,6 @@ using namespace std;
 class LectorCorreo
 {
 public:
-    LectorCorreo();
-    virtual ~LectorCorreo();
-
     struct Indice
     {
         Indice(){}
@@ -43,6 +40,12 @@ public:
             return atol(this->llave) > atol(other.llave);
         }
 
+        friend ostream& operator << (ostream& os, const Indice& other)
+        {
+            os << other.llave;
+            return os;
+        }
+
         bool operator == (const long llave)
         {
             return atol(this->llave) == llave;
@@ -57,14 +60,18 @@ public:
         long referencia;
     };
 
+    LectorCorreo(AVLTree<LectorCorreo::Indice> *indices);
+
+    virtual ~LectorCorreo();
+
     void menu();
-    void crear(Correo* tmp);
+    void crear(Correo* tmp, AVLTree<LectorCorreo::Indice>* indices, bool modificar = false);
     Correo leer(const char* id);
     Correo leer(long pos);
     void leer(LDL<unsigned int>& ids);
     void leer_rem(LDL<unsigned int>& lista, const char* rem);
     void modificar(long id, Correo& correo);
-    void eliminar(long id);
+    void eliminar(long id, AVLTree<LectorCorreo::Indice>* indices);
 
     // Copia de seguridad (CSV)
     void crear_copia_seguridad();
@@ -80,10 +87,8 @@ public:
     // Cargar en RAM
     void leerRAM(Vector<Correo> &vec);
 
-    // Búsqueda eficiente con árboles
-    void leerIndicePrimario(AVLTree<LectorCorreo::Indice>& arbol);
-
 private:
+    AVLTree<LectorCorreo::Indice>* m_indices;
 };
 
 #endif // LECTORCORREO_H

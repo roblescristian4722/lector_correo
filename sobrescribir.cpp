@@ -1,7 +1,7 @@
 #include "sobrescribir.h"
 #include "ui_sobrescribir.h"
 
-Sobrescribir::Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia, int index, QWidget *parent) :
+Sobrescribir::Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia, int index, AVLTree<LectorCorreo::Indice>* indiceMem, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Sobrescribir)
 {
@@ -11,6 +11,7 @@ Sobrescribir::Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia, 
     m_index = index;
     m_copia = copia;
     m_actual = actual;
+    m_indiceMem = indiceMem;
 
     ui->idLE_copia->setText(copia->getIdentificador());
     ui->fechaLE_copia->setText(copia->getFechaEnvio());
@@ -45,6 +46,6 @@ void Sobrescribir::on_actualPB_clicked()
 
 void Sobrescribir::on_copiaPB_clicked()
 {
-    m_lector->crear(m_copia);
+    m_lector->crear(m_copia, m_indiceMem);
     this->close();
 }

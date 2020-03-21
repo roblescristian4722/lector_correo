@@ -60,6 +60,6 @@ void Parser::getData(const char* fileName, LDL<string> &data)
         data.pop_back();
 
     // Este for borra el header
-    for (int i = 0; i < m_size; ++i)
+    for (long i = 0; i < m_size; ++i)
         data.pop_front();
 }
