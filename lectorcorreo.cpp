@@ -113,7 +113,9 @@ LectorCorreo::~LectorCorreo()
             nuevoIndice.close();
 
             m_indices->writeFileInOrder();
+
         }
+        m_indices->removeAll();
     }
 }
 

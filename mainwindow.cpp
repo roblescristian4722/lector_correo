@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     limpiarFilas();
+    m_ids.clear();
     delete m_lector;
     delete ui;
 }
