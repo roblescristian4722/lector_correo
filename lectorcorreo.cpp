@@ -18,7 +18,7 @@ LectorCorreo::LectorCorreo(AVLTree<LectorCorreo::Indice>* indices)
 
     // Si no está abierto el archivo de índices se crea y se pone
     // la bandera en verdadero porque aún no hay datos
-    if (!indicesArchivo.is_open())
+    if (!indicesArchivo.is_open() && !entrada.is_open())
     {
         cout << "Creando nuevo archivo de índices" << endl;
 
@@ -27,8 +27,32 @@ LectorCorreo::LectorCorreo(AVLTree<LectorCorreo::Indice>* indices)
 
         actualizado.referencia = 0;
         indicesArchivo.write((char*)&actualizado, sizeof(actualizado));
-        entrada.seekg(ios::beg);
-        indicesArchivo.seekp(sizeof (LectorCorreo::Indice));
+
+        entrada.close();
+        indicesArchivo.close();
+    }
+    else if (!indicesArchivo.is_open())
+    {
+        cout << "Creando nuevo archivo de índices" << endl;
+
+        indicesArchivo.open("indices.bin", ios::binary | ios::out);
+
+        actualizado.referencia = 0;
+        indicesArchivo.write((char*)&actualizado, sizeof(actualizado));
+
+        for (long i = 1; !entrada.eof(); ++i)
+        {
+            entrada.read((char*)&correoTmp, sizeof(correoTmp));
+            if (entrada.eof())
+                break;
+            if (i == atol(correoTmp.getIdentificador()))
+            {
+                strcpy(indiceTmp.llave, correoTmp.getIdentificador());
+                posTmp = entrada.tellg();
+                indiceTmp.referencia =  posTmp - sizeof(Correo);
+                m_indices->insertData(indiceTmp);
+            }
+        }
 
         entrada.close();
         indicesArchivo.close();
