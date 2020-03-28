@@ -26,19 +26,13 @@ public:
     {
         Indice(){}
         Indice(const char* id, long pos) : referencia(pos)
-        {
-            strcpy(llave, id);
-        }
+        { strcpy(llave, id); }
 
         bool operator < (const Indice &other)
-        {
-            return atol(this->llave) < atol(other.llave);
-        }
+        { return atol(this->llave) < atol(other.llave); }
 
         bool operator > (const Indice &other)
-        {
-            return atol(this->llave) > atol(other.llave);
-        }
+        { return atol(this->llave) > atol(other.llave); }
 
         friend ostream& operator << (ostream& os, const Indice& other)
         {
@@ -47,14 +41,10 @@ public:
         }
 
         bool operator == (const long llave)
-        {
-            return atol(this->llave) == llave;
-        }
+        { return atol(this->llave) == llave; }
 
         bool operator == (const Indice &other)
-        {
-            return atol(this->llave) == atol(other.llave);
-        }
+        { return atol(this->llave) == atol(other.llave); }
 
         char llave[10];
         long referencia;

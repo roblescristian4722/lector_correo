@@ -46,6 +46,6 @@ void Sobrescribir::on_actualPB_clicked()
 
 void Sobrescribir::on_copiaPB_clicked()
 {
-    m_lector->crear(m_copia, m_indiceMem);
+    m_lector->crear(m_copia, m_indiceMem, true);
     this->close();
 }

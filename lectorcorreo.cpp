@@ -122,13 +122,6 @@ LectorCorreo::~LectorCorreo()
         {
             ofstream nuevoIndice("indices.bin", ios::out | ios::binary);
 
-            Vector<LectorCorreo::Indice> ind;
-
-            m_indices->parseInOrder(ind);
-
-            for (long i = 0; i < ind.size(); ++i)
-                cout << ind[i] << endl;
-
             // Se activa la bandera para indicar que los datos se guardaron
             // correctamente
             indiceTmp.referencia = 1;
@@ -137,7 +130,6 @@ LectorCorreo::~LectorCorreo()
             nuevoIndice.close();
 
             m_indices->writeFileInOrder();
-
         }
         m_indices->removeAll();
     }

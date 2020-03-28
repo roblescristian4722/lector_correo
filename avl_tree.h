@@ -50,7 +50,7 @@ public:
     // PROPERTIES
     bool isLeaf();
     bool isLeaf(AVLTreeNode*& node);
-    unsigned int height();
+    int height();
 
     // GET AVL DATA
     AVLTreeNode*& findData(T& data);
@@ -71,11 +71,11 @@ private:
     void writeFileInOrder(AVLTreeNode*& node);
 
     // PROPERTIES
-    unsigned int height(AVLTreeNode*& node);
+    int height(AVLTreeNode*& node);
 
     // AVL PROPERTIES
     void doBalancing(AVLTreeNode*& node);
-    unsigned int balanceFactor(AVLTreeNode*& node);
+    int balanceFactor(AVLTreeNode*& node);
 
     // AVL ACTIONS
     void simpleLeftRotation(AVLTreeNode*& node);
@@ -161,14 +161,14 @@ void AVLTree<T>::parsePostOrder(AVLTreeNode*& node, Vector<T> &vec)
 }
 
 template<typename T>
-unsigned int AVLTree<T>::height(AVLTreeNode*& node)
+int AVLTree<T>::height(AVLTreeNode*& node)
 {
     if (node == nullptr)
         return 0;
     else if (isLeaf(node))
         return 1;
-    unsigned int rightHeight = height(node->right);
-    unsigned int leftHeight = height(node->left);
+    int rightHeight = height(node->right);
+    int leftHeight = height(node->left);
     return max(rightHeight, leftHeight) + 1;
 }
 
@@ -194,7 +194,7 @@ void AVLTree<T>::doBalancing(AVLTreeNode*& node)
 }
 
 template<typename T>
-unsigned int AVLTree<T>::balanceFactor(AVLTreeNode*& node)
+int AVLTree<T>::balanceFactor(AVLTreeNode*& node)
 {
     return height(node->right) - height(node->left);
 }
@@ -238,9 +238,11 @@ typename AVLTree<T>::AVLTreeNode*& AVLTree<T>::findData(AVLTreeNode*& node,  T& 
     else
     {
         if (data < *(node->dataPtr))
-            findData(node->left, data);
+            return findData(node->left, data);
         else
-            findData(node->right, data);
+        {
+            return findData(node->right, data);
+        }
     }
 }
 
@@ -327,13 +329,13 @@ void AVLTree<T>::parsePostOrder(Vector<T> &vec)
 }
 
 template<typename T>
-unsigned int AVLTree<T>::height()
+int AVLTree<T>::height()
 {
     return height(m_root);
 }
 
 template<typename T>
-typename AVLTree<T>::AVLTreeNode*& AVLTree<T>::findData( T& data)
+typename AVLTree<T>::AVLTreeNode*& AVLTree<T>::findData(T& data)
 {
     return findData(m_root, data);
 }
