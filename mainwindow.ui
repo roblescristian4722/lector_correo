@@ -21,17 +21,49 @@
        <string/>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="1" colspan="3">
-        <widget class="QLineEdit" name="buscar_barra"/>
+       <item row="1" column="0">
+        <widget class="QComboBox" name="opcCB">
+         <item>
+          <property name="text">
+           <string>ID</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>remitente</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>remitente (en memoria)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ID (indices)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>remitente/destinatario (indices sec.)</string>
+          </property>
+         </item>
+        </widget>
        </item>
-       <item row="1" column="4">
+       <item row="1" column="5">
         <widget class="QPushButton" name="buscarPB">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Buscar</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="0" rowspan="4" colspan="5">
+       <item row="3" column="0" rowspan="4" colspan="6">
         <widget class="QTableWidget" name="bandejaTabla">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -89,54 +121,49 @@
          </attribute>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QComboBox" name="opcCB">
-         <item>
-          <property name="text">
-           <string>Búsqueda por ID</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Búsqueda por remitente</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Búsqueda en memoria (remitente)</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Búsqueda por índices (ID)</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="8" column="2">
-        <widget class="QPushButton" name="agregar">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>1</verstretch>
-          </sizepolicy>
+       <item row="0" column="0" colspan="6">
+        <widget class="QLabel" name="titulo">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+           <weight>75</weight>
+           <italic>true</italic>
+           <bold>true</bold>
+           <underline>false</underline>
+          </font>
          </property>
          <property name="text">
-          <string>Agregar</string>
+          <string>Yi Mail</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
-       <item row="8" column="4">
-        <widget class="QPushButton" name="modificar">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>1</verstretch>
-          </sizepolicy>
+       <item row="1" column="2" colspan="3">
+        <widget class="QLineEdit" name="buscar_barra"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="busLogicaCB">
+         <property name="enabled">
+          <bool>false</bool>
          </property>
-         <property name="text">
-          <string>Modificar</string>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
          </property>
+         <item>
+          <property name="text">
+           <string>AND</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>OR</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="8" column="0" colspan="2">
@@ -149,6 +176,19 @@
          </property>
          <property name="text">
           <string>Mostrar Todo</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="QPushButton" name="agregar">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Agregar</string>
          </property>
         </widget>
        </item>
@@ -165,22 +205,16 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0" colspan="5">
-        <widget class="QLabel" name="titulo">
-         <property name="font">
-          <font>
-           <pointsize>14</pointsize>
-           <weight>75</weight>
-           <italic>true</italic>
-           <bold>true</bold>
-           <underline>false</underline>
-          </font>
+       <item row="8" column="4" colspan="2">
+        <widget class="QPushButton" name="modificar">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
          </property>
          <property name="text">
-          <string>Yi Mail</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <string>Modificar</string>
          </property>
         </widget>
        </item>
@@ -261,13 +295,14 @@
  </widget>
  <tabstops>
   <tabstop>opcCB</tabstop>
+  <tabstop>busLogicaCB</tabstop>
   <tabstop>buscar_barra</tabstop>
   <tabstop>buscarPB</tabstop>
   <tabstop>bandejaTabla</tabstop>
   <tabstop>mostrarTodo</tabstop>
   <tabstop>agregar</tabstop>
-  <tabstop>eliminar</tabstop>
   <tabstop>modificar</tabstop>
+  <tabstop>eliminar</tabstop>
  </tabstops>
  <resources/>
  <connections/>

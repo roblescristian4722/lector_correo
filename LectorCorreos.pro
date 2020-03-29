@@ -17,8 +17,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     agregar.cpp \
+    avl_tree_primario.cpp \
+    avl_tree_secundario.cpp \
     eliminar_copia.cpp \
     eliminar_propietario.cpp \
+    indices.cpp \
     main.cpp \
     mainwindow.cpp \
     correo.cpp \
@@ -32,12 +35,14 @@ SOURCES += \
 
 HEADERS += \
     agregar.h \
-    avl_tree.h \
+    avl_tree_primario.h \
+    avl_tree_secundario.h \
     eliminar_copia.h \
     eliminar_propietario.h \
+    indices.h \
+    lsl.h \
     mainwindow.h \
     correo.h \
-    ldl.h \
     lectorcorreo.h \
     modificar.h \
     modificar_copia.h \

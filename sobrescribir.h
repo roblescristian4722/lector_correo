@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include "correo.h"
-#include "ldl.h"
 #include "lectorcorreo.h"
 
 namespace Ui {
@@ -15,7 +14,7 @@ class Sobrescribir : public QDialog
     Q_OBJECT
 
 public:
-    explicit Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia, int index, AVLTree<LectorCorreo::Indice>* indiceMem, QWidget *parent = nullptr);
+    explicit Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia, int index, AVLTreePrimario* indiceMem, QWidget *parent = nullptr);
     ~Sobrescribir();
 
 private slots:
@@ -28,7 +27,7 @@ private:
     Correo* m_copia;
     Correo* m_actual;
     LectorCorreo* m_lector;
-    AVLTree<LectorCorreo::Indice>* m_indiceMem;
+    AVLTreePrimario* m_indiceMem;
     int m_index;
 };
 

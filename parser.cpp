@@ -5,7 +5,7 @@ Parser::Parser()
 
 Parser::~Parser(){}
 
-void Parser::getData(const char* fileName, LDL<string> &data)
+void Parser::getData(const char* fileName, LSL<string> &data)
 {
     char auxChar;
     string auxString = "";

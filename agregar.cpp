@@ -1,7 +1,7 @@
 #include "agregar.h"
 #include "ui_agregar.h"
 
-agregar::agregar(LectorCorreo* lector, AVLTree<LectorCorreo::Indice>* indices, QWidget *parent) :
+agregar::agregar(LectorCorreo* lector, AVLTreePrimario* indices, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::agregar),
     m_lector(lector),

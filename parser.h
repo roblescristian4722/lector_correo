@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <string>
 #include <fstream>
-#include "ldl.h"
+#include "lsl.h"
 using namespace std;
 
 class Parser
@@ -14,7 +14,7 @@ public:
     Parser();
     ~Parser();
 
-    void getData(const char* fileName, LDL<string> &data);
+    void getData(const char* fileName, LSL<string> &data);
 
 private:
     unsigned int m_size;

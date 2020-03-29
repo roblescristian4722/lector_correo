@@ -1,4 +1,4 @@
-    #ifndef MAINWINDOW_H
+#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -16,7 +16,7 @@
 #include "eliminar_copia.h"
 #include "eliminar_propietario.h"
 #include "modificar_propietario.h"
-#include "avl_tree.h"
+#include "avl_tree_primario.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -65,10 +65,16 @@ private slots:
 
     void on_actionModificar_Correo_triggered();
 
+    void on_busLogicaCB_currentIndexChanged(int index);
+
+    void on_opcCB_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
 
-    AVLTree<LectorCorreo::Indice> m_indices;
+    AVLTreePrimario m_indices;
+    AVLTreeSecundario m_rem;
+    AVLTreeSecundario m_des;
 
     /*
      * Objeto lector que se encargará de administrar
@@ -76,8 +82,8 @@ private:
     */
     LectorCorreo *m_lector;
 
-    unsigned int m_fila;
-    LDL<unsigned int> m_ids;
+    int m_fila;
+    LSL<unsigned int> m_ids;
 
     enum COLUMNAS
     {
@@ -89,6 +95,15 @@ private:
         COL_CC,
         COL_CCC,
         COL_ASUNTO
+    };
+
+    enum OPC_BUS
+    {
+        OPC_ID = 0,
+        OPC_REM,
+        OPC_REM_MEM,
+        OPC_IND_PRIM,
+        OPC_IND_SEC
     };
 };
 #endif // MAINWINDOW_H

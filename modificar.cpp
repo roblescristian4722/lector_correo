@@ -1,7 +1,7 @@
 #include "modificar.h"
 #include "ui_modificar.h"
 
-modificar::modificar(LectorCorreo* lector, unsigned long index, AVLTree<LectorCorreo::Indice>* indicesMem, QWidget *parent) :
+modificar::modificar(LectorCorreo* lector, unsigned long index, AVLTreePrimario* indicesMem, QWidget *parent) :
     m_lector(lector),
     m_index(index),
     m_indicesMem(indicesMem),

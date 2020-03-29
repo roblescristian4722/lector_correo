@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include "lectorcorreo.h"
 #include "parser.h"
-#include "ldl.h"
+#include "lsl.h"
 
 namespace Ui {
 class eliminar_copia;

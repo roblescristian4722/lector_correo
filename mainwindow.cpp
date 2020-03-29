@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     QStringList columnas;
 
-    m_lector = new LectorCorreo(&m_indices);
+    m_lector = new LectorCorreo(&m_indices, &m_rem, &m_des);
 
     // Se inicializa la interfaz y todos sus atributos
     ui->setupUi(this);
@@ -22,10 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
              << "Asunto";
     ui->bandejaTabla->setHorizontalHeaderLabels(columnas);
 
-    /*
-     * Se recuperan los datos del archivo binario en la
-     * lista doblemente ligada que forma parte de la clase
-    */
+    // Se recuperan los datos del archivo binario en la
+    // lista doblemente ligada que forma parte de la clase
     ui->bandejaTabla->horizontalHeader()->setVisible(true);
 
     on_mostrarTodo_clicked();
@@ -97,7 +95,7 @@ void MainWindow::on_eliminar_clicked()
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
     }
-    else if (m_fila >= m_ids.size() || m_fila < 0)
+    else if (m_fila >= m_ids.size())
         m_fila = 0;
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong();
@@ -144,6 +142,8 @@ void MainWindow::on_mostrarTodo_clicked()
         crearFila(correoTmp);
     }
     this->setCursor(Qt::ArrowCursor);
+    m_rem.parseInOrder();
+    m_des.parseInOrder();
 }
 
 void MainWindow::on_bandejaTabla_cellClicked(int row, int column)
@@ -193,15 +193,15 @@ void MainWindow::on_buscarPB_clicked()
         // BÚSQUEDA POR ID EN ÁRBOL BINARIO
         else if (ui->opcCB->currentIndex() == 3)
         {
-            AVLTree<LectorCorreo::Indice>::AVLTreeNode* nodo;
-            LectorCorreo::Indice tmp;
-            strcpy(tmp.llave, ui->buscar_barra->text().toStdString().c_str());
+            AVLTreePrimario::AVLTreeNode* nodo;
+            IndicePrimario tmp;
+            tmp.setLlave(ui->buscar_barra->text().toStdString().c_str());
 
             nodo = m_indices.findData(tmp);
 
             if (nodo != nullptr)
             {
-                correoTmp = m_lector->leer(nodo->dataPtr->referencia);
+                correoTmp = m_lector->leer(nodo->dataPtr->getReferencia());
                 crearFila(correoTmp);
             }
         }
@@ -266,18 +266,18 @@ int MainWindow::busqueda_binaria(int dato)
 int MainWindow::busqueda_binaria(Vector<Correo> &vec, QString dato)
 {
     int l = 0;
-        int r = int(vec.size() - 1);
-        while (l <= r)
-        {
-            int m = (l + r) / 2;
-            if (dato == QString(vec[m].getRem()))
-                return m;
-            else if (dato < QString(vec[m].getRem()))
-                r = m - 1;
-            else
-                l = m + 1;
-        }
-        return -1;
+    int r = int(vec.size() - 1);
+    while (l <= r)
+    {
+        int m = (l + r) / 2;
+        if (dato == QString(vec[m].getRem()))
+            return m;
+        else if (dato < QString(vec[m].getRem()))
+            r = m - 1;
+        else
+            l = m + 1;
+    }
+    return -1;
 }
 
 void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
@@ -285,14 +285,14 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
     Parser parser;
     Correo correoActual;
     Correo correoCopia;
-    LDL<string> copiaDatos;
+    LSL<string> copiaDatos;
     int res;
 
     // Se almacenan los datos de la copia de seguridad en una lista
     // de strings cuyos valores se copiarán luego a un correo temporal
     parser.getData("respaldo.csv", copiaDatos);
 
-    for (int i = 0; i < copiaDatos.size(); i += 9)
+    for (size_t i = 0; i < copiaDatos.size(); i += 9)
     {
         /* res guardará el índice de la lista que coincida con
         * el correo leído de la copia de seguridad. En caso de
@@ -319,7 +319,7 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
         // uno de los almacenadosen el programa
         else
         {
-            correoActual = m_lector->leer(to_string(m_ids[res]).c_str());
+            correoActual = m_lector->leer(to_string(m_ids[size_t(res)]).c_str());
 
             if (correoActual != correoCopia)
             {
@@ -377,12 +377,12 @@ void MainWindow::on_actionModificar_Correo_triggered()
 
 void MainWindow::shell_sort(size_t n, Vector<Correo> &vec)
 {
-    int brecha = n / 2;
-    int j;
+    size_t brecha = n / 2;
+    size_t j;
     Correo tmp;
     while (brecha > 0)
     {
-        for (int i = brecha; i < n; ++i)
+        for (size_t i = brecha; i < n; ++i)
         {
             tmp = vec[i];
             j = i;
@@ -395,4 +395,12 @@ void MainWindow::shell_sort(size_t n, Vector<Correo> &vec)
         }
         brecha /= 2;
     }
+}
+
+void MainWindow::on_opcCB_currentIndexChanged(int index)
+{
+    if (index == OPC_IND_SEC)
+        ui->busLogicaCB->setEnabled(true);
+    else
+        ui->busLogicaCB->setEnabled(false);
 }

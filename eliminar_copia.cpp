@@ -19,7 +19,7 @@ void eliminar_copia::on_eliminarPB_clicked()
 {
     bool found = false;
     Parser par;
-    LDL<string> data, idString;
+    LSL<string> data, idString;
     QString id = ui->idLE->text();
 
     par.getData("respaldo.csv", data);

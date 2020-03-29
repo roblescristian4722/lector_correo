@@ -1,7 +1,7 @@
 #include "sobrescribir.h"
 #include "ui_sobrescribir.h"
 
-Sobrescribir::Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia, int index, AVLTree<LectorCorreo::Indice>* indiceMem, QWidget *parent) :
+Sobrescribir::Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia, int index, AVLTreePrimario* indiceMem, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Sobrescribir)
 {

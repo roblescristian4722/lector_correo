@@ -1,7 +1,7 @@
 #include "lectorcorreo.h"
 #define TOTAL_CAMPOS 9
 
-LectorCorreo::LectorCorreo(AVLTree<LectorCorreo::Indice>* indices)
+LectorCorreo::LectorCorreo(AVLTreePrimario* indices, AVLTreeSecundario *rem, AVLTreeSecundario *des)
 {
     // Se crea un archivo binario nuevo en caso de que aún no exista
     fstream entrada("datos.bin", ios::binary | ios::in | ios::out);
@@ -9,12 +9,14 @@ LectorCorreo::LectorCorreo(AVLTree<LectorCorreo::Indice>* indices)
     // Archivo de índices
     fstream indicesArchivo("indices.bin", ios::binary | ios::in | ios::out);
 
-    LectorCorreo::Indice actualizado;
-    LectorCorreo::Indice indiceTmp;
+    IndicePrimario actualizado;
+    IndicePrimario indiceTmp;
     Correo correoTmp;
     long posTmp;
 
     m_indices = indices;
+    m_des = des;
+    m_rem = rem;
 
     // Si no está abierto el archivo de índices se crea y se pone
     // la bandera en verdadero porque aún no hay datos
@@ -25,7 +27,7 @@ LectorCorreo::LectorCorreo(AVLTree<LectorCorreo::Indice>* indices)
         entrada.open("datos.bin", ios::binary | ios::out);
         indicesArchivo.open("indices.bin", ios::binary | ios::out);
 
-        actualizado.referencia = 0;
+        actualizado.setReferencia(0);
         indicesArchivo.write((char*)&actualizado, sizeof(actualizado));
 
         entrada.close();
@@ -37,7 +39,7 @@ LectorCorreo::LectorCorreo(AVLTree<LectorCorreo::Indice>* indices)
 
         indicesArchivo.open("indices.bin", ios::binary | ios::out);
 
-        actualizado.referencia = 0;
+        actualizado.setReferencia(0);
         indicesArchivo.write((char*)&actualizado, sizeof(actualizado));
 
         for (long i = 1; !entrada.eof(); ++i)
@@ -47,10 +49,10 @@ LectorCorreo::LectorCorreo(AVLTree<LectorCorreo::Indice>* indices)
                 break;
             if (i == atol(correoTmp.getIdentificador()))
             {
-                strcpy(indiceTmp.llave, correoTmp.getIdentificador());
+                indiceTmp.setLlave(correoTmp.getIdentificador());
                 posTmp = entrada.tellg();
-                indiceTmp.referencia =  posTmp - sizeof(Correo);
-                m_indices->insertData(indiceTmp);
+                indiceTmp.setReferencia(posTmp - sizeof(Correo));
+                m_indices->insertData(indiceTmp, m_rem, m_des);
             }
         }
 
@@ -60,18 +62,18 @@ LectorCorreo::LectorCorreo(AVLTree<LectorCorreo::Indice>* indices)
     else
     {
         indicesArchivo.read((char*)&actualizado, sizeof(actualizado));
-        cout << "\"bandera actualizado\": " << actualizado.referencia << endl;
+        cout << "\"bandera actualizado\": " << actualizado.getReferencia() << endl;
 
         // Si los datos están actualizados se guardan los
         // datos del archivo de índices en el arbol
-        if (actualizado.referencia)
+        if (actualizado.getReferencia())
         {
             while (!indicesArchivo.eof())
             {
                 indicesArchivo.read((char*)&indiceTmp, sizeof(indiceTmp));
                 if (indicesArchivo.eof())
                     break;
-                m_indices->insertData(indiceTmp);
+                m_indices->insertData(indiceTmp, m_rem, m_des);
             }
         }
         // Si los datos están desactualizados se guardan
@@ -86,16 +88,16 @@ LectorCorreo::LectorCorreo(AVLTree<LectorCorreo::Indice>* indices)
 
                 if (atol(correoTmp.getIdentificador()) == i)
                 {
-                    strcpy(indiceTmp.llave, correoTmp.getIdentificador());
+                    indiceTmp.setLlave(correoTmp.getIdentificador());
                     posTmp = entrada.tellg();
-                    indiceTmp.referencia = posTmp - long(sizeof(Correo));
+                    indiceTmp.setReferencia(posTmp - long(sizeof(Correo)));
 
-                    m_indices->insertData(indiceTmp);
+                    m_indices->insertData(indiceTmp, m_rem, m_des);
                 }
             }
             // Se cambia la bandera en el archivo para que no se tengan que cambiar
             // los datos a menos que se haga algún cambio en memoria
-            actualizado.referencia = 0;
+            actualizado.setReferencia(0);
             indicesArchivo.seekp(0);
             indicesArchivo.write((char*)&actualizado, sizeof(actualizado));
         }
@@ -109,7 +111,7 @@ LectorCorreo::LectorCorreo(AVLTree<LectorCorreo::Indice>* indices)
 LectorCorreo::~LectorCorreo()
 {
     fstream archivoIndices("indices.bin", ios::in | ios::out | ios::binary);
-    LectorCorreo::Indice indiceTmp;
+    IndicePrimario indiceTmp;
 
     if (!archivoIndices.is_open())
         cout << "Error en el archivo de índices" << endl;
@@ -118,13 +120,13 @@ LectorCorreo::~LectorCorreo()
         archivoIndices.read((char*)&indiceTmp, sizeof(indiceTmp));
         archivoIndices.close();
 
-        if (!indiceTmp.referencia)
+        if (!indiceTmp.getReferencia())
         {
             ofstream nuevoIndice("indices.bin", ios::out | ios::binary);
 
             // Se activa la bandera para indicar que los datos se guardaron
             // correctamente
-            indiceTmp.referencia = 1;
+            indiceTmp.setReferencia(1);
             nuevoIndice.write((char*)&indiceTmp, sizeof(indiceTmp));
 
             nuevoIndice.close();
@@ -135,10 +137,10 @@ LectorCorreo::~LectorCorreo()
     }
 }
 
-void LectorCorreo::eliminar(long id, AVLTree<LectorCorreo::Indice>* indices)
+void LectorCorreo::eliminar(long id, AVLTreePrimario* indices)
 {
     Correo tmp;
-    LectorCorreo::Indice indiceTmp;
+    IndicePrimario indiceTmp;
     fstream archivoDatos("datos.bin", ios::out | ios::in | ios::binary);
     fstream archivoIndices("indices.bin", ios::out | ios::in | ios::binary);
 
@@ -153,12 +155,12 @@ void LectorCorreo::eliminar(long id, AVLTree<LectorCorreo::Indice>* indices)
         archivoDatos.write((char*)&tmp, long(sizeof(Correo)));
 
         // Se borra el índice del árbol
-        strcpy(indiceTmp.llave, to_string(id).c_str());
-        indiceTmp.referencia = pos;
+        indiceTmp.setLlave(to_string(id).c_str());
+        indiceTmp.setReferencia(pos);
         indices->removeData(indiceTmp);
 
         // Se cambia la bandera del archivo de índices
-        indiceTmp.referencia = 0;
+        indiceTmp.setReferencia(0);
         archivoIndices.write((char*)&indiceTmp, sizeof(indiceTmp));
 
         archivoDatos.close();
@@ -166,11 +168,11 @@ void LectorCorreo::eliminar(long id, AVLTree<LectorCorreo::Indice>* indices)
     }
 }
 
-void LectorCorreo::crear(Correo* correo, AVLTree<LectorCorreo::Indice>* indices, bool modificar)
+void LectorCorreo::crear(Correo* correo, AVLTreePrimario* indices, bool modificar)
 {
     fstream archivoDatos("datos.bin", ios::out | ios::binary | ios::in);
     fstream archivoIndices("indices.bin", ios::out | ios::binary | ios::in);
-    LectorCorreo::Indice indiceTmp;
+    IndicePrimario indiceTmp;
 
     if (!archivoDatos.is_open())
         cout << "Error en el achivo de datos" << endl;
@@ -186,17 +188,17 @@ void LectorCorreo::crear(Correo* correo, AVLTree<LectorCorreo::Indice>* indices,
         archivoDatos.write((char*)correo, long(sizeof(Correo)));
 
         // Se guardan los datos del correo en el índice temporal
-        strcpy(indiceTmp.llave, correo->getIdentificador());
-        indiceTmp.referencia = pos;
+        indiceTmp.setLlave(correo->getIdentificador());
+        indiceTmp.setReferencia(pos);
 
         if (!modificar)
         {
             // Se añade el indice al árbol solamente cuando se añade un dato
             // no cuando se modifica
-            indices->insertData(indiceTmp);
+            indices->insertData(indiceTmp, m_rem, m_des);
 
             // Se cambia la bandera del archivo de índices
-            indiceTmp.referencia = 0;
+            indiceTmp.setReferencia(0);
             archivoIndices.write((char*)&indiceTmp, sizeof(indiceTmp));
         }
 
@@ -252,7 +254,7 @@ Correo LectorCorreo::leer(long pos)
     }
 }
 
-void LectorCorreo::leer(LDL<unsigned int>& ids)
+void LectorCorreo::leer(LSL<unsigned int>& ids)
 {
     Correo tmp;
     fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
@@ -268,7 +270,7 @@ void LectorCorreo::leer(LDL<unsigned int>& ids)
     archivo.close();
 }
 
-void LectorCorreo::leer_rem(LDL<unsigned int>& lista, const char* rem)
+void LectorCorreo::leer_rem(LSL<unsigned int>& lista, const char* rem)
 {
     Correo correoTmp;
     string strTmp;
@@ -332,7 +334,7 @@ void LectorCorreo::crear_copia_seguridad()
     csv.close();
 }
 
-void LectorCorreo::modificar_copia(Correo& correo, LDL<string> idRegistrados)
+void LectorCorreo::modificar_copia(Correo& correo, LSL<string> idRegistrados)
 {
     string aux;
     string auxID = "";
@@ -460,7 +462,7 @@ void LectorCorreo::validar_comillas(Correo &correo)
         correo.setContenido(contenidoTmp);
 }
 
-void LectorCorreo::eliminar_copia_seguridad(string id, LDL<string> idRegistrados)
+void LectorCorreo::eliminar_copia_seguridad(string id, LSL<string> idRegistrados)
 {
     fstream csv("respaldo.csv", ios::in);
     fstream tmp("respaldo.tmp", ios::out);

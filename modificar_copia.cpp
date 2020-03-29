@@ -20,7 +20,7 @@ void modificar_copia::on_guardar_2_clicked()
     QString id, des, rem, cc, ccc, asunto, cont;
     Correo correoTmp;
     Parser par;
-    LDL<string> data, idString;
+    LSL<string> data, idString;
     bool found =  false;
     unsigned int i;
 

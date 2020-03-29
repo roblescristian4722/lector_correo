@@ -16,7 +16,7 @@ class agregar : public QDialog
     Q_OBJECT
 
 public:
-    explicit agregar(LectorCorreo* lector, AVLTree<LectorCorreo::Indice>* indices, QWidget *parent = nullptr);
+    explicit agregar(LectorCorreo* lector, AVLTreePrimario* indices, QWidget *parent = nullptr);
     ~agregar();
 
 private slots:
@@ -29,7 +29,7 @@ private:
      * lector principal y métodos de creación de archivos
     */
     LectorCorreo* m_lector;
-    AVLTree<LectorCorreo::Indice>* m_indices;
+    AVLTreePrimario* m_indices;
 };
 
 #endif // AGREGAR_H
