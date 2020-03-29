@@ -28,7 +28,7 @@ public:
     virtual ~LectorCorreo();
 
     void menu();
-    void crear(Correo* tmp, AVLTreePrimario* indices, bool modificar = false);
+    void crear(Correo* tmp, bool modificar = false);
     Correo leer(const char* id);
     Correo leer(long pos);
     void leer(LSL<unsigned int>& ids);
@@ -52,8 +52,8 @@ public:
 
 private:
     AVLTreePrimario* m_indices;
-     AVLTreeSecundario* m_rem;
-     AVLTreeSecundario* m_des;
+    AVLTreeSecundario* m_rem;
+    AVLTreeSecundario* m_des;
 };
 
 #endif // LECTORCORREO_H

@@ -168,7 +168,7 @@ void LectorCorreo::eliminar(long id, AVLTreePrimario* indices)
     }
 }
 
-void LectorCorreo::crear(Correo* correo, AVLTreePrimario* indices, bool modificar)
+void LectorCorreo::crear(Correo* correo, bool modificar)
 {
     fstream archivoDatos("datos.bin", ios::out | ios::binary | ios::in);
     fstream archivoIndices("indices.bin", ios::out | ios::binary | ios::in);
@@ -191,16 +191,13 @@ void LectorCorreo::crear(Correo* correo, AVLTreePrimario* indices, bool modifica
         indiceTmp.setLlave(correo->getIdentificador());
         indiceTmp.setReferencia(pos);
 
-        if (!modificar)
-        {
-            // Se añade el indice al árbol solamente cuando se añade un dato
-            // no cuando se modifica
-            indices->insertData(indiceTmp, m_rem, m_des);
+        // Se añade el indice al árbol solamente cuando se añade un dato
+        // no cuando se modifica
+        m_indices->insertData(indiceTmp, m_rem, m_des, modificar);
 
-            // Se cambia la bandera del archivo de índices
-            indiceTmp.setReferencia(0);
-            archivoIndices.write((char*)&indiceTmp, sizeof(indiceTmp));
-        }
+        // Se cambia la bandera del archivo de índices
+        indiceTmp.setReferencia(0);
+        archivoIndices.write((char*)&indiceTmp, sizeof(indiceTmp));
 
         // Se cierran los archivos
         archivoDatos.close();

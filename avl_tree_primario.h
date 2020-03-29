@@ -27,7 +27,7 @@ public:
     ~AVLTreePrimario();
 
     // MODIFY DATA
-    void insertData(IndicePrimario& data, AVLTreeSecundario*& rem, AVLTreeSecundario*& des);
+    void insertData(IndicePrimario& data, AVLTreeSecundario*& rem, AVLTreeSecundario*& des, bool mod = false);
     void removeData(IndicePrimario& data);
     void removeNode(AVLTreeNode*& node);
     void removeAll();
@@ -50,7 +50,7 @@ private:
     AVLTreeNode* m_root;
 
     // MODIFY DATA
-    void insertData(IndicePrimario& data, AVLTreeNode*& node, AVLTreeSecundario*& rem, AVLTreeSecundario*& des);
+    void insertData(IndicePrimario& data, AVLTreeNode*& node, AVLTreeSecundario*& rem, AVLTreeSecundario*& des, bool mod = false);
     void removeAll(AVLTreeNode*& node);
 
     // PARSE

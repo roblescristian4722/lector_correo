@@ -191,10 +191,7 @@ void AVLTreeSecundario::removePrimary(long id, AVLTreeSecundario::AVLTreeNode *&
         cout << "Removing item \"" << (*list)[size_t(pos)].getLlave() << "\"" << endl;
         list->erase(size_t(pos));
         if (!list->size())
-        {
-            cout << "asdf" << endl;
             removeNode(node);
-        }
     }
 }
 

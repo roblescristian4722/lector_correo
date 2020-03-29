@@ -133,7 +133,7 @@ void MainWindow::on_modificar_clicked()
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
-    modificar m(m_lector, id, &m_indices);
+    modificar m(m_lector, id, &m_indices, &m_rem, &m_des);
     m.setModal(true);
     m.exec();
     on_mostrarTodo_clicked();

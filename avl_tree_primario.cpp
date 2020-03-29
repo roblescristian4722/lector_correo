@@ -20,7 +20,7 @@ AVLTreePrimario::AVLTreeNode::~AVLTreeNode()
 }
 
 /// PRIVATE METHODS ///
-void AVLTreePrimario::insertData(IndicePrimario& data, AVLTreeNode*& node, AVLTreeSecundario*& rem, AVLTreeSecundario*& des)
+void AVLTreePrimario::insertData(IndicePrimario& data, AVLTreeNode*& node, AVLTreeSecundario*& rem, AVLTreeSecundario*& des, bool mod)
 {
     if (node == nullptr)
     {
@@ -38,11 +38,24 @@ void AVLTreePrimario::insertData(IndicePrimario& data, AVLTreeNode*& node, AVLTr
         des->insertData(correoTmp.getDestinatario(), node->dataPtr);
     }
     else if (*(node->dataPtr) == data)
-        throw range_error("Data has already been inserted");
+        if (!mod)
+            throw range_error("Data has already been inserted");
+        else
+        {
+            Correo correoTmp;
+            fstream archivo("datos.bin", ios::in | ios::binary);
+
+            archivo.seekg(data.getReferencia());
+            archivo.read((char*)&correoTmp, sizeof(Correo));
+            archivo.close();
+
+            rem->insertData(correoTmp.getRem(), node->dataPtr);
+            des->insertData(correoTmp.getDestinatario(), node->dataPtr);
+        }
     else if (data < *(node->dataPtr))
-        insertData(data, node->left, rem, des);
+        insertData(data, node->left, rem, des, mod);
     else
-        insertData(data, node->right, rem, des);
+        insertData(data, node->right, rem, des, mod);
     doBalancing(node);
 }
 
@@ -194,9 +207,9 @@ bool AVLTreePrimario::isLeaf()
    return isLeaf(m_root);
 }
 
-void AVLTreePrimario::insertData(IndicePrimario& data, AVLTreeSecundario* &rem, AVLTreeSecundario*&des)
+void AVLTreePrimario::insertData(IndicePrimario& data, AVLTreeSecundario* &rem, AVLTreeSecundario*&des, bool mod)
 {
-    insertData(data, m_root, rem, des);
+    insertData(data, m_root, rem, des, mod);
 }
 
 void AVLTreePrimario::writeFileInOrder()
