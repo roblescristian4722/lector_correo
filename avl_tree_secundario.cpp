@@ -123,13 +123,13 @@ void AVLTreeSecundario::doubleRightRotation(AVLTreeNode*& node)
    simpleRightRotation(node);
 }
 
-AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::findData(AVLTreeNode*& node,  IndiceSecundario& data)
+AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::findData(AVLTreeNode*& node, const string& data)
 {
    if (node == nullptr || *(node->dataPtr) == data)
        return node;
    else
    {
-       if (data < *(node->dataPtr))
+       if (*(node->dataPtr) > data)
            return findData(node->left, data);
        else
            return findData(node->right, data);
@@ -150,23 +150,58 @@ typename AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::highestData(AVLTree
    return highestData(node->right);
 }
 
+int AVLTreeSecundario::busqueda_binaria(long id, LSL<IndicePrimario>*& lista)
+{
+    int l = 0;
+    int r = int(lista->size() - 1);
+    while (l <= r)
+    {
+        int m = (l + r) / 2;
+        if (id == stol((*lista)[size_t(m)].getLlave()))
+            return m;
+        else if (id < stol((*lista)[size_t(m)].getLlave()))
+            r = m - 1;
+        else
+            l = m + 1;
+    }
+    return -1;
+}
+
 void AVLTreeSecundario::removeAll(AVLTreeNode*& node)
 {
-   if (node != nullptr)
-   {
-       removeAll(node->left);
-       removeAll(node->right);
-       delete node;
-   }
-   node = nullptr;
+    if (node != nullptr)
+    {
+        removeAll(node->left);
+        removeAll(node->right);
+        delete node;
+    }
+    node = nullptr;
+}
+
+void AVLTreeSecundario::removePrimary(long id, AVLTreeSecundario::AVLTreeNode *&node)
+{
+    if (node == nullptr)
+        throw range_error("Node doesn't exist");
+    else
+    {
+        cout << id << endl;
+        LSL<IndicePrimario>*& list = node->dataPtr->getReferencia();
+        int pos = busqueda_binaria(id, list);
+        cout << "pos: " << pos << endl;
+        cout << "Removing item \"" << (*list)[size_t(pos)].getLlave() << "\"" << endl;
+        list->erase(size_t(pos));
+        if (!list->size())
+        {
+            cout << "asdf" << endl;
+            removeNode(node);
+        }
+    }
 }
 
 
 /// PUBLIC METHODS ///
 void AVLTreeSecundario::removeAll()
-{
-   removeAll(m_root);
-}
+{ removeAll(m_root); }
 
 bool AVLTreeSecundario::isLeaf(AVLTreeNode*& node)
 {
@@ -176,41 +211,27 @@ bool AVLTreeSecundario::isLeaf(AVLTreeNode*& node)
 }
 
 bool AVLTreeSecundario::isLeaf()
-{
-   return isLeaf(m_root);
-}
+{ return isLeaf(m_root); }
 
 void AVLTreeSecundario::insertData(const string& llave, IndicePrimario*& prim)
-{
-    insertData(llave, m_root, prim);
-}
+{ insertData(llave, m_root, prim); }
 
 void AVLTreeSecundario::parseInOrder()
-{
-   parseInOrder(m_root);
-}
+{ parseInOrder(m_root); }
 
 int AVLTreeSecundario::height()
-{
-   return height(m_root);
-}
+{ return height(m_root); }
 
-AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::findData(IndiceSecundario& data)
-{
-   return findData(m_root, data);
-}
+AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::findData(const string& data)
+{ return findData(m_root, data); }
 
 AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::lowestData()
-{
-   return lowestData(m_root);
-}
+{ return lowestData(m_root); }
 
 AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::highestData()
-{
-   return highestData(m_root);
-}
+{ return highestData(m_root); }
 
-void AVLTreeSecundario::removeData(IndiceSecundario& data)
+void AVLTreeSecundario::removeData(const string& data)
 {
    AVLTreeNode*& aux = findData(data);
    cout << "Removing item \"" << *(aux->dataPtr) << "\" from AVL Tree" << endl;
@@ -228,8 +249,14 @@ void AVLTreeSecundario::removeNode(AVLTreeNode*& node)
    }
    else
    {
-       AVLTreeNode*& aux = node->left == nullptr ? lowestData(node->right) : highestData(node->left);
+       AVLTreeNode*& aux = (node->left == nullptr) ? lowestData(node->right) : highestData(node->left);
        *(node->dataPtr) = *(aux->dataPtr);
        removeNode(aux);
    }
+}
+
+void AVLTreeSecundario::removePrimary(const string data, long id)
+{
+    AVLTreeNode *& node = findData(data);
+    removePrimary(id, node);
 }

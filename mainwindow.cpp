@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
     // lista doblemente ligada que forma parte de la clase
     ui->bandejaTabla->horizontalHeader()->setVisible(true);
 
+    m_rem.parseInOrder();
+    m_des.parseInOrder();
     on_mostrarTodo_clicked();
 }
 
@@ -82,12 +84,15 @@ void MainWindow::on_agregar_clicked()
     agregar a(m_lector, &m_indices);
     a.setModal(true);
     a.exec();
+    m_rem.parseInOrder();
+    m_des.parseInOrder();
     on_mostrarTodo_clicked();
 }
 
 void MainWindow::on_eliminar_clicked()
 {
-    unsigned long id;
+    long id;
+    string aux;
     if (!ui->bandejaTabla->rowCount())
     {
         m_fila = 0;
@@ -95,18 +100,27 @@ void MainWindow::on_eliminar_clicked()
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
     }
-    else if (m_fila >= m_ids.size())
-        m_fila = 0;
+    else if (m_fila >= int(m_ids.size()))
+    m_fila = 0;
 
-    id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong();
+    id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
-    m_lector->eliminar(long(id), &m_indices);
+    aux = ui->bandejaTabla->item(m_fila, COL_REM)->text().toStdString();
+    m_rem.removePrimary(aux, id);
+
+    aux = ui->bandejaTabla->item(m_fila, COL_DES)->text().toStdString();
+    m_des.removePrimary(aux, id);
+
+    m_lector->eliminar(id, &m_indices);
+
+    m_rem.parseInOrder();
+    m_des.parseInOrder();
     on_mostrarTodo_clicked();
 }
 
 void MainWindow::on_modificar_clicked()
 {
-    unsigned long id;
+    long id;
     if (!ui->bandejaTabla->rowCount())
     {
         m_fila = 0;
@@ -114,10 +128,10 @@ void MainWindow::on_modificar_clicked()
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
     }
-    else if (m_fila >= m_ids.size() || m_fila < 0)
+    else if (m_fila >= int(m_ids.size()) || m_fila < 0)
         m_fila = 0;
 
-    id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toULong();
+    id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
     modificar m(m_lector, id, &m_indices);
     m.setModal(true);
@@ -142,8 +156,6 @@ void MainWindow::on_mostrarTodo_clicked()
         crearFila(correoTmp);
     }
     this->setCursor(Qt::ArrowCursor);
-    m_rem.parseInOrder();
-    m_des.parseInOrder();
 }
 
 void MainWindow::on_bandejaTabla_cellClicked(int row, int column)
@@ -157,9 +169,9 @@ void MainWindow::on_buscarPB_clicked()
     char idTmp[10];
     strcpy(idTmp, ui->buscarPB->text().toStdString().c_str());
 
-    if (!ui->buscar_barra->text().size() && ui->opcCB->currentIndex())
+    if (!ui->barraRemLE->text().size() && ui->opcCB->currentIndex())
         QMessageBox::warning(this, "Campo vacío", "Ingrese el ID o remitente a buscar");
-    else if ((ui->buscar_barra->text().toULongLong() < 1 || ui->buscar_barra->text().toStdString().length() > 10
+    else if ((ui->barraRemLE->text().toULongLong() < 1 || ui->barraRemLE->text().toStdString().length() > 10
              || idTmp[0] == '0') && (!ui->opcCB->currentIndex() || ui->opcCB->currentIndex() == 3))
         QMessageBox::warning(this, "ID no válido", "El ID debe de estar en un rango de (1 - 9999999999)");
     else
@@ -171,8 +183,8 @@ void MainWindow::on_buscarPB_clicked()
         m_ids.clear();
         ui->bandejaTabla->setRowCount(0);
 
-        // BÚSQUEDA EN MEMORIA RAM POR REMITENTE
-        if (ui->opcCB->currentIndex() == 2)
+        /// BÚSQUEDA EN MEMORIA RAM POR REMITENTE ///
+        if (ui->opcCB->currentIndex() == OPC_REM_RAM)
         {
             int res;
             Vector<Correo> vec;
@@ -184,18 +196,18 @@ void MainWindow::on_buscarPB_clicked()
             shell_sort(vec.size(), vec);
 
             // Se busca el dato con búsqueda binaria
-            res = busqueda_binaria(vec, ui->buscar_barra->text());
+            res = busqueda_binaria(vec, ui->barraRemLE->text());
 
             if (res != -1)
                 crearFila(vec[res]);
         }
 
-        // BÚSQUEDA POR ID EN ÁRBOL BINARIO
-        else if (ui->opcCB->currentIndex() == 3)
+        /// BÚSQUEDA POR ID EN ÁRBOL BINARIO ///
+        else if (ui->opcCB->currentIndex() == OPC_IND_PRIM)
         {
             AVLTreePrimario::AVLTreeNode* nodo;
             IndicePrimario tmp;
-            tmp.setLlave(ui->buscar_barra->text().toStdString().c_str());
+            tmp.setLlave(ui->barraRemLE->text().toStdString().c_str());
 
             nodo = m_indices.findData(tmp);
 
@@ -206,19 +218,37 @@ void MainWindow::on_buscarPB_clicked()
             }
         }
 
+        /// BÚSQUEDA POR REMITENTE/DESTINATARIO EN ÁRBOL BINARIO ///
+        else if (ui->opcCB->currentIndex() == OPC_IND_SEC)
+        {
+            string input = ui->barraRemLE->text().toStdString();
+            AVLTreeSecundario::AVLTreeNode* nodo = m_rem.findData(input);
+            LSL<IndicePrimario>* lista;
+
+            if (nodo != nullptr)
+            {
+                lista = nodo->dataPtr->getReferencia();
+                for (size_t i = 0; i < lista->size(); ++i)
+                {
+                    correoTmp = m_lector->leer((*lista)[i].getReferencia());
+                    crearFila(correoTmp);
+                }
+            }
+        }
+
         else
         {
-            // BÚSQUEDA POR ID EN ARCHIVO BINARIO
-            if (!ui->opcCB->currentIndex())
+            /// BÚSQUEDA POR ID EN ARCHIVO BINARIO ///
+            if (ui->opcCB->currentIndex() == OPC_ID)
             {
-                correoTmp = m_lector->leer(ui->buscar_barra->text().toStdString().c_str());
-                if (atol(correoTmp.getIdentificador()) == ui->buscar_barra->text().toLong())
+                correoTmp = m_lector->leer(ui->barraRemLE->text().toStdString().c_str());
+                if (atol(correoTmp.getIdentificador()) == ui->barraRemLE->text().toLong())
                     m_ids.push_back(atol(correoTmp.getIdentificador()));
             }
 
-            // BÚSQUEDA POR REMITENTE EN ARCHIVO BINARIO
-            else if (ui->opcCB->currentIndex() == 1)
-                m_lector->leer_rem(m_ids, ui->buscar_barra->text().toStdString().c_str());
+            /// BÚSQUEDA POR REMITENTE EN ARCHIVO BINARIO ///
+            else if (ui->opcCB->currentIndex() == OPC_REM)
+                m_lector->leer_rem(m_ids, ui->barraRemLE->text().toStdString().c_str());
 
             for (i = 0; i < m_ids.size(); i++)
             {
@@ -404,3 +434,6 @@ void MainWindow::on_opcCB_currentIndexChanged(int index)
     else
         ui->busLogicaCB->setEnabled(false);
 }
+
+void MainWindow::on_busLogicaCB_currentIndexChanged(int index)
+{}

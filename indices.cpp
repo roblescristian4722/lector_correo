@@ -45,6 +45,14 @@ bool IndiceSecundario::operator >(const string &llave)
 bool IndiceSecundario::operator ==(const IndiceSecundario &other)
 { return this->getLlave() == other.getLlave(); }
 
+void IndiceSecundario::operator =(IndiceSecundario &other)
+{
+    this->setLlave(other.getLlave());
+    this->getReferencia()->clear();
+    for(size_t i = 0; i < other.getReferencia()->size(); ++i)
+        this->getReferencia()->push_back((*other.getReferencia())[i]);
+}
+
 bool IndiceSecundario::operator ==(const string llave)
 { return this->getLlave() == llave; }
 

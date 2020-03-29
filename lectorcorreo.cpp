@@ -210,27 +210,24 @@ void LectorCorreo::crear(Correo* correo, AVLTreePrimario* indices, bool modifica
 
 Correo LectorCorreo::leer(const char* id)
 {
-     /*
-      * Se crea un Correo temporal en memoria dinámica
-      * que guardará los datos almacenados en el archivo
-      * de texto en una posición determinada y luego se
-      * pasará dicho correo a las ventanas
-    */
+    // Se crea un Correo temporal en memoria dinámica
+    // que guardará los datos almacenados en el archivo
+    // de texto en una posición determinada y luego se
+    // pasará dicho correo a las ventanas
+
     Correo tmp;
-    /*
-     * Se abre el archivo en modo de lectura y escritura al mismo
-     * tiempo para evitar que se sobrescriban los datos del archivo
-     * de texto
-    */
+
+    // Se abre el archivo en modo de lectura y escritura al mismo
+    // tiempo para evitar que se sobrescriban los datos del archivo
+    // de texto
+
     fstream archivo("datos.bin", ios::in | ios::out | ios::binary);
     if (!archivo.is_open())
         cout << " Error al abrir el archivo" << endl;
-    /*
-     * Se calcula la posición en la que se leerá, luego se pone el
-     * apuntador en esa posición con seekg, luego se guardan los datos
-     * en la variable temporal y el puntero que guarda su dirección se
-     * retorna
-    */
+    // Se calcula la posición en la que se leerá, luego se pone el
+    // apuntador en esa posición con seekg, luego se guardan los datos
+    // en la variable temporal y el puntero que guarda su dirección se
+    // retorna
     else
     {
         long pos = (atol(id) - 1) * long(sizeof(Correo));

@@ -26,8 +26,9 @@ public:
 
     // MODIFY DATA
     void insertData(const string& llave, IndicePrimario*& prim);
-    void removeData(IndiceSecundario& data);
+    void removeData(const string& data);
     void removeNode(AVLTreeNode*& node);
+    void removePrimary(const string data, long id);
     void removeAll();
 
     // PARSE
@@ -39,7 +40,7 @@ public:
     int height();
 
     // GET AVL DATA
-    AVLTreeNode*& findData(IndiceSecundario& data);
+    AVLTreeNode*& findData(const string& data);
     AVLTreeNode*& lowestData();
     AVLTreeNode*& highestData();
 
@@ -49,6 +50,7 @@ private:
     // MODIFY DATA
     void insertData(const string& llave, AVLTreeNode*& node, IndicePrimario*& prim);
     void removeAll(AVLTreeNode*& node);
+    void removePrimary(long id, AVLTreeNode*& node);
 
     // PARSE
     void parseInOrder(AVLTreeNode*& node);
@@ -67,9 +69,11 @@ private:
     void doubleRightRotation(AVLTreeNode*& node);
 
     // GET AVL NODE
-    AVLTreeNode*& findData(AVLTreeNode*& node,  IndiceSecundario& data);
+    AVLTreeNode*& findData(AVLTreeNode*& node,  const string& data);
     AVLTreeNode*& lowestData(AVLTreeNode*& node);
     AVLTreeNode*& highestData(AVLTreeNode*& node);
+
+    int busqueda_binaria(long dato, LSL<IndicePrimario>*& list);
 };
 
 #endif

@@ -101,7 +101,7 @@ private:
     {
         OPC_ID = 0,
         OPC_REM,
-        OPC_REM_MEM,
+        OPC_REM_RAM,
         OPC_IND_PRIM,
         OPC_IND_SEC
     };

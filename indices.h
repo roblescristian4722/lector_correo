@@ -52,6 +52,7 @@ public:
     bool operator > (const IndiceSecundario &other);
     bool operator > (const string &llave);
     bool operator == (const IndiceSecundario &other);
+    void operator = (IndiceSecundario &other);
     bool operator == (const string llave);
     friend ostream& operator << (ostream& os, const IndiceSecundario& other)
     {
