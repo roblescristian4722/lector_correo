@@ -195,9 +195,12 @@ void LectorCorreo::crear(Correo* correo, bool modificar)
         // no cuando se modifica
         m_indices->insertData(indiceTmp, m_rem, m_des, modificar);
 
-        // Se cambia la bandera del archivo de índices
-        indiceTmp.setReferencia(0);
-        archivoIndices.write((char*)&indiceTmp, sizeof(indiceTmp));
+        if (!modificar)
+        {
+            // Se cambia la bandera del archivo de índices
+            indiceTmp.setReferencia(0);
+            archivoIndices.write((char*)&indiceTmp, sizeof(indiceTmp));
+        }
 
         // Se cierran los archivos
         archivoDatos.close();

@@ -65,8 +65,6 @@ private slots:
 
     void on_actionModificar_Correo_triggered();
 
-    void on_busLogicaCB_currentIndexChanged(int index);
-
     void on_opcCB_currentIndexChanged(int index);
 
 private:
@@ -103,7 +101,8 @@ private:
         OPC_REM,
         OPC_REM_RAM,
         OPC_IND_PRIM,
-        OPC_IND_SEC
+        OPC_IND_SEC_REM,
+        OPC_IND_SEC_DES
     };
 };
 #endif // MAINWINDOW_H

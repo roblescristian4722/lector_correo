@@ -45,7 +45,12 @@
          </item>
          <item>
           <property name="text">
-           <string>remitente/destinatario (indices sec.)</string>
+           <string>remitente (indices sec.)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>destinatario (indices sec.)</string>
           </property>
          </item>
         </widget>
@@ -140,32 +145,6 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2" colspan="3">
-        <widget class="QLineEdit" name="barraRemLE"/>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="busLogicaCB">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <item>
-          <property name="text">
-           <string>AND</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>OR</string>
-          </property>
-         </item>
-        </widget>
-       </item>
        <item row="8" column="0" colspan="2">
         <widget class="QPushButton" name="mostrarTodo">
          <property name="sizePolicy">
@@ -217,6 +196,9 @@
           <string>Modificar</string>
          </property>
         </widget>
+       </item>
+       <item row="1" column="1" colspan="4">
+        <widget class="QLineEdit" name="barraRemLE"/>
        </item>
       </layout>
      </widget>
@@ -295,7 +277,6 @@
  </widget>
  <tabstops>
   <tabstop>opcCB</tabstop>
-  <tabstop>busLogicaCB</tabstop>
   <tabstop>barraRemLE</tabstop>
   <tabstop>buscarPB</tabstop>
   <tabstop>bandejaTabla</tabstop>

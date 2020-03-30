@@ -30,16 +30,23 @@ void AVLTreeSecundario::insertData(const string& llave, AVLTreeNode*& node, Indi
     }
     else if (*(node->dataPtr) == llave)
     {
-        node->dataPtr->getReferencia()->push_back(*prim);
-        cout << "Inserting item \"" <<  *(node->dataPtr)
-             << "\" in Already existing node (Secondary Index) with "
-             << node->dataPtr->getReferencia()->size() << " items" << endl;
+        LSL<IndicePrimario>*& list = node->dataPtr->getReferencia();
+        int pos = busqueda_binaria(stol(prim->getLlave()), list);
+        if (pos == -1)
+        {
+            list->push_back(*prim);
+            shell_sort(list);
+            cout << "Inserting item \"" <<  *(node->dataPtr)
+                 << "\" in Already existing node (Secondary Index) with "
+                 << node->dataPtr->getReferencia()->size() << " items" << endl;
+        }
     }
     else if (*(node->dataPtr) > llave)
        insertData(llave, node->left, prim);
     else
        insertData(llave, node->right, prim);
-doBalancing(node);
+
+    doBalancing(node);
 }
 
 void AVLTreeSecundario::parseInOrder(AVLTreeNode*& node)
@@ -150,23 +157,6 @@ typename AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::highestData(AVLTree
    return highestData(node->right);
 }
 
-int AVLTreeSecundario::busqueda_binaria(long id, LSL<IndicePrimario>*& lista)
-{
-    int l = 0;
-    int r = int(lista->size() - 1);
-    while (l <= r)
-    {
-        int m = (l + r) / 2;
-        if (id == stol((*lista)[size_t(m)].getLlave()))
-            return m;
-        else if (id < stol((*lista)[size_t(m)].getLlave()))
-            r = m - 1;
-        else
-            l = m + 1;
-    }
-    return -1;
-}
-
 void AVLTreeSecundario::removeAll(AVLTreeNode*& node)
 {
     if (node != nullptr)
@@ -257,3 +247,45 @@ void AVLTreeSecundario::removePrimary(const string data, long id)
     AVLTreeNode *& node = findData(data);
     removePrimary(id, node);
 }
+
+/// EXTRA ///
+int AVLTreeSecundario::busqueda_binaria(long id, LSL<IndicePrimario>*& lista)
+{
+    int l = 0;
+    int r = int(lista->size() - 1);
+    while (l <= r)
+    {
+        int m = (l + r) / 2;
+        if (id == stol((*lista)[size_t(m)].getLlave()))
+            return m;
+        else if (id < stol((*lista)[size_t(m)].getLlave()))
+            r = m - 1;
+        else
+            l = m + 1;
+    }
+    return -1;
+}
+
+void AVLTreeSecundario::shell_sort(LSL<IndicePrimario>*& list)
+{
+    size_t n = list->size();
+    size_t brecha = n / 2;
+    size_t j;
+    IndicePrimario tmp;
+    while (brecha > 0)
+    {
+        for (size_t i = brecha; i < n; ++i)
+        {
+            tmp = (*list)[i];
+            j = i;
+            while (j >= brecha && stol((*list)[j - brecha].getLlave()) > stol(tmp.getLlave()))
+            {
+                (*list)[j] = (*list)[j - brecha];
+                j -= brecha;
+            }
+            (*list)[j] = tmp;
+        }
+        brecha /= 2;
+    }
+}
+

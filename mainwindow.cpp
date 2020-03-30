@@ -41,18 +41,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::limpiarFilas()
 {
-    for (int i = 0; i < ui->bandejaTabla->rowCount(); ++i)
-    {
-        delete ui->bandejaTabla->takeItem(i, COL_ID);
-        delete ui->bandejaTabla->takeItem(i, COL_CC);
-        delete ui->bandejaTabla->takeItem(i, COL_CCC);
-        delete ui->bandejaTabla->takeItem(i, COL_DES);
-        delete ui->bandejaTabla->takeItem(i, COL_REM);
-        delete ui->bandejaTabla->takeItem(i, COL_HORA);
-        delete ui->bandejaTabla->takeItem(i, COL_FECHA);
-        delete ui->bandejaTabla->takeItem(i, COL_ASUNTO);
-    }
-    ui->bandejaTabla->setRowCount(0);
+    while (ui->bandejaTabla->rowCount())
+        ui->bandejaTabla->removeRow(0);
 }
 
 void MainWindow::crearFila(Correo &correo)
@@ -100,8 +90,6 @@ void MainWindow::on_eliminar_clicked()
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
     }
-    else if (m_fila >= int(m_ids.size()))
-    m_fila = 0;
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
@@ -128,8 +116,6 @@ void MainWindow::on_modificar_clicked()
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
     }
-    else if (m_fila >= int(m_ids.size()) || m_fila < 0)
-        m_fila = 0;
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
@@ -162,6 +148,7 @@ void MainWindow::on_bandejaTabla_cellClicked(int row, int column)
 {
     Q_UNUSED(column)
     m_fila = row;
+    cout << "row: " << row << endl;
 }
 
 void MainWindow::on_buscarPB_clicked()
@@ -181,7 +168,7 @@ void MainWindow::on_buscarPB_clicked()
 
         this->setCursor(Qt::WaitCursor);
         m_ids.clear();
-        ui->bandejaTabla->setRowCount(0);
+        limpiarFilas();
 
         /// BÚSQUEDA EN MEMORIA RAM POR REMITENTE ///
         if (ui->opcCB->currentIndex() == OPC_REM_RAM)
@@ -219,11 +206,16 @@ void MainWindow::on_buscarPB_clicked()
         }
 
         /// BÚSQUEDA POR REMITENTE/DESTINATARIO EN ÁRBOL BINARIO ///
-        else if (ui->opcCB->currentIndex() == OPC_IND_SEC)
+        else if (ui->opcCB->currentIndex() == OPC_IND_SEC_REM || ui->opcCB->currentIndex() == OPC_IND_SEC_DES)
         {
             string input = ui->barraRemLE->text().toStdString();
-            AVLTreeSecundario::AVLTreeNode* nodo = m_rem.findData(input);
             LSL<IndicePrimario>* lista;
+            AVLTreeSecundario::AVLTreeNode* nodo;
+
+            if (ui->opcCB->currentIndex() == OPC_IND_SEC_REM )
+                nodo = m_rem.findData(input);
+            else
+                nodo = m_des.findData(input);
 
             if (nodo != nullptr)
             {
@@ -324,10 +316,9 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
 
     for (size_t i = 0; i < copiaDatos.size(); i += 9)
     {
-        /* res guardará el índice de la lista que coincida con
-        * el correo leído de la copia de seguridad. En caso de
-        * que no se hayan encontrado coincidencias regresa un -1
-        */
+        // res guardará el índice de la lista que coincida con
+        // el correo leído de la copia de seguridad. En caso de
+        // que no se hayan encontrado coincidencias regresa un -1
         res = busqueda_binaria(stoi(copiaDatos[i]));
 
         correoCopia.setIdentificador(copiaDatos[i].c_str());
@@ -353,7 +344,7 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
 
             if (correoActual != correoCopia)
             {
-                Sobrescribir sob(m_lector, &correoActual, &correoCopia, res, &m_indices);
+                Sobrescribir sob(m_lector, &correoActual, &correoCopia, &m_rem, &m_des);
                 sob.setModal(true);
                 sob.exec();
             }
@@ -428,12 +419,4 @@ void MainWindow::shell_sort(size_t n, Vector<Correo> &vec)
 }
 
 void MainWindow::on_opcCB_currentIndexChanged(int index)
-{
-    if (index == OPC_IND_SEC)
-        ui->busLogicaCB->setEnabled(true);
-    else
-        ui->busLogicaCB->setEnabled(false);
-}
-
-void MainWindow::on_busLogicaCB_currentIndexChanged(int index)
 {}

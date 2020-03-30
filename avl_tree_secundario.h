@@ -73,7 +73,9 @@ private:
     AVLTreeNode*& lowestData(AVLTreeNode*& node);
     AVLTreeNode*& highestData(AVLTreeNode*& node);
 
+    // EXTRA
     int busqueda_binaria(long dato, LSL<IndicePrimario>*& list);
+    void shell_sort(LSL<IndicePrimario>*& list);
 };
 
 #endif
