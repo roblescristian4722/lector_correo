@@ -38,33 +38,19 @@ public:
 
 private slots:
     void on_agregar_clicked();
-
     void on_eliminar_clicked();
-
     void on_modificar_clicked();
-
     void on_mostrarTodo_clicked();
-
     void on_bandejaTabla_cellClicked(int row, int column);
-
     void on_buscarPB_clicked();
-
     void on_bandejaTabla_cellDoubleClicked(int row, int column);
-
     void on_actionRecuperar_copia_de_seguridad_triggered();
-
     void on_actionCrear_copia_de_seguridad_triggered();
-
     void on_actionModificar_correo_en_copia_de_seguridad_triggered();
-
     void on_actionEliminar_correo_en_copia_de_seguridad_triggered();
-
     void on_actionExportar_copia_de_propietario_triggered();
-
     void on_actionEliminar_correo_triggered();
-
     void on_actionModificar_Correo_triggered();
-
     void on_opcCB_currentIndexChanged(int index);
 
 private:

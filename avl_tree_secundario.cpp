@@ -56,7 +56,7 @@ void AVLTreeSecundario::parseInOrder(AVLTreeNode*& node)
         parseInOrder(node->left);
 
         LSL<IndicePrimario>* lista = node->dataPtr->getReferencia();
-        cout << "IndiceS: " << node->dataPtr->getLlave() << " = ";
+        cout << "Secondary Index Parsing: " << node->dataPtr->getLlave() << " = ";
         for (size_t i = 0; i < lista->size(); i++)
             cout << "llave: " << (*lista)[i].getLlave() << " | ref: " << (*lista)[i].getReferencia() << ", ";
         cout << endl;
@@ -177,8 +177,8 @@ void AVLTreeSecundario::removePrimary(long id, AVLTreeSecundario::AVLTreeNode *&
         cout << id << endl;
         LSL<IndicePrimario>*& list = node->dataPtr->getReferencia();
         int pos = busqueda_binaria(id, list);
-        cout << "pos: " << pos << endl;
-        cout << "Removing item \"" << (*list)[size_t(pos)].getLlave() << "\"" << endl;
+        cout << "Removing item \"" << (*list)[size_t(pos)].getLlave()
+             << "\" with position " << pos << "in list" << endl;
         list->erase(size_t(pos));
         if (!list->size())
             removeNode(node);

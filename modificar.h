@@ -16,8 +16,8 @@ class modificar : public QDialog
     Q_OBJECT
 
 public:
-    explicit modificar(LectorCorreo* lector, long index, AVLTreePrimario* indicesMem,
-                       AVLTreeSecundario *rem, AVLTreeSecundario *des, QWidget *parent = nullptr);
+    explicit modificar(LectorCorreo* lector, long index, AVLTreeSecundario *rem,
+                       AVLTreeSecundario *des, QWidget *parent = nullptr);
     ~modificar();
 
 private slots:
@@ -26,13 +26,10 @@ private slots:
 private:
     Ui::modificar *ui;
 
-    /*
-     * Puntero utilizado para acceder al
-     * lector principal y métodos de creación de archivos
-    */
+    // Puntero utilizado para acceder al
+    // lector principal y métodos de creación de archivos
     LectorCorreo* m_lector;
     Correo m_correoTmp;
-    AVLTreePrimario* m_indicesMem;
     AVLTreeSecundario* m_rem;
     AVLTreeSecundario* m_des;
     long m_index;

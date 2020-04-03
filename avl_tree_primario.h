@@ -76,4 +76,13 @@ private:
     AVLTreeNode*& highestData(AVLTreeNode*& node);
 };
 
+//// CLASE PARA INDICES PAGINADOS ////
+
+class AVLTreePrimarioPaginado: public AVLTreePrimario
+{
+private:
+
+public:
+};
+
 #endif

@@ -39,6 +39,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+//// MÉTODOS /////
 void MainWindow::limpiarFilas()
 {
     while (ui->bandejaTabla->rowCount())
@@ -69,9 +70,68 @@ void MainWindow::crearFila(Correo &correo)
     ui->bandejaTabla->resizeColumnToContents(fila);
 }
 
+int MainWindow::busqueda_binaria(int dato)
+{
+    int l = 0;
+        int r = int(m_ids.size() - 1);
+        while (l <= r)
+        {
+            int m = (l + r) / 2;
+            if (dato == m_ids[m])
+                return m;
+            else if (dato < m_ids[m])
+                r = m - 1;
+            else
+                l = m + 1;
+        }
+        return -1;
+}
+
+int MainWindow::busqueda_binaria(Vector<Correo> &vec, QString dato)
+{
+    int l = 0;
+    int r = int(vec.size() - 1);
+    while (l <= r)
+    {
+        int m = (l + r) / 2;
+        if (dato == QString(vec[m].getRem()))
+            return m;
+        else if (dato < QString(vec[m].getRem()))
+            r = m - 1;
+        else
+            l = m + 1;
+    }
+    return -1;
+}
+
+void MainWindow::shell_sort(size_t n, Vector<Correo> &vec)
+{
+    size_t brecha = n / 2;
+    size_t j;
+    Correo tmp;
+    while (brecha > 0)
+    {
+        for (size_t i = brecha; i < n; ++i)
+        {
+            tmp = vec[i];
+            j = i;
+            while (j >= brecha && strcmp(vec[j - brecha].getRem(), tmp.getRem()) > 0)
+            {
+                vec[j] = vec[j - brecha];
+                j -= brecha;
+            }
+            vec[j] = tmp;
+        }
+        brecha /= 2;
+    }
+}
+
+
+//// SLOTS ////
+/// ARCHIVO DE DATOS ///
 void MainWindow::on_agregar_clicked()
 {
-    agregar a(m_lector, &m_indices);
+    agregar a(m_lector);
     a.setModal(true);
     a.exec();
     m_rem.parseInOrder();
@@ -90,6 +150,8 @@ void MainWindow::on_eliminar_clicked()
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
     }
+    else if (m_fila > ui->bandejaTabla->rowCount() || m_fila < 0)
+        m_fila = 0;
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
@@ -116,10 +178,12 @@ void MainWindow::on_modificar_clicked()
                              "No hay correos seleccionados, intente buscar o añadir uno");
         return;
     }
+    else if (m_fila > ui->bandejaTabla->rowCount() || m_fila < 0)
+        m_fila = 0;
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
-    modificar m(m_lector, id, &m_indices, &m_rem, &m_des);
+    modificar m(m_lector, id, &m_rem, &m_des);
     m.setModal(true);
     m.exec();
     on_mostrarTodo_clicked();
@@ -128,7 +192,7 @@ void MainWindow::on_modificar_clicked()
 void MainWindow::on_mostrarTodo_clicked()
 {
     Correo correoTmp;
-
+    m_fila = 0;
     this->setCursor(Qt::WaitCursor);
     limpiarFilas();
 
@@ -148,9 +212,9 @@ void MainWindow::on_bandejaTabla_cellClicked(int row, int column)
 {
     Q_UNUSED(column)
     m_fila = row;
-    cout << "row: " << row << endl;
 }
 
+/// BÚSQUEDAS ///
 void MainWindow::on_buscarPB_clicked()
 {
     char idTmp[10];
@@ -268,40 +332,7 @@ void MainWindow::on_bandejaTabla_cellDoubleClicked(int row, int column)
     p.exec();
 }
 
-int MainWindow::busqueda_binaria(int dato)
-{
-    int l = 0;
-        int r = int(m_ids.size() - 1);
-        while (l <= r)
-        {
-            int m = (l + r) / 2;
-            if (dato == m_ids[m])
-                return m;
-            else if (dato < m_ids[m])
-                r = m - 1;
-            else
-                l = m + 1;
-        }
-        return -1;
-}
-
-int MainWindow::busqueda_binaria(Vector<Correo> &vec, QString dato)
-{
-    int l = 0;
-    int r = int(vec.size() - 1);
-    while (l <= r)
-    {
-        int m = (l + r) / 2;
-        if (dato == QString(vec[m].getRem()))
-            return m;
-        else if (dato < QString(vec[m].getRem()))
-            r = m - 1;
-        else
-            l = m + 1;
-    }
-    return -1;
-}
-
+/// COPIA DE SEGURIDAD ///
 void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
 {
     Parser parser;
@@ -334,7 +365,7 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
         if (res == -1)
         {
             m_ids.push_back(atol(correoCopia.getIdentificador()));
-            m_lector->crear(&correoCopia, &m_indices);
+            m_lector->crear(&correoCopia);
         }
         // En caso de que uno de los correos tenga el mismo ID que
         // uno de los almacenadosen el programa
@@ -376,6 +407,7 @@ void MainWindow::on_actionEliminar_correo_en_copia_de_seguridad_triggered()
     elim.exec();
 }
 
+/// COPIA DE PROPIETARIO ///
 void MainWindow::on_actionExportar_copia_de_propietario_triggered()
 {
     m_lector->crear_copia_propietario();
@@ -394,28 +426,6 @@ void MainWindow::on_actionModificar_Correo_triggered()
     modificar_propietario mod(m_lector);
     mod.setModal(true);
     mod.exec();
-}
-
-void MainWindow::shell_sort(size_t n, Vector<Correo> &vec)
-{
-    size_t brecha = n / 2;
-    size_t j;
-    Correo tmp;
-    while (brecha > 0)
-    {
-        for (size_t i = brecha; i < n; ++i)
-        {
-            tmp = vec[i];
-            j = i;
-            while (j >= brecha && strcmp(vec[j - brecha].getRem(), tmp.getRem()) > 0)
-            {
-                vec[j] = vec[j - brecha];
-                j -= brecha;
-            }
-            vec[j] = tmp;
-        }
-        brecha /= 2;
-    }
 }
 
 void MainWindow::on_opcCB_currentIndexChanged(int index)

@@ -53,11 +53,9 @@ void modificar_copia::on_guardar_2_clicked()
     }
     else if (!id.isEmpty() && !des.isEmpty() && !rem.isEmpty())
     {
-        /*
-         * Se guarda toda la información en el correo temporal
-         * y luego se escribe dicho correo en el archivo binario
-         * con el método "crear()" del lector
-        */
+        // Se guarda toda la información en el correo temporal
+        // y luego se escribe dicho correo en el archivo binario
+        // con el método "crear()" del lector
         correoTmp.setRem(rem.toStdString().c_str());
         correoTmp.setAsunto(asunto.toStdString().c_str());
         correoTmp.setContenido(cont.toStdString().c_str());

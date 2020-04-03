@@ -1,11 +1,10 @@
 #include "agregar.h"
 #include "ui_agregar.h"
 
-agregar::agregar(LectorCorreo* lector, AVLTreePrimario* indices, QWidget *parent) :
+agregar::agregar(LectorCorreo* lector, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::agregar),
-    m_lector(lector),
-    m_indices(indices)
+    m_lector(lector)
 {
     ui->setupUi(this);
     this->setWindowTitle("Agregar correo");
@@ -20,7 +19,6 @@ void agregar::on_guardar_clicked()
 {
     char fechaEnvio[11];
     char horaEnvio[9];
-    char idVer[10];
     QString id, des, rem, cc, ccc, asunto, cont;
     Correo correo;
     Correo tmp;
@@ -49,11 +47,9 @@ void agregar::on_guardar_clicked()
                              "El ID está en uso, utilice uno nuevo o modifique el ya existente");
     else if (!id.isEmpty() && !des.isEmpty() && !rem.isEmpty())
     {
-        /*
-         * Se guarda toda la información en el correo temporal
-         * y luego se escribe dicho correo en el archivo binario
-         * con el método "crear()" del lector
-        */
+        // Se guarda toda la información en el correo temporal
+        // y luego se escribe dicho correo en el archivo binario
+        // con el método "crear()" del lector
         correo.setHoraEnvio(horaEnvio);
         correo.setFechaEnvio(fechaEnvio);
         correo.setRem(rem.toStdString().c_str());
@@ -64,7 +60,7 @@ void agregar::on_guardar_clicked()
         correo.setIdentificador(id.toLocal8Bit());
         correo.setCopiaCarbonCiega(ccc.toStdString().c_str());
 
-        m_lector->crear(&correo, m_indices);
+        m_lector->crear(&correo);
         agregar::close();
     }
     else

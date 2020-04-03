@@ -1,12 +1,11 @@
 #include "modificar.h"
 #include "ui_modificar.h"
 
-modificar::modificar(LectorCorreo* lector, long index, AVLTreePrimario* indicesMem,
-                     AVLTreeSecundario *rem, AVLTreeSecundario *des, QWidget *parent) :
+modificar::modificar(LectorCorreo* lector, long index, AVLTreeSecundario *rem,
+                     AVLTreeSecundario *des, QWidget *parent) :
     m_lector(lector),
     m_rem(rem),
     m_des(des),
-    m_indicesMem(indicesMem),
     m_index(index),
     QDialog(parent),
     ui(new Ui::modificar)

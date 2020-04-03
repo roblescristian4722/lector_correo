@@ -38,7 +38,7 @@ public:
 
     // Copia de seguridad (CSV)
     void crear_copia_seguridad();
-    void modificar_copia(Correo &correo, LSL<string> idRegistrados);
+    void modificar_copia(Correo &correo, LSL<string> &idRegistrados);
     void validar_comillas(Correo &correo);
     void eliminar_copia_seguridad(string id, LSL<string> idRegistrados);
 

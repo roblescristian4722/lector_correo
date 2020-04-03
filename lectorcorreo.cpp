@@ -73,6 +73,7 @@ LectorCorreo::LectorCorreo(AVLTreePrimario* indices, AVLTreeSecundario *rem, AVL
                 indicesArchivo.read((char*)&indiceTmp, sizeof(indiceTmp));
                 if (indicesArchivo.eof())
                     break;
+                cout << "asdf" << endl;
                 m_indices->insertData(indiceTmp, m_rem, m_des);
             }
         }
@@ -142,7 +143,7 @@ void LectorCorreo::eliminar(long id, AVLTreePrimario* indices)
     Correo tmp;
     IndicePrimario indiceTmp;
     fstream archivoDatos("datos.bin", ios::out | ios::in | ios::binary);
-    fstream archivoIndices("indices.bin", ios::out | ios::in | ios::binary);
+    fstream archivoIndices;
 
     tmp.setIdentificador("");
 
@@ -158,12 +159,12 @@ void LectorCorreo::eliminar(long id, AVLTreePrimario* indices)
         indiceTmp.setLlave(to_string(id).c_str());
         indiceTmp.setReferencia(pos);
         indices->removeData(indiceTmp);
+        archivoDatos.close();
 
         // Se cambia la bandera del archivo de índices
+        archivoIndices.open("indices.bin", ios::out | ios::in | ios::binary);
         indiceTmp.setReferencia(0);
         archivoIndices.write((char*)&indiceTmp, sizeof(indiceTmp));
-
-        archivoDatos.close();
         archivoIndices.close();
     }
 }
@@ -171,7 +172,7 @@ void LectorCorreo::eliminar(long id, AVLTreePrimario* indices)
 void LectorCorreo::crear(Correo* correo, bool modificar)
 {
     fstream archivoDatos("datos.bin", ios::out | ios::binary | ios::in);
-    fstream archivoIndices("indices.bin", ios::out | ios::binary | ios::in);
+    fstream archivoIndices;
     IndicePrimario indiceTmp;
 
     if (!archivoDatos.is_open())
@@ -194,17 +195,16 @@ void LectorCorreo::crear(Correo* correo, bool modificar)
         // Se añade el indice al árbol solamente cuando se añade un dato
         // no cuando se modifica
         m_indices->insertData(indiceTmp, m_rem, m_des, modificar);
+        archivoDatos.close();
 
         if (!modificar)
         {
             // Se cambia la bandera del archivo de índices
+            archivoIndices.open("indices.bin", ios::out | ios::binary | ios::in);
             indiceTmp.setReferencia(0);
             archivoIndices.write((char*)&indiceTmp, sizeof(indiceTmp));
+            archivoIndices.close();
         }
-
-        // Se cierran los archivos
-        archivoDatos.close();
-        archivoIndices.close();
     }
 }
 
@@ -214,13 +214,11 @@ Correo LectorCorreo::leer(const char* id)
     // que guardará los datos almacenados en el archivo
     // de texto en una posición determinada y luego se
     // pasará dicho correo a las ventanas
-
     Correo tmp;
 
     // Se abre el archivo en modo de lectura y escritura al mismo
     // tiempo para evitar que se sobrescriban los datos del archivo
     // de texto
-
     fstream archivo("datos.bin", ios::in | ios::out | ios::binary);
     if (!archivo.is_open())
         cout << " Error al abrir el archivo" << endl;
@@ -331,7 +329,7 @@ void LectorCorreo::crear_copia_seguridad()
     csv.close();
 }
 
-void LectorCorreo::modificar_copia(Correo& correo, LSL<string> idRegistrados)
+void LectorCorreo::modificar_copia(Correo& correo, LSL<string> &idRegistrados)
 {
     string aux;
     string auxID = "";
@@ -479,20 +477,17 @@ void LectorCorreo::eliminar_copia_seguridad(string id, LSL<string> idRegistrados
 
         if (auxID == id)
         {
-            /* Si se encuentra el ID en el archivo se
-             * elimina de la lista de id's y no se ecribe
-             * nada en el tmp hasta encontrar otro ID
-            */
+            // Si se encuentra el ID en el archivo se
+            // elimina de la lista de id's y no se ecribe
+            // nada en el tmp hasta encontrar otro ID
             idRegistrados.pop_front();
             if (idRegistrados.size())
             {
                 do
                 {
-                    /*
-                     * Una vez que se encuentra otro ID
-                     * se sale del ciclo y se escribe en
-                     * el archivo
-                     */
+                    // Una vez que se encuentra otro ID
+                    // se sale del ciclo y se escribe en
+                    // el archivo
 
                     getline(csv, aux);
                     auxID = "";
@@ -507,20 +502,16 @@ void LectorCorreo::eliminar_copia_seguridad(string id, LSL<string> idRegistrados
                 break;
             }
         }
-        /*
-         * Cualquier ID que se encuentre se borrará
-         * de la lista de ID's y además se escribirá
-         * la línea en el archivo
-        */
+        // Cualquier ID que se encuentre se borrará
+        // de la lista de ID's y además se escribirá
+        // la línea en el archivo
         else if (auxID == idRegistrados.front())
         {
             idRegistrados.pop_front();
             tmp << aux << '\n';
         }
-        /*
-         * Cualquier otra línea se va a escribir
-         * en el archivo de texto
-        */
+        // Cualquier otra línea se va a escribir
+        // en el archivo de texto
         else
             tmp << aux << '\n';
     }
