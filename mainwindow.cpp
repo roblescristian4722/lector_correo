@@ -96,9 +96,9 @@ int MainWindow::busqueda_binaria(Vector<Correo> &vec, QString dato)
     while (l <= r)
     {
         int m = (l + r) / 2;
-        if (dato == QString(vec[m].getRem()))
+        if (dato == QString(vec[size_t(m)].getRem()))
             return m;
-        else if (dato < QString(vec[m].getRem()))
+        else if (dato < QString(vec[size_t(m)].getRem()))
             r = m - 1;
         else
             l = m + 1;
@@ -317,7 +317,35 @@ void MainWindow::on_buscarPB_clicked()
         }
         /// BÚSQUEDA POR ÍNDICES PAGINADOS ///
         else if (ui->opcCB->currentIndex() == OPC_IND_PAGINADOS){
-
+            IndicePrimario indiceTmp;
+            indiceTmp.setLlave(ui->barraRemLE->text().toStdString().c_str());
+            AVLTreePrimario::AVLTreeNode *node = m_paginados.findData(indiceTmp);
+            if (node == nullptr){
+                fstream archivoIndices("indices.bin", ios::in | ios::binary);
+                long pos = atol(indiceTmp.getLlave().c_str()) * long(sizeof(IndicePrimario));
+                indiceTmp.setLlave("");
+                archivoIndices.seekg(pos);
+                archivoIndices.read((char*)&indiceTmp, sizeof(IndicePrimario));
+                archivoIndices.close();
+                if (ui->barraRemLE->text().toLong() != atol(indiceTmp.getLlave().c_str())){
+                    QMessageBox::warning(this, "Correo no encontrado", "El correo introducido no existe");
+                    on_mostrarTodo_clicked();
+                    return;
+                }
+                else{
+                    m_paginados.removeLeastVisited();
+                    AVLTreeSecundario* rem = &m_rem;
+                    AVLTreeSecundario* des = &m_des;
+                    m_paginados.insertData(indiceTmp, rem, des);
+                    correoTmp = m_lector->leer(indiceTmp.getReferencia());
+                }
+            }
+            else{
+                node->time = chrono::system_clock::now().time_since_epoch().count();
+                correoTmp = m_lector->leer(node->dataPtr->getReferencia());
+            }
+            cout << "Reacomodando nodos más visitados..." << endl;
+            crearFila(correoTmp);
         }
 
         else{

@@ -45,7 +45,7 @@ LectorCorreo::LectorCorreo(AVLTreePrimario* indices, AVLTreePrimario *paginados,
             if (i == atol(correoTmp.getIdentificador())){
                 indiceTmp.setLlave(correoTmp.getIdentificador());
                 posTmp = entrada.tellg();
-                indiceTmp.setReferencia(posTmp - sizeof(Correo));
+                indiceTmp.setReferencia(posTmp - long(sizeof(Correo)));
                 m_indices->insertData(indiceTmp, m_rem, m_des);
             }
         }
@@ -137,14 +137,12 @@ void LectorCorreo::cargar_archivo_datos()
     long posTmp;
     fstream entrada("datos.bin", ios::binary | ios::in | ios::out);
     IndicePrimario actualizado;
-    for (long i = 1; !entrada.eof(); i++)
-    {
+    for (long i = 1; !entrada.eof(); i++){
         entrada.read((char*)&correoTmp, sizeof(correoTmp));
         if (entrada.eof())
             break;
 
-        if (atol(correoTmp.getIdentificador()) == i)
-        {
+        if (atol(correoTmp.getIdentificador()) == i){
             indiceTmp.setLlave(correoTmp.getIdentificador());
             posTmp = entrada.tellg();
             indiceTmp.setReferencia(posTmp - long(sizeof(Correo)));
@@ -172,8 +170,7 @@ void LectorCorreo::crear(Correo* correo, bool modificar, bool paginado)
 
     if (!archivoDatos.is_open())
         cout << "Error en el achivo de datos" << endl;
-    else
-    {
+    else{
         // Se elige la posición en la que se escribirá el correo
         // con ayuda del id
         long pos = (atoll(correo->getIdentificador()) - 1) * long(sizeof(Correo));
@@ -539,8 +536,7 @@ void LectorCorreo::eliminar_copia_seguridad(string id, LSL<string> idRegistrados
         // Cualquier ID que se encuentre se borrará
         // de la lista de ID's y además se escribirá
         // la línea en el archivo
-        else if (auxID == idRegistrados.front())
-        {
+        else if (auxID == idRegistrados.front()){
             idRegistrados.pop_front();
             tmp << aux << '\n';
         }
