@@ -31,7 +31,7 @@ void AVLTreeSecundario::insertData(const string& llave, AVLTreeNode*& node, Indi
     else if (*(node->dataPtr) == llave)
     {
         LSL<IndicePrimario>*& list = node->dataPtr->getReferencia();
-        int pos = busqueda_binaria(stol(prim->getLlave()), list);
+        int pos = busqueda_binaria(atol(prim->getLlave().c_str()), list);
         if (pos == -1)
         {
             list->push_back(*prim);
@@ -256,9 +256,9 @@ int AVLTreeSecundario::busqueda_binaria(long id, LSL<IndicePrimario>*& lista)
     while (l <= r)
     {
         int m = (l + r) / 2;
-        if (id == stol((*lista)[size_t(m)].getLlave()))
+        if (id == atol((*lista)[size_t(m)].getLlave().c_str()))
             return m;
-        else if (id < stol((*lista)[size_t(m)].getLlave()))
+        else if (id < atol((*lista)[size_t(m)].getLlave().c_str()))
             r = m - 1;
         else
             l = m + 1;
@@ -278,7 +278,7 @@ void AVLTreeSecundario::shell_sort(LSL<IndicePrimario>*& list)
         {
             tmp = (*list)[i];
             j = i;
-            while (j >= brecha && stol((*list)[j - brecha].getLlave()) > stol(tmp.getLlave()))
+            while (j >= brecha && atol((*list)[j - brecha].getLlave().c_str()) > atol(tmp.getLlave().c_str()))
             {
                 (*list)[j] = (*list)[j - brecha];
                 j -= brecha;

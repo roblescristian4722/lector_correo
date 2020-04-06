@@ -22,16 +22,16 @@ IndiceSecundario::~IndiceSecundario()
 
 /// SOBRECARGA DE OPERADORES ///
 bool IndicePrimario::operator <(const IndicePrimario &other)
-{ return stol(this->getLlave()) < stol(other.getLlave()); }
+{ return atol(this->getLlave().c_str()) < atol(other.getLlave().c_str()); }
 
 bool IndicePrimario::operator >(const IndicePrimario &other)
-{ return stol(this->getLlave()) > stol(other.getLlave()); }
+{ return atol(this->getLlave().c_str()) > atol(other.getLlave().c_str()); }
 
 bool IndicePrimario::operator ==(const IndicePrimario &other)
-{ return stol(this->getLlave()) == stol(other.getLlave()); }
+{ return atol(this->getLlave().c_str()) == atol(other.getLlave().c_str()); }
 
 bool IndicePrimario::operator ==(const long llave)
-{ return stol(this->getLlave()) == llave; }
+{ return atol(this->getLlave().c_str()) == llave; }
 
 bool IndiceSecundario::operator <(const IndiceSecundario &other)
 { return this->getLlave() < other.getLlave(); }

@@ -4,10 +4,13 @@
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
+#include <chrono>
 #include "correo.h"
 #include "vector.h"
 #include "indices.h"
 #include "avl_tree_secundario.h"
+
+#define PAG_MAX_SIZE 10
 using namespace std;
 
 class AVLTreePrimario
@@ -19,6 +22,7 @@ public:
         AVLTreeNode* right;
         AVLTreeNode* left;
 
+        long time;
         AVLTreeNode(IndicePrimario& data);
         ~AVLTreeNode();
     };
@@ -30,6 +34,7 @@ public:
     void insertData(IndicePrimario& data, AVLTreeSecundario*& rem, AVLTreeSecundario*& des, bool mod = false);
     void removeData(IndicePrimario& data);
     void removeNode(AVLTreeNode*& node);
+    void removeLeastVisited();
     void removeAll();
 
     // PARSE
@@ -46,8 +51,16 @@ public:
     AVLTreeNode*& lowestData();
     AVLTreeNode*& highestData();
 
-private:
+    long getSize() const;
+    void setSize(const long &size);
+
+    Vector<IndicePrimario *> getLeastVisited() const;
+    void setLeastVisited(const Vector<IndicePrimario *> &leastVisited);
+
+protected:
     AVLTreeNode* m_root;
+    Vector<IndicePrimario*> m_leastVisited;
+    long m_size;
 
     // MODIFY DATA
     void insertData(IndicePrimario& data, AVLTreeNode*& node, AVLTreeSecundario*& rem, AVLTreeSecundario*& des, bool mod = false);
@@ -74,15 +87,10 @@ private:
     AVLTreeNode*& findData(AVLTreeNode*& node,  IndicePrimario& data);
     AVLTreeNode*& lowestData(AVLTreeNode*& node);
     AVLTreeNode*& highestData(AVLTreeNode*& node);
-};
 
-//// CLASE PARA INDICES PAGINADOS ////
-
-class AVLTreePrimarioPaginado: public AVLTreePrimario
-{
-private:
-
-public:
+    // EXTRA
+    void shell_sort();
+    int binary_search(IndicePrimario& data);
 };
 
 #endif

@@ -149,12 +149,6 @@ void LSL<T>::pop_back()
     --listSize;
 }
 
-/*
-    *->*->*->*->null
-    i        f
-       t
-*/
-
 template<typename T>
 void LSL<T>::insert(size_t position, const T &element)
 {

@@ -48,7 +48,7 @@ void Sobrescribir::on_actualPB_clicked()
 
 void Sobrescribir::on_copiaPB_clicked()
 {
-    long id = stol(m_actual->getIdentificador());
+    long id = atol(m_actual->getIdentificador());
     m_rem->removePrimary(m_actual->getRem(), id);
     m_des->removePrimary(m_actual->getDestinatario(), id);
 

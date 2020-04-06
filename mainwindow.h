@@ -34,6 +34,7 @@ public:
     int busqueda_binaria(int dato);
     int busqueda_binaria(Vector<Correo> &vec, QString dato);
     void shell_sort(size_t n, Vector<Correo> &vec);
+    void shell_sort();
     void limpiarFilas();
 
 private slots:
@@ -57,17 +58,16 @@ private:
     Ui::MainWindow *ui;
 
     AVLTreePrimario m_indices;
+    AVLTreePrimario m_paginados;
     AVLTreeSecundario m_rem;
     AVLTreeSecundario m_des;
 
-    /*
-     * Objeto lector que se encargará de administrar
-     * todos los datos de la interfaz
-    */
+    // Objeto lector que se encargará de administrar
+    // todos los datos de la interfaz
     LectorCorreo *m_lector;
 
     int m_fila;
-    LSL<unsigned int> m_ids;
+    LSL<long> m_ids;
 
     enum COLUMNAS
     {
@@ -88,7 +88,8 @@ private:
         OPC_REM_RAM,
         OPC_IND_PRIM,
         OPC_IND_SEC_REM,
-        OPC_IND_SEC_DES
+        OPC_IND_SEC_DES,
+        OPC_IND_PAGINADOS
     };
 };
 #endif // MAINWINDOW_H

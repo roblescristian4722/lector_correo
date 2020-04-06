@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     QStringList columnas;
 
-    m_lector = new LectorCorreo(&m_indices, &m_rem, &m_des);
+    m_lector = new LectorCorreo(&m_indices, &m_paginados, &m_rem, &m_des);
 
     // Se inicializa la interfaz y todos sus atributos
     ui->setupUi(this);
@@ -35,6 +35,8 @@ MainWindow::~MainWindow()
 {
     limpiarFilas();
     m_ids.clear();
+    ui->opcCB->setCurrentIndex(OPC_ID);
+    m_lector->guardar_indices();
     delete m_lector;
     delete ui;
 }
@@ -104,19 +106,36 @@ int MainWindow::busqueda_binaria(Vector<Correo> &vec, QString dato)
     return -1;
 }
 
+void MainWindow::shell_sort()
+{
+    size_t n = m_ids.size();
+    size_t brecha = n / 2;
+    size_t j;
+    long tmp;
+    while (brecha > 0){
+        for (size_t i = brecha; i < n; ++i){
+            tmp = m_ids[i];
+            j = i;
+            while (j >= brecha && m_ids[j - brecha] > tmp){
+                m_ids[j] = m_ids[j - brecha];
+                j -= brecha;
+            }
+            m_ids[j] = tmp;
+        }
+        brecha /= 2;
+    }
+}
+
 void MainWindow::shell_sort(size_t n, Vector<Correo> &vec)
 {
     size_t brecha = n / 2;
     size_t j;
     Correo tmp;
-    while (brecha > 0)
-    {
-        for (size_t i = brecha; i < n; ++i)
-        {
+    while (brecha > 0){
+        for (size_t i = brecha; i < n; ++i){
             tmp = vec[i];
             j = i;
-            while (j >= brecha && strcmp(vec[j - brecha].getRem(), tmp.getRem()) > 0)
-            {
+            while (j >= brecha && strcmp(vec[j - brecha].getRem(), tmp.getRem()) > 0){
                 vec[j] = vec[j - brecha];
                 j -= brecha;
             }
@@ -131,7 +150,8 @@ void MainWindow::shell_sort(size_t n, Vector<Correo> &vec)
 /// ARCHIVO DE DATOS ///
 void MainWindow::on_agregar_clicked()
 {
-    agregar a(m_lector);
+    bool paginado = ui->opcCB->currentIndex() == OPC_IND_PAGINADOS ? true : false;
+    agregar a(m_lector, paginado);
     a.setModal(true);
     a.exec();
     m_rem.parseInOrder();
@@ -155,13 +175,23 @@ void MainWindow::on_eliminar_clicked()
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
+    // Se elimina el id de la lista de ids
+    shell_sort();
+    int res = busqueda_binaria(int(id));
+    if (res != -1)
+        m_ids.erase(size_t(res));
+
+    // Se elimina el dato de los árboles secundarios
     aux = ui->bandejaTabla->item(m_fila, COL_REM)->text().toStdString();
     m_rem.removePrimary(aux, id);
 
     aux = ui->bandejaTabla->item(m_fila, COL_DES)->text().toStdString();
     m_des.removePrimary(aux, id);
 
-    m_lector->eliminar(id, &m_indices);
+    if (ui->opcCB->currentIndex() == OPC_IND_PAGINADOS)
+        m_lector->eliminar(id, true);
+    else
+        m_lector->eliminar(id);
 
     m_rem.parseInOrder();
     m_des.parseInOrder();
@@ -200,8 +230,7 @@ void MainWindow::on_mostrarTodo_clicked()
     m_lector->leer(m_ids);
 
     // Se añaden los datos recuperados a la tabla
-    for (size_t i = 0; i < m_ids.size(); i++)
-    {
+    for (size_t i = 0; i < m_ids.size(); i++){
         correoTmp = m_lector->leer(to_string(m_ids[i]).c_str());
         crearFila(correoTmp);
     }
@@ -235,8 +264,7 @@ void MainWindow::on_buscarPB_clicked()
         limpiarFilas();
 
         /// BÚSQUEDA EN MEMORIA RAM POR REMITENTE ///
-        if (ui->opcCB->currentIndex() == OPC_REM_RAM)
-        {
+        if (ui->opcCB->currentIndex() == OPC_REM_RAM){
             int res;
             Vector<Correo> vec;
 
@@ -250,28 +278,25 @@ void MainWindow::on_buscarPB_clicked()
             res = busqueda_binaria(vec, ui->barraRemLE->text());
 
             if (res != -1)
-                crearFila(vec[res]);
+                crearFila(vec[size_t(res)]);
         }
 
         /// BÚSQUEDA POR ID EN ÁRBOL BINARIO ///
-        else if (ui->opcCB->currentIndex() == OPC_IND_PRIM)
-        {
+        else if (ui->opcCB->currentIndex() == OPC_IND_PRIM){
             AVLTreePrimario::AVLTreeNode* nodo;
             IndicePrimario tmp;
             tmp.setLlave(ui->barraRemLE->text().toStdString().c_str());
 
             nodo = m_indices.findData(tmp);
 
-            if (nodo != nullptr)
-            {
+            if (nodo != nullptr){
                 correoTmp = m_lector->leer(nodo->dataPtr->getReferencia());
                 crearFila(correoTmp);
             }
         }
 
         /// BÚSQUEDA POR REMITENTE/DESTINATARIO EN ÁRBOL BINARIO ///
-        else if (ui->opcCB->currentIndex() == OPC_IND_SEC_REM || ui->opcCB->currentIndex() == OPC_IND_SEC_DES)
-        {
+        else if (ui->opcCB->currentIndex() == OPC_IND_SEC_REM || ui->opcCB->currentIndex() == OPC_IND_SEC_DES){
             string input = ui->barraRemLE->text().toStdString();
             LSL<IndicePrimario>* lista;
             AVLTreeSecundario::AVLTreeNode* nodo;
@@ -281,8 +306,7 @@ void MainWindow::on_buscarPB_clicked()
             else
                 nodo = m_des.findData(input);
 
-            if (nodo != nullptr)
-            {
+            if (nodo != nullptr){
                 lista = nodo->dataPtr->getReferencia();
                 for (size_t i = 0; i < lista->size(); ++i)
                 {
@@ -291,12 +315,14 @@ void MainWindow::on_buscarPB_clicked()
                 }
             }
         }
+        /// BÚSQUEDA POR ÍNDICES PAGINADOS ///
+        else if (ui->opcCB->currentIndex() == OPC_IND_PAGINADOS){
 
-        else
-        {
+        }
+
+        else{
             /// BÚSQUEDA POR ID EN ARCHIVO BINARIO ///
-            if (ui->opcCB->currentIndex() == OPC_ID)
-            {
+            if (ui->opcCB->currentIndex() == OPC_ID){
                 correoTmp = m_lector->leer(ui->barraRemLE->text().toStdString().c_str());
                 if (atol(correoTmp.getIdentificador()) == ui->barraRemLE->text().toLong())
                     m_ids.push_back(atol(correoTmp.getIdentificador()));
@@ -306,8 +332,7 @@ void MainWindow::on_buscarPB_clicked()
             else if (ui->opcCB->currentIndex() == OPC_REM)
                 m_lector->leer_rem(m_ids, ui->barraRemLE->text().toStdString().c_str());
 
-            for (i = 0; i < m_ids.size(); i++)
-            {
+            for (i = 0; i < m_ids.size(); i++){
                 correoTmp = m_lector->leer(to_string(m_ids[i]).c_str());
                 if (i)
                     if (m_ids[i] == m_ids[i - 1])
@@ -350,6 +375,7 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
         // res guardará el índice de la lista que coincida con
         // el correo leído de la copia de seguridad. En caso de
         // que no se hayan encontrado coincidencias regresa un -1
+        shell_sort();
         res = busqueda_binaria(stoi(copiaDatos[i]));
 
         correoCopia.setIdentificador(copiaDatos[i].c_str());
@@ -362,19 +388,17 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
         correoCopia.setAsunto(copiaDatos[i + 7].c_str());
         correoCopia.setContenido(copiaDatos[i + 8].c_str());
 
-        if (res == -1)
-        {
-            m_ids.push_back(atol(correoCopia.getIdentificador()));
+        // Si el id de la copia no se encontró en la lista de
+        // ids cargada en memoria
+        if (res == -1){
             m_lector->crear(&correoCopia);
         }
         // En caso de que uno de los correos tenga el mismo ID que
         // uno de los almacenadosen el programa
-        else
-        {
+        else{
             correoActual = m_lector->leer(to_string(m_ids[size_t(res)]).c_str());
 
-            if (correoActual != correoCopia)
-            {
+            if (correoActual != correoCopia){
                 Sobrescribir sob(m_lector, &correoActual, &correoCopia, &m_rem, &m_des);
                 sob.setModal(true);
                 sob.exec();
@@ -429,4 +453,38 @@ void MainWindow::on_actionModificar_Correo_triggered()
 }
 
 void MainWindow::on_opcCB_currentIndexChanged(int index)
-{}
+{
+    if (index == OPC_IND_PAGINADOS){
+        ui->agregar->setEnabled(false);
+        ui->actionCrear_copia_de_seguridad->setEnabled(false);
+        ui->actionRecuperar_copia_de_seguridad->setEnabled(false);
+        ui->actionExportar_copia_de_propietario->setEnabled(false);
+        if (m_indices.getSize()){
+            m_rem.removeAll();
+            m_des.removeAll();
+            m_indices.writeFileInOrder();
+            m_indices.removeAll();
+
+            cout << "----------------------------------------------------------------"
+                 << endl
+                 << "Insertando índices en árbol de ind. prim. paginados..." << endl
+                 << m_indices.getSize() << " " << m_paginados.getSize()      << endl;
+            m_lector->cargar_archivo_indices(true);
+        }
+    }
+    else if (index != OPC_IND_PAGINADOS){
+        ui->agregar->setEnabled(true);
+        ui->actionCrear_copia_de_seguridad->setEnabled(true);
+        ui->actionRecuperar_copia_de_seguridad->setEnabled(true);
+        ui->actionExportar_copia_de_propietario->setEnabled(true);
+        if (!m_indices.getSize() && m_paginados.getSize()){
+            cout << "----------------------------------------------------------------"
+                 << endl
+                 << "Insertando índices en árbol de ind. prim. regular..." << endl;
+            m_rem.removeAll();
+            m_des.removeAll();
+            m_paginados.removeAll();
+            m_lector->cargar_archivo_indices();
+        }
+    }
+}

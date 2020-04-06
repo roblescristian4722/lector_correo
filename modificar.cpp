@@ -40,8 +40,8 @@ void modificar::on_guardar_clicked()
 
     if (!des.isEmpty() && !rem.isEmpty())
     {
-        m_rem->removePrimary(m_correoTmp.getRem(), stol(m_correoTmp.getIdentificador()));
-        m_des->removePrimary(m_correoTmp.getDestinatario(), stol(m_correoTmp.getIdentificador()));
+        m_rem->removePrimary(m_correoTmp.getRem(), atol(m_correoTmp.getIdentificador()));
+        m_des->removePrimary(m_correoTmp.getDestinatario(), atol(m_correoTmp.getIdentificador()));
 
         m_correoTmp.setRem(rem.toStdString().c_str());
         m_correoTmp.setAsunto(asunto.toStdString().c_str());

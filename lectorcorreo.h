@@ -23,18 +23,25 @@ using namespace std;
 class LectorCorreo
 {
 public:
-    LectorCorreo(AVLTreePrimario *indices, AVLTreeSecundario *rem, AVLTreeSecundario *des);
+    LectorCorreo(AVLTreePrimario *indices, AVLTreePrimario *paginados, AVLTreeSecundario *rem, AVLTreeSecundario *des);
 
     virtual ~LectorCorreo();
 
     void menu();
-    void crear(Correo* tmp, bool modificar = false);
+    void guardar_indices();
+
+    // Cargar datos de archivo
+    void cargar_archivo_indices(bool indicesPaginados = false);
+    void cargar_archivo_datos();
+
+    // Operaciones básicas
+    void crear(Correo* tmp, bool modificar = false, bool paginado = false);
     Correo leer(const char* id);
     Correo leer(long pos);
-    void leer(LSL<unsigned int>& ids);
-    void leer_rem(LSL<unsigned int>& lista, const char* rem);
+    void leer(LSL<long>& ids);
+    void leer_rem(LSL<long>& lista, const char* rem);
     void modificar(long id, Correo& correo);
-    void eliminar(long id, AVLTreePrimario* indices);
+    void eliminar(long id, bool paginado = false);
 
     // Copia de seguridad (CSV)
     void crear_copia_seguridad();
@@ -52,6 +59,7 @@ public:
 
 private:
     AVLTreePrimario* m_indices;
+    AVLTreePrimario* m_paginados;
     AVLTreeSecundario* m_rem;
     AVLTreeSecundario* m_des;
 };

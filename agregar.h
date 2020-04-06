@@ -16,7 +16,7 @@ class agregar : public QDialog
     Q_OBJECT
 
 public:
-    explicit agregar(LectorCorreo* lector, QWidget *parent = nullptr);
+    explicit agregar(LectorCorreo* lector, bool paginado = false, QWidget *parent = nullptr);
     ~agregar();
 
 private slots:
@@ -28,6 +28,7 @@ private:
     // Puntero utilizado para acceder al
     // lector principal y métodos de creación de archivos
     LectorCorreo* m_lector;
+    bool m_paginado;
 };
 
 #endif // AGREGAR_H

@@ -1,10 +1,11 @@
 #include "agregar.h"
 #include "ui_agregar.h"
 
-agregar::agregar(LectorCorreo* lector, QWidget *parent) :
+agregar::agregar(LectorCorreo* lector, bool paginado, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::agregar),
-    m_lector(lector)
+    m_lector(lector),
+    m_paginado(paginado)
 {
     ui->setupUi(this);
     this->setWindowTitle("Agregar correo");
@@ -24,7 +25,7 @@ void agregar::on_guardar_clicked()
     Correo tmp;
 
     // Se obtiene la fecha del sistema
-    time_t now = time(0);
+    time_t now = time(nullptr);
     tm * time = localtime(&now);
     snprintf(fechaEnvio, sizeof(fechaEnvio), "%s/%s/%s", to_string(time->tm_mday).c_str(),
             to_string(time->tm_mon + 1).c_str(), to_string(time->tm_year + 1900).c_str());
@@ -60,7 +61,7 @@ void agregar::on_guardar_clicked()
         correo.setIdentificador(id.toLocal8Bit());
         correo.setCopiaCarbonCiega(ccc.toStdString().c_str());
 
-        m_lector->crear(&correo);
+        m_lector->crear(&correo, m_paginado);
         agregar::close();
     }
     else
