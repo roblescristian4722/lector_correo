@@ -308,8 +308,7 @@ void MainWindow::on_buscarPB_clicked()
 
             if (nodo != nullptr){
                 lista = nodo->dataPtr->getReferencia();
-                for (size_t i = 0; i < lista->size(); ++i)
-                {
+                for (size_t i = 0; i < lista->size(); ++i){
                     correoTmp = m_lector->leer((*lista)[i].getReferencia());
                     crearFila(correoTmp);
                 }
@@ -327,25 +326,38 @@ void MainWindow::on_buscarPB_clicked()
                 archivoIndices.seekg(pos);
                 archivoIndices.read((char*)&indiceTmp, sizeof(IndicePrimario));
                 archivoIndices.close();
+                // Si el índice no se encuentra en el archivo se muestra el siguiente mensaje de error
+                // y se vuelven a mostrar todos los datos
                 if (ui->barraRemLE->text().toLong() != atol(indiceTmp.getLlave().c_str())){
                     QMessageBox::warning(this, "Correo no encontrado", "El correo introducido no existe");
                     on_mostrarTodo_clicked();
                     return;
                 }
+                // Si el índice se encontró en el archivo entonces se eliminan los índices de la lista
+                // de últimos visitados
                 else{
-                    m_paginados.removeLeastVisited();
+                    for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados.getSize()); ++i)
+                        cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
+                    m_paginados.removeLRU();
+                    for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados.getSize()); ++i)
+                        cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
                     AVLTreeSecundario* rem = &m_rem;
                     AVLTreeSecundario* des = &m_des;
                     m_paginados.insertData(indiceTmp, rem, des);
+                    for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados.getSize()); ++i)
+                        cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
                     correoTmp = m_lector->leer(indiceTmp.getReferencia());
                 }
             }
+            // Si el índice se encontró en el árbol entonces se actualiza al valor del nodo y se
+            // reacomoda la lista
             else{
                 node->time = chrono::system_clock::now().time_since_epoch().count();
                 correoTmp = m_lector->leer(node->dataPtr->getReferencia());
             }
             cout << "Reacomodando nodos más visitados..." << endl;
             crearFila(correoTmp);
+            cout << "<---últimos 10 elementos consulatdos:--->" << endl;
         }
 
         else{

@@ -118,14 +118,11 @@ void LectorCorreo::cargar_archivo_indices(bool indicesPaginados)
             if (indicesArchivo.eof())
                 break;
             if (i == atol(indiceTmp.getLlave().c_str())){
-                m_paginados->removeLeastVisited();
+                m_paginados->removeLRU();
                 m_paginados->insertData(indiceTmp, m_rem, m_des);
                 ++cont;
             }
         }
-        cout << "<---últimos 10 elementos consulatdos:--->" << endl;
-        for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados->getSize()); ++i)
-            cout << i << ": " << m_paginados->getLeastVisited()[i]->getLlave() << endl;
     }
     indicesArchivo.close();
 }

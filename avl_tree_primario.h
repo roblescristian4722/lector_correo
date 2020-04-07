@@ -34,7 +34,7 @@ public:
     void insertData(IndicePrimario& data, AVLTreeSecundario*& rem, AVLTreeSecundario*& des, bool mod = false);
     void removeData(IndicePrimario& data);
     void removeNode(AVLTreeNode*& node);
-    void removeLeastVisited();
+    void removeLRU();
     void removeAll();
 
     // PARSE
@@ -51,15 +51,19 @@ public:
     AVLTreeNode*& lowestData();
     AVLTreeNode*& highestData();
 
+    // EXTRA
+    void shell_sort();
+    void shell_sort_key();
+
     long getSize() const;
     void setSize(const long &size);
 
-    Vector<IndicePrimario *> getLeastVisited() const;
-    void setLeastVisited(const Vector<IndicePrimario *> &leastVisited);
+    Vector<IndicePrimario *> getLRU() const;
+    void setLRU(const Vector<IndicePrimario *> &LRU);
 
-protected:
+private:
     AVLTreeNode* m_root;
-    Vector<IndicePrimario*> m_leastVisited;
+    Vector<IndicePrimario*> m_LRU;
     long m_size;
 
     // MODIFY DATA
@@ -89,7 +93,6 @@ protected:
     AVLTreeNode*& highestData(AVLTreeNode*& node);
 
     // EXTRA
-    void shell_sort();
     int binary_search(IndicePrimario& data);
 };
 

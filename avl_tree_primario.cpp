@@ -7,7 +7,7 @@ AVLTreePrimario::AVLTreePrimario()
 }
 
 AVLTreePrimario::~AVLTreePrimario()
-{ m_leastVisited.clear(); }
+{ m_LRU.clear(); }
 
 AVLTreePrimario::AVLTreeNode::AVLTreeNode(IndicePrimario &data)
 {
@@ -37,7 +37,7 @@ void AVLTreePrimario::insertData(IndicePrimario& data, AVLTreeNode*& node, AVLTr
         archivo.read((char*)&correoTmp, sizeof(Correo));
         archivo.close();
         ++m_size;
-        m_leastVisited.push_back(node->dataPtr);
+        m_LRU.push_back(node->dataPtr);
         rem->insertData(correoTmp.getRem(), node->dataPtr);
         des->insertData(correoTmp.getDestinatario(), node->dataPtr);
     }
@@ -192,7 +192,7 @@ void AVLTreePrimario::removeAll(AVLTreeNode*& node)
 void AVLTreePrimario::removeAll()
 {
     removeAll(m_root);
-    m_leastVisited.clear();
+    m_LRU.clear();
     m_size = 0;
 }
 
@@ -243,11 +243,11 @@ long AVLTreePrimario::getSize() const
 void AVLTreePrimario::setSize(const long &size)
 { m_size = size; }
 
-Vector<IndicePrimario *> AVLTreePrimario::getLeastVisited() const
-{ return m_leastVisited; }
+Vector<IndicePrimario *> AVLTreePrimario::getLRU() const
+{ return m_LRU; }
 
-void AVLTreePrimario::setLeastVisited(const Vector<IndicePrimario *> &leastVisited)
-{ m_leastVisited = leastVisited; }
+void AVLTreePrimario::setLRU(const Vector<IndicePrimario *> &LRU)
+{ m_LRU = LRU; }
 
 void AVLTreePrimario::removeData(IndicePrimario& data)
 {
@@ -262,10 +262,6 @@ void AVLTreePrimario::removeNode(AVLTreeNode*& node)
     else if (isLeaf(node))
     {
         cout << "Removing item \"" << (*node->dataPtr) << "\" from AVL Tree" << endl;
-        int res = binary_search(*node->dataPtr);
-        if (res != -1)
-           m_leastVisited.erase(size_t(res));
-
         delete node;
         node = nullptr;
         --m_size;
@@ -273,33 +269,64 @@ void AVLTreePrimario::removeNode(AVLTreeNode*& node)
     else
     {
         AVLTreeNode*& aux = node->left == nullptr ? lowestData(node->right) : highestData(node->left);
+        shell_sort_key();
+        for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_size); ++i)
+            cout << i + 1 << ": " << m_LRU[i]->getLlave() << endl;
+        int res = binary_search(*aux->dataPtr);
+        cout << "res = " << res << endl;
+        cout << "node: " << node->dataPtr->getLlave() << endl;
+        cout << "aux: " << aux->dataPtr->getLlave() << endl;
         *(node->dataPtr) = *(aux->dataPtr);
+        m_LRU[size_t(res)] = node->dataPtr;
+        shell_sort();
         removeNode(aux);
     }
 }
 
-void AVLTreePrimario::removeLeastVisited()
+void AVLTreePrimario::removeLRU()
 {
-    for (size_t i = 0; m_leastVisited.size() >= PAG_MAX_SIZE; ++i)
-        removeNode(findData(*(m_leastVisited[0])));
+    while (m_LRU.size() >= PAG_MAX_SIZE){
+        removeNode(findData(*(m_LRU[0])));
+        m_LRU.erase(0);
+    }
 }
 
 /// EXTRA ///
 void AVLTreePrimario::shell_sort()
 {
-    size_t n = m_leastVisited.size();
+    size_t n = m_LRU.size();
     size_t brecha = n / 2;
     size_t j;
     IndicePrimario* tmp;
     while (brecha > 0){
         for (size_t i = brecha; i < n; ++i){
-            tmp = m_leastVisited[i];
+            tmp = m_LRU[i];
             j = i;
-            while (j >= brecha && findData(*m_leastVisited[j - brecha])->time > findData(*tmp)->time){
-                m_leastVisited[j] = m_leastVisited[j - brecha];
+            while (j >= brecha && findData(*m_LRU[j - brecha])->time > findData(*tmp)->time){
+                m_LRU[j] = m_LRU[j - brecha];
                 j -= brecha;
             }
-            m_leastVisited[j] = tmp;
+            m_LRU[j] = tmp;
+        }
+        brecha /= 2;
+    }
+}
+
+void AVLTreePrimario::shell_sort_key()
+{
+    size_t n = m_LRU.size();
+    size_t brecha = n / 2;
+    size_t j;
+    IndicePrimario* tmp;
+    while (brecha > 0){
+        for (size_t i = brecha; i < n; ++i){
+            tmp = m_LRU[i];
+            j = i;
+            while (j >= brecha && stol(findData(*m_LRU[j - brecha])->dataPtr->getLlave()) > stol(findData(*tmp)->dataPtr->getLlave())){
+                m_LRU[j] = m_LRU[j - brecha];
+                j -= brecha;
+            }
+            m_LRU[j] = tmp;
         }
         brecha /= 2;
     }
@@ -308,13 +335,13 @@ void AVLTreePrimario::shell_sort()
 int AVLTreePrimario::binary_search(IndicePrimario& data)
 {
     int l = 0;
-    int r = int(m_leastVisited.size() - 1);
+    int r = int(m_LRU.size() - 1);
     while (l <= r)
     {
         int m = (l + r) / 2;
-        if (data == *m_leastVisited[size_t(m)])
+        if (data == *m_LRU[size_t(m)])
             return m;
-        else if (data < *m_leastVisited[size_t(m)])
+        else if (data < *m_LRU[size_t(m)])
             r = m - 1;
         else
             l = m + 1;
