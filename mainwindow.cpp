@@ -188,8 +188,11 @@ void MainWindow::on_eliminar_clicked()
     aux = ui->bandejaTabla->item(m_fila, COL_DES)->text().toStdString();
     m_des.removePrimary(aux, id);
 
-    if (ui->opcCB->currentIndex() == OPC_IND_PAGINADOS)
+    if (ui->opcCB->currentIndex() == OPC_IND_PAGINADOS){
         m_lector->eliminar(id, true);
+        for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados.getSize()); ++i)
+            cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
+    }
     else
         m_lector->eliminar(id);
 
@@ -201,8 +204,7 @@ void MainWindow::on_eliminar_clicked()
 void MainWindow::on_modificar_clicked()
 {
     long id;
-    if (!ui->bandejaTabla->rowCount())
-    {
+    if (!ui->bandejaTabla->rowCount()){
         m_fila = 0;
         QMessageBox::warning(this, "Sin correo seleccionado",
                              "No hay correos seleccionados, intente buscar o añadir uno");
@@ -213,7 +215,8 @@ void MainWindow::on_modificar_clicked()
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
-    modificar m(m_lector, id, &m_rem, &m_des);
+    bool paginado = ui->opcCB->currentIndex() == OPC_IND_PAGINADOS ? true : false;
+    modificar m(m_lector, id, &m_rem, &m_des, paginado);
     m.setModal(true);
     m.exec();
     on_mostrarTodo_clicked();
@@ -319,6 +322,12 @@ void MainWindow::on_buscarPB_clicked()
             IndicePrimario indiceTmp;
             indiceTmp.setLlave(ui->barraRemLE->text().toStdString().c_str());
             AVLTreePrimario::AVLTreeNode *node = m_paginados.findData(indiceTmp);
+
+            // Se imprime la lista de los 10 últimos datos añadidos
+            cout << "<---últimos 10 elementos consulatdos:--->" << endl;
+            for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados.getSize()); ++i)
+                cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
+
             if (node == nullptr){
                 fstream archivoIndices("indices.bin", ios::in | ios::binary);
                 long pos = atol(indiceTmp.getLlave().c_str()) * long(sizeof(IndicePrimario));
@@ -336,16 +345,10 @@ void MainWindow::on_buscarPB_clicked()
                 // Si el índice se encontró en el archivo entonces se eliminan los índices de la lista
                 // de últimos visitados
                 else{
-                    for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados.getSize()); ++i)
-                        cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
                     m_paginados.removeLRU();
-                    for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados.getSize()); ++i)
-                        cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
                     AVLTreeSecundario* rem = &m_rem;
                     AVLTreeSecundario* des = &m_des;
                     m_paginados.insertData(indiceTmp, rem, des);
-                    for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados.getSize()); ++i)
-                        cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
                     correoTmp = m_lector->leer(indiceTmp.getReferencia());
                 }
             }
@@ -354,10 +357,13 @@ void MainWindow::on_buscarPB_clicked()
             else{
                 node->time = chrono::system_clock::now().time_since_epoch().count();
                 correoTmp = m_lector->leer(node->dataPtr->getReferencia());
+                m_paginados.shell_sort();
             }
             cout << "Reacomodando nodos más visitados..." << endl;
             crearFila(correoTmp);
-            cout << "<---últimos 10 elementos consulatdos:--->" << endl;
+            cout << "<---últimos 10 elementos consulatdos después de reacomodar:--->" << endl;
+            for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados.getSize()); ++i)
+                cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
         }
 
         else{
@@ -409,6 +415,8 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
     // Se almacenan los datos de la copia de seguridad en una lista
     // de strings cuyos valores se copiarán luego a un correo temporal
     parser.getData("respaldo.csv", copiaDatos);
+    if (!m_ids.size())
+        m_lector->leer(m_ids);
 
     for (size_t i = 0; i < copiaDatos.size(); i += 9)
     {
@@ -507,8 +515,7 @@ void MainWindow::on_opcCB_currentIndexChanged(int index)
 
             cout << "----------------------------------------------------------------"
                  << endl
-                 << "Insertando índices en árbol de ind. prim. paginados..." << endl
-                 << m_indices.getSize() << " " << m_paginados.getSize()      << endl;
+                 << "Insertando índices en árbol de ind. prim. paginados..." << endl;
             m_lector->cargar_archivo_indices(true);
         }
     }

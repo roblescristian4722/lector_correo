@@ -2,11 +2,12 @@
 #include "ui_modificar.h"
 
 modificar::modificar(LectorCorreo* lector, long index, AVLTreeSecundario *rem,
-                     AVLTreeSecundario *des, QWidget *parent) :
+                     AVLTreeSecundario *des, bool paginado, QWidget *parent) :
     m_lector(lector),
     m_rem(rem),
     m_des(des),
     m_index(index),
+    m_paginado(paginado),
     QDialog(parent),
     ui(new Ui::modificar)
 {
@@ -50,7 +51,7 @@ void modificar::on_guardar_clicked()
         m_correoTmp.setDestinatario(des.toStdString().c_str());
         m_correoTmp.setCopiaCarbonCiega(ccc.toStdString().c_str());
 
-        m_lector->crear(&m_correoTmp, true);
+        m_lector->crear(&m_correoTmp, true, m_paginado);
         modificar::close();
     }
     else

@@ -17,7 +17,7 @@ class modificar : public QDialog
 
 public:
     explicit modificar(LectorCorreo* lector, long index, AVLTreeSecundario *rem,
-                       AVLTreeSecundario *des, QWidget *parent = nullptr);
+                       AVLTreeSecundario *des, bool paginado, QWidget *parent = nullptr);
     ~modificar();
 
 private slots:
@@ -33,6 +33,7 @@ private:
     AVLTreeSecundario* m_rem;
     AVLTreeSecundario* m_des;
     long m_index;
+    bool m_paginado;
 };
 
 #endif // MODIFICAR_H

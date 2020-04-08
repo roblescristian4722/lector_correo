@@ -233,18 +233,17 @@ void LectorCorreo::eliminar(long id, bool paginado)
         else{
             AVLTreePrimario::AVLTreeNode* nodo;
             nodo = m_paginados->findData(indiceTmp);
-            // Si no se ecuentra el dato en el árbol se busca en el archivo de índices
-            if (nodo != nullptr)
-                m_paginados->removeData(indiceTmp);
             // Si el dato se encuentra en el árbol se borra tanto en el
             // árbol como en el archivo de índices
+            if (nodo != nullptr)
+                m_paginados->removeData(indiceTmp, true);
+            // Si no se ecuentra el dato en el árbol se busca en el archivo de índices
             indiceTmp.setLlave("");
             archivoIndices.open("indices.bin", ios::out | ios::in | ios::binary);
             archivoIndices.seekp(indiceTmp.getReferencia());
             archivoIndices.write((char*)&indiceTmp, sizeof(IndicePrimario));
             archivoIndices.close();
         }
-
         // Se cambia la bandera del archivo de índices
         archivoIndices.open("indices.bin", ios::out | ios::in | ios::binary);
         indiceTmp.setReferencia(0);

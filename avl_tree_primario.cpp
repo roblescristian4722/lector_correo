@@ -249,46 +249,41 @@ Vector<IndicePrimario *> AVLTreePrimario::getLRU() const
 void AVLTreePrimario::setLRU(const Vector<IndicePrimario *> &LRU)
 { m_LRU = LRU; }
 
-void AVLTreePrimario::removeData(IndicePrimario& data)
+void AVLTreePrimario::removeData(IndicePrimario& data, bool removeFromList)
 {
     AVLTreeNode*& aux = findData(data);
-    removeNode(aux);
+    removeNode(aux, removeFromList);
 }
 
-void AVLTreePrimario::removeNode(AVLTreeNode*& node)
+void AVLTreePrimario::removeNode(AVLTreeNode*& node, bool removeFromList)
 {
     if (node == nullptr)
          throw range_error("Data doesn't exist");
-    else if (isLeaf(node))
-    {
+    else if (isLeaf(node)){
         cout << "Removing item \"" << (*node->dataPtr) << "\" from AVL Tree" << endl;
+        if (removeFromList){
+            int res_aux = binary_search(*node->dataPtr);
+            m_LRU.erase(size_t(res_aux));
+            shell_sort();
+        }
         delete node;
         node = nullptr;
         --m_size;
     }
-    else
-    {
+    else{
         AVLTreeNode*& aux = node->left == nullptr ? lowestData(node->right) : highestData(node->left);
-        shell_sort_key();
-        for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_size); ++i)
-            cout << i + 1 << ": " << m_LRU[i]->getLlave() << endl;
-        int res = binary_search(*aux->dataPtr);
-        cout << "res = " << res << endl;
-        cout << "node: " << node->dataPtr->getLlave() << endl;
-        cout << "aux: " << aux->dataPtr->getLlave() << endl;
         *(node->dataPtr) = *(aux->dataPtr);
-        m_LRU[size_t(res)] = node->dataPtr;
-        shell_sort();
-        removeNode(aux);
+        node->time = aux->time;
+        removeNode(aux, removeFromList);
     }
 }
 
 void AVLTreePrimario::removeLRU()
 {
-    while (m_LRU.size() >= PAG_MAX_SIZE){
-        removeNode(findData(*(m_LRU[0])));
-        m_LRU.erase(0);
-    }
+    shell_sort();
+    while (m_LRU.size() >= PAG_MAX_SIZE)
+        removeNode(findData(*(m_LRU[0])), true);
+    shell_sort();
 }
 
 /// EXTRA ///
@@ -339,9 +334,9 @@ int AVLTreePrimario::binary_search(IndicePrimario& data)
     while (l <= r)
     {
         int m = (l + r) / 2;
-        if (data == *m_LRU[size_t(m)])
+        if (findData(data)->time == findData(*m_LRU[size_t(m)])->time)
             return m;
-        else if (data < *m_LRU[size_t(m)])
+        else if (findData(data)->time < findData(*m_LRU[size_t(m)])->time)
             r = m - 1;
         else
             l = m + 1;

@@ -32,8 +32,8 @@ public:
 
     // MODIFY DATA
     void insertData(IndicePrimario& data, AVLTreeSecundario*& rem, AVLTreeSecundario*& des, bool mod = false);
-    void removeData(IndicePrimario& data);
-    void removeNode(AVLTreeNode*& node);
+    void removeData(IndicePrimario& data, bool removeFromList = false);
+    void removeNode(AVLTreeNode*& node, bool removeFromList = false);
     void removeLRU();
     void removeAll();
 
