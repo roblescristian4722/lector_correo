@@ -1,23 +1,24 @@
 #include "lectorcorreo.h"
 #define TOTAL_CAMPOS 9
 
-LectorCorreo::LectorCorreo(AVLTreePrimario* indices, AVLTreePrimario *paginados, AVLTreeSecundario *rem, AVLTreeSecundario *des)
+LectorCorreo::LectorCorreo(AVLTreePrimario* indices, AVLTreePrimario *paginados, AVLTreeSecundario *rem,
+                           AVLTreeSecundario *des, HashMap<string, LSL<IndicePrimario>*>* mapRem,
+                           HashMap<string, LSL<IndicePrimario>*>* mapDes)
 {
     // Se crea un archivo binario nuevo en caso de que aún no exista
     fstream entrada("datos.bin", ios::binary | ios::in | ios::out);
-
     // Archivo de índices
     fstream indicesArchivo("indices.bin", ios::binary | ios::in | ios::out);
-
     IndicePrimario actualizado;
     IndicePrimario indiceTmp;
     Correo correoTmp;
-    long posTmp;
 
     m_paginados = paginados;
     m_indices = indices;
     m_des = des;
     m_rem = rem;
+    m_mapDes = mapDes;
+    m_mapRem = mapRem;
 
     // Si no está abierto el archivo de índices se crea y se pone
     // la bandera en verdadero porque aún no hay datos
@@ -37,19 +38,8 @@ LectorCorreo::LectorCorreo(AVLTreePrimario* indices, AVLTreePrimario *paginados,
         actualizado.setReferencia(0);
         indicesArchivo.write((char*)&actualizado, sizeof(actualizado));
         indicesArchivo.close();
-
-        for (long i = 1; !entrada.eof(); ++i){
-            entrada.read((char*)&correoTmp, sizeof(correoTmp));
-            if (entrada.eof())
-                break;
-            if (i == atol(correoTmp.getIdentificador())){
-                indiceTmp.setLlave(correoTmp.getIdentificador());
-                posTmp = entrada.tellg();
-                indiceTmp.setReferencia(posTmp - long(sizeof(Correo)));
-                m_indices->insertData(indiceTmp, m_rem, m_des);
-            }
-        }
         entrada.close();
+        cargar_archivo_datos();
     }
     else
     {
@@ -96,35 +86,38 @@ void LectorCorreo::guardar_indices()
 void LectorCorreo::cargar_archivo_indices(bool indicesPaginados)
 {
     IndicePrimario indiceTmp;
+    Correo correoTmp;
     fstream indicesArchivo("indices.bin", ios::binary | ios::in | ios::out);
+    fstream datosArchivo("datos.bin", ios::binary | ios::in | ios::out);
+    long cont = 0;
 
-    if (!indicesPaginados)
-        for (long i = 1; !indicesArchivo.eof(); ++i){
-            long pos = i * long(sizeof(IndicePrimario));
-            indicesArchivo.seekg(pos);
-            indicesArchivo.read((char*)&indiceTmp, sizeof(indiceTmp));
-            if (indicesArchivo.eof())
-                break;
-            if (i == atol(indiceTmp.getLlave().c_str()))
-                m_indices->insertData(indiceTmp, m_rem, m_des);
-        }
-    else
-    {
-        long cont = 0;
-        for (long i = 1; !indicesArchivo.eof() && cont <= PAG_MAX_SIZE; ++i){
-            long pos = i * long(sizeof(IndicePrimario));
-            indicesArchivo.seekg(pos);
-            indicesArchivo.read((char*)&indiceTmp, sizeof(indiceTmp));
-            if (indicesArchivo.eof())
-                break;
-            if (i == atol(indiceTmp.getLlave().c_str())){
+    for (long i = 1; !indicesArchivo.eof(); ++i){
+        if (cont > PAG_MAX_SIZE && indicesPaginados)
+            break;
+        long pos = i * long(sizeof(IndicePrimario));
+        indicesArchivo.seekg(pos);
+        indicesArchivo.read((char*)&indiceTmp, sizeof(indiceTmp));
+        if (indicesArchivo.eof())
+            break;
+        datosArchivo.seekg(indiceTmp.getReferencia());
+        datosArchivo.read((char*)&correoTmp, sizeof(Correo));
+        if (i == atol(indiceTmp.getLlave().c_str())){
+            if (indicesPaginados){
                 m_paginados->removeLRU();
-                m_paginados->insertData(indiceTmp, m_rem, m_des);
+                m_paginados->insertData(indiceTmp);
+                m_rem->insertData(correoTmp.getRem(), (*m_paginados)[indiceTmp]->dataPtr);
+                m_des->insertData(correoTmp.getDestinatario(), (*m_paginados)[indiceTmp]->dataPtr);
                 ++cont;
+            }
+            else{
+                m_indices->insertData(indiceTmp);
+                m_rem->insertData(correoTmp.getRem(), (*m_indices)[indiceTmp]->dataPtr);
+                m_des->insertData(correoTmp.getDestinatario(), (*m_indices)[indiceTmp]->dataPtr);
             }
         }
     }
     indicesArchivo.close();
+    datosArchivo.close();
 }
 
 void LectorCorreo::cargar_archivo_datos()
@@ -134,6 +127,7 @@ void LectorCorreo::cargar_archivo_datos()
     long posTmp;
     fstream entrada("datos.bin", ios::binary | ios::in | ios::out);
     IndicePrimario actualizado;
+
     for (long i = 1; !entrada.eof(); i++){
         entrada.read((char*)&correoTmp, sizeof(correoTmp));
         if (entrada.eof())
@@ -143,8 +137,10 @@ void LectorCorreo::cargar_archivo_datos()
             indiceTmp.setLlave(correoTmp.getIdentificador());
             posTmp = entrada.tellg();
             indiceTmp.setReferencia(posTmp - long(sizeof(Correo)));
-
-            m_indices->insertData(indiceTmp, m_rem, m_des);
+            m_indices->insertData(indiceTmp);
+            cout << "referencia: " << indiceTmp.getReferencia() << endl;
+            m_rem->insertData(correoTmp.getRem(), (*m_indices)[indiceTmp]->dataPtr);
+            m_des->insertData(correoTmp.getDestinatario(), (*m_indices)[indiceTmp]->dataPtr);
         }
     }
     entrada.close();
@@ -159,7 +155,7 @@ void LectorCorreo::cargar_archivo_datos()
 }
 
 /// OPERACIONES BÁSICAS ///
-void LectorCorreo::crear(Correo* correo, bool modificar, bool paginado)
+void LectorCorreo::crear(Correo* correo, bool modificar, bool hash)
 {
     fstream archivoDatos("datos.bin", ios::out | ios::binary | ios::in);
     fstream archivoIndices;
@@ -182,25 +178,27 @@ void LectorCorreo::crear(Correo* correo, bool modificar, bool paginado)
         indiceTmp.setReferencia(pos);
         pos = atoll(correo->getIdentificador()) * long(sizeof(Correo));
 
-        // Se añade el indice al árbol solamente cuando se añade un dato
-        // no cuando se modifica
-        if (!paginado)
-            m_indices->insertData(indiceTmp, m_rem, m_des, modificar);
-        else{
-            m_paginados->insertData(indiceTmp, m_rem, m_des, modificar);
-            archivoIndices.open("indices.bin", ios::out | ios::in | ios::binary);
-            archivoIndices.seekp(indiceTmp.getReferencia());
-            archivoIndices.write((char*)&indiceTmp, sizeof(IndicePrimario));
-            archivoIndices.close();
-        }
-
-        if (!modificar)
-        {
+        if (!modificar){
             // Se cambia la bandera del archivo de índices
+            m_indices->insertData(indiceTmp);
+            m_rem->insertData(correo->getRem(), (*m_indices)[indiceTmp]->dataPtr);
+            m_des->insertData(correo->getDestinatario(), (*m_indices)[indiceTmp]->dataPtr);
+
             archivoIndices.open("indices.bin", ios::out | ios::binary | ios::in);
             indiceTmp.setReferencia(0);
             archivoIndices.write((char*)&indiceTmp, sizeof(IndicePrimario));
             archivoIndices.close();
+            /*if (hash){
+                LSL<IndicePrimario>* des = *(*m_mapDes)[correo->getDestinatario()];
+                for (size_t i = 0; i < des->size(); ++i){
+
+                }
+                LSL<IndicePrimario>* rem = *(*m_mapRem)[correo->getRem()];
+            }*/
+        }
+        else{
+            m_rem->insertData(correo->getRem(), (*m_indices)[indiceTmp]->dataPtr);
+            m_des->insertData(correo->getDestinatario(), (*m_indices)[indiceTmp]->dataPtr);
         }
     }
 }
@@ -232,7 +230,7 @@ void LectorCorreo::eliminar(long id, bool paginado)
         // Si el árbol no es paginado
         else{
             AVLTreePrimario::AVLTreeNode* nodo;
-            nodo = m_paginados->findData(indiceTmp);
+            nodo = (*m_paginados)[indiceTmp];
             // Si el dato se encuentra en el árbol se borra tanto en el
             // árbol como en el archivo de índices
             if (nodo != nullptr)
@@ -738,20 +736,17 @@ bool LectorCorreo::eliminar_copia_propietario(long id)
             if (prop.eof())
                 break;
 
-            for (i = 0; i < int(tam); ++i)
-            {
+            for (i = 0; i < int(tam); ++i){
                 prop.get(aux);
                 auxString[i] = aux;
             }
             auxString[i] = '\0';
             ++cont;
-            if (cont == 1 && atoi(auxString) == id)
-            {
+            if (cont == 1 && atoi(auxString) == id){
                 encontrado = true;
                 borrar = true;
             }
-            else if (!borrar)
-            {
+            else if (!borrar){
                 tmp.write((char*)&tam, sizeof(tam));
                 for (i = 0; i < int(tam); ++i)
                     tmp << auxString[i];
@@ -784,4 +779,20 @@ void LectorCorreo::leerRAM(Vector<Correo> &vec)
             vec.push_back(tmpCorreo);
     }
     archivo.close();
+}
+
+// Carga los datos del archivo de índices secundarios al hash map
+void LectorCorreo::cargar_map()
+{
+    fstream archivoSecundarios;
+    archivoSecundarios.open("indices_secundarios.txt", ios::in);
+    if (!archivoSecundarios.is_open()){
+        cout << "No encontrado el archivo de índices secundarios." << endl
+             << "Creando nuevo archivo." << endl;
+        archivoSecundarios.open("indices_secundarios.txt", ios::out);
+    }
+
+    m_des->export_to_hash(m_mapDes);
+    m_rem->export_to_hash(m_mapRem);
+
 }

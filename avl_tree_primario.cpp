@@ -24,41 +24,20 @@ AVLTreePrimario::AVLTreeNode::~AVLTreeNode()
 }
 
 /// PRIVATE METHODS ///
-void AVLTreePrimario::insertData(IndicePrimario& data, AVLTreeNode*& node, AVLTreeSecundario*& rem, AVLTreeSecundario*& des, bool mod)
+void AVLTreePrimario::insertData(IndicePrimario& data, AVLTreeNode*& node)
 {
     if (node == nullptr){
         node = new AVLTreeNode(data);
-        cout << "Inserting item \"" << *(node->dataPtr) << "\" in AVL Tree (Primary Index)" << endl;
-
-        Correo correoTmp;
-        fstream archivo("datos.bin", ios::in | ios::binary);
-
-        archivo.seekg(data.getReferencia());
-        archivo.read((char*)&correoTmp, sizeof(Correo));
-        archivo.close();
+        cout << "Inserting item \"" << *(node->dataPtr) << "\" in AVL Tree (Primary Index)" << endl;    
         ++m_size;
         m_LRU.push_back(node->dataPtr);
-        rem->insertData(correoTmp.getRem(), node->dataPtr);
-        des->insertData(correoTmp.getDestinatario(), node->dataPtr);
     }
     else if (*(node->dataPtr) == data)
-        if (!mod)
             throw range_error("Data has already been inserted");
-        else{
-            Correo correoTmp;
-            fstream archivo("datos.bin", ios::in | ios::binary);
-
-            archivo.seekg(data.getReferencia());
-            archivo.read((char*)&correoTmp, sizeof(Correo));
-            archivo.close();
-
-            rem->insertData(correoTmp.getRem(), node->dataPtr);
-            des->insertData(correoTmp.getDestinatario(), node->dataPtr);
-        }
     else if (data < *(node->dataPtr))
-        insertData(data, node->left, rem, des, mod);
+        insertData(data, node->left);
     else
-        insertData(data, node->right, rem, des, mod);
+        insertData(data, node->right);
     doBalancing(node);
 }
 
@@ -68,7 +47,7 @@ void AVLTreePrimario::writeFileInOrder(AVLTreeNode*& node)
        writeFileInOrder(node->left);
 
        long pos;
-       cout << "Writing item \"" << *(node->dataPtr) << "\" in index file" << endl;
+       cout << "Writing item \"" << *(node->dataPtr) << "\" " << node->dataPtr->getReferencia() << " in index file" << endl;
        fstream archivoIndices("indices.bin", ios::in | ios::out | ios::binary);
        if (!archivoIndices.is_open())
            cout << "Couldn't open index file" << endl;
@@ -206,8 +185,8 @@ bool AVLTreePrimario::isLeaf(AVLTreeNode*& node)
 bool AVLTreePrimario::isLeaf()
 { return isLeaf(m_root); }
 
-void AVLTreePrimario::insertData(IndicePrimario& data, AVLTreeSecundario* &rem, AVLTreeSecundario*&des, bool mod)
-{ insertData(data, this->m_root, rem, des, mod); }
+void AVLTreePrimario::insertData(IndicePrimario& data)
+{ insertData(data, this->m_root); }
 
 void AVLTreePrimario::writeFileInOrder()
 {
@@ -228,7 +207,7 @@ void AVLTreePrimario::parseInOrder(Vector<IndicePrimario> &vec)
 int AVLTreePrimario::height()
 { return height(m_root); }
 
-AVLTreePrimario::AVLTreeNode*& AVLTreePrimario::findData(IndicePrimario& data)
+AVLTreePrimario::AVLTreeNode*& AVLTreePrimario::operator[](IndicePrimario& data)
 { return findData(m_root, data); }
 
 AVLTreePrimario::AVLTreeNode*& AVLTreePrimario::lowestData()
@@ -251,7 +230,7 @@ void AVLTreePrimario::setLRU(const Vector<IndicePrimario *> &LRU)
 
 void AVLTreePrimario::removeData(IndicePrimario& data, bool removeFromList)
 {
-    AVLTreeNode*& aux = findData(data);
+    AVLTreeNode*& aux = (*this)[data];
     removeNode(aux, removeFromList);
 }
 
@@ -281,8 +260,10 @@ void AVLTreePrimario::removeNode(AVLTreeNode*& node, bool removeFromList)
 void AVLTreePrimario::removeLRU()
 {
     shell_sort();
-    while (m_LRU.size() >= PAG_MAX_SIZE)
-        removeNode(findData(*(m_LRU[0])), true);
+    while (m_LRU.size() >= PAG_MAX_SIZE){
+        AVLTreeNode* indice = findData(m_root, *(m_LRU[0]));
+        removeNode(indice, true);
+    }
     shell_sort();
 }
 
@@ -297,7 +278,9 @@ void AVLTreePrimario::shell_sort()
         for (size_t i = brecha; i < n; ++i){
             tmp = m_LRU[i];
             j = i;
-            while (j >= brecha && findData(*m_LRU[j - brecha])->time > findData(*tmp)->time){
+            AVLTreeNode*& first = findData(m_root, *m_LRU[j - brecha]);
+            AVLTreeNode*& second = findData(m_root, *tmp);
+            while (j >= brecha && first->time > second->time){
                 m_LRU[j] = m_LRU[j - brecha];
                 j -= brecha;
             }
@@ -307,25 +290,6 @@ void AVLTreePrimario::shell_sort()
     }
 }
 
-void AVLTreePrimario::shell_sort_key()
-{
-    size_t n = m_LRU.size();
-    size_t brecha = n / 2;
-    size_t j;
-    IndicePrimario* tmp;
-    while (brecha > 0){
-        for (size_t i = brecha; i < n; ++i){
-            tmp = m_LRU[i];
-            j = i;
-            while (j >= brecha && stol(findData(*m_LRU[j - brecha])->dataPtr->getLlave()) > stol(findData(*tmp)->dataPtr->getLlave())){
-                m_LRU[j] = m_LRU[j - brecha];
-                j -= brecha;
-            }
-            m_LRU[j] = tmp;
-        }
-        brecha /= 2;
-    }
-}
 
 int AVLTreePrimario::binary_search(IndicePrimario& data)
 {
@@ -334,9 +298,11 @@ int AVLTreePrimario::binary_search(IndicePrimario& data)
     while (l <= r)
     {
         int m = (l + r) / 2;
-        if (findData(data)->time == findData(*m_LRU[size_t(m)])->time)
+        AVLTreeNode*& dataNode = findData(m_root, data);
+        AVLTreeNode*& cmpNode = findData(m_root, *m_LRU[size_t(m)]);
+        if (dataNode->time == cmpNode->time)
             return m;
-        else if (findData(data)->time < findData(*m_LRU[size_t(m)])->time)
+        else if (dataNode->time < cmpNode->time)
             r = m - 1;
         else
             l = m + 1;

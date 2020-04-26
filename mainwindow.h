@@ -17,6 +17,7 @@
 #include "eliminar_propietario.h"
 #include "modificar_propietario.h"
 #include "avl_tree_primario.h"
+#include "hash_map.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -61,6 +62,8 @@ private:
     AVLTreePrimario m_paginados;
     AVLTreeSecundario m_rem;
     AVLTreeSecundario m_des;
+    HashMap<string, LSL<IndicePrimario>*> m_mapRem;
+    HashMap<string, LSL<IndicePrimario>*> m_mapDes;
 
     // Objeto lector que se encargará de administrar
     // todos los datos de la interfaz
@@ -89,7 +92,9 @@ private:
         OPC_IND_PRIM,
         OPC_IND_SEC_REM,
         OPC_IND_SEC_DES,
-        OPC_IND_PAGINADOS
+        OPC_IND_PAGINADOS,
+        OPC_HASH_REM,
+        OPC_HASH_DES
     };
 };
 #endif // MAINWINDOW_H

@@ -6,61 +6,57 @@ AVLTreeSecundario::AVLTreeSecundario()
 AVLTreeSecundario::~AVLTreeSecundario()
 {}
 
-AVLTreeSecundario::AVLTreeNode::AVLTreeNode(const string& data)
+AVLTreeNode::AVLTreeNode(const string& data)
 {
     dataPtr = new IndiceSecundario(data.c_str());
     right = nullptr;
     left = nullptr;
 }
 
-AVLTreeSecundario::AVLTreeNode::~AVLTreeNode()
+AVLTreeNode::~AVLTreeNode()
 {
     delete dataPtr;
     dataPtr = nullptr;
 }
 
 /// PRIVATE METHODS ///
-void AVLTreeSecundario::insertData(const string& llave, AVLTreeNode*& node, IndicePrimario*& prim)
+void AVLTreeSecundario::insertData(const string& llave, AVLTreeNode*& node, IndicePrimario* prim)
 {
-    if (node == nullptr)
-    {
-       node = new AVLTreeNode(llave);
-       node->dataPtr->getReferencia()->push_back(*prim);
-       cout << "Inserting item \"" <<  *(node->dataPtr) << "\" in AVL Tree (Secondary Index)" << endl;
+    if (node == nullptr){
+        node = new AVLTreeNode(llave);
+        node->dataPtr->getReferencia().push_back(*prim);
+        cout << "Inserting item \"" <<  *(node->dataPtr) << "\" in AVL Tree (Secondary Index)" << endl;
     }
-    else if (*(node->dataPtr) == llave)
-    {
-        LSL<IndicePrimario>*& list = node->dataPtr->getReferencia();
+    else if (*(node->dataPtr) == llave){
+        LSL<IndicePrimario>& list = node->dataPtr->getReferencia();
         int pos = busqueda_binaria(atol(prim->getLlave().c_str()), list);
         if (pos == -1)
         {
-            list->push_back(*prim);
+            list.push_back(*prim);
             shell_sort(list);
             cout << "Inserting item \"" <<  *(node->dataPtr)
                  << "\" in Already existing node (Secondary Index) with "
-                 << node->dataPtr->getReferencia()->size() << " items" << endl;
+                 << node->dataPtr->getReferencia().size() << " items" << endl;
         }
     }
     else if (*(node->dataPtr) > llave)
-       insertData(llave, node->left, prim);
+        insertData(llave, node->left, prim);
     else
-       insertData(llave, node->right, prim);
+        insertData(llave, node->right, prim);
 
     doBalancing(node);
 }
 
 void AVLTreeSecundario::parseInOrder(AVLTreeNode*& node)
 {
-    if (node != nullptr)
-    {
+    if (node != nullptr){
         parseInOrder(node->left);
 
-        LSL<IndicePrimario>* lista = node->dataPtr->getReferencia();
+        LSL<IndicePrimario>& lista = node->dataPtr->getReferencia();
         cout << "Secondary Index Parsing: " << node->dataPtr->getLlave() << " = ";
-        for (size_t i = 0; i < lista->size(); i++)
-            cout << "llave: " << (*lista)[i].getLlave() << " | ref: " << (*lista)[i].getReferencia() << ", ";
+        for (size_t i = 0; i < lista.size(); i++)
+            cout << "llave: " << lista[i].getLlave() << " | ref: " << lista[i].getReferencia() << ", ";
         cout << endl;
-        lista = nullptr;
 
         parseInOrder(node->right);
     }
@@ -130,12 +126,11 @@ void AVLTreeSecundario::doubleRightRotation(AVLTreeNode*& node)
    simpleRightRotation(node);
 }
 
-AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::findData(AVLTreeNode*& node, const string& data)
+AVLTreeNode*& AVLTreeSecundario::findData(AVLTreeNode*& node, const string& data)
 {
    if (node == nullptr || *(node->dataPtr) == data)
        return node;
-   else
-   {
+   else{
        if (*(node->dataPtr) > data)
            return findData(node->left, data);
        else
@@ -143,14 +138,14 @@ AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::findData(AVLTreeNode*& node,
    }
 }
 
-AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::lowestData(AVLTreeNode*& node)
+AVLTreeNode*& AVLTreeSecundario::lowestData(AVLTreeNode*& node)
 {
    if (node == nullptr || node->left == nullptr)
        return node;
    return lowestData(node->left);
 }
 
-typename AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::highestData(AVLTreeNode*& node)
+AVLTreeNode*& AVLTreeSecundario::highestData(AVLTreeNode*& node)
 {
    if (node == nullptr || node->right == nullptr)
        return node;
@@ -168,19 +163,19 @@ void AVLTreeSecundario::removeAll(AVLTreeNode*& node)
     node = nullptr;
 }
 
-void AVLTreeSecundario::removePrimary(long id, AVLTreeSecundario::AVLTreeNode *&node)
+void AVLTreeSecundario::removePrimary(long id, AVLTreeNode *&node)
 {
     if (node == nullptr)
         throw range_error("Node doesn't exist");
     else
     {
         cout << id << endl;
-        LSL<IndicePrimario>*& list = node->dataPtr->getReferencia();
+        LSL<IndicePrimario>& list = node->dataPtr->getReferencia();
         int pos = busqueda_binaria(id, list);
-        cout << "Removing item \"" << (*list)[size_t(pos)].getLlave()
+        cout << "Removing item \"" << list[size_t(pos)].getLlave()
              << "\" with position " << pos << "in list" << endl;
-        list->erase(size_t(pos));
-        if (!list->size())
+        list.erase(size_t(pos));
+        if (!list.size())
             removeNode(node);
     }
 }
@@ -200,7 +195,7 @@ bool AVLTreeSecundario::isLeaf(AVLTreeNode*& node)
 bool AVLTreeSecundario::isLeaf()
 { return isLeaf(m_root); }
 
-void AVLTreeSecundario::insertData(const string& llave, IndicePrimario*& prim)
+void AVLTreeSecundario::insertData(const string& llave, IndicePrimario* prim)
 { insertData(llave, m_root, prim); }
 
 void AVLTreeSecundario::parseInOrder()
@@ -209,14 +204,17 @@ void AVLTreeSecundario::parseInOrder()
 int AVLTreeSecundario::height()
 { return height(m_root); }
 
-AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::findData(const string& data)
+AVLTreeNode*& AVLTreeSecundario::findData(const string& data)
 { return findData(m_root, data); }
 
-AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::lowestData()
+AVLTreeNode*& AVLTreeSecundario::lowestData()
 { return lowestData(m_root); }
 
-AVLTreeSecundario::AVLTreeNode*& AVLTreeSecundario::highestData()
+AVLTreeNode*& AVLTreeSecundario::highestData()
 { return highestData(m_root); }
+
+void AVLTreeSecundario::export_to_hash(HashMap<string, LSL<IndicePrimario>*> *map)
+{ export_to_hash(m_root, map); }
 
 void AVLTreeSecundario::removeData(const string& data)
 {
@@ -229,13 +227,11 @@ void AVLTreeSecundario::removeNode(AVLTreeNode*& node)
 {
    if (node == nullptr)
        throw range_error("Data doesn't exist");
-   else if (isLeaf(node))
-   {
+   else if (isLeaf(node)){
        delete node;
        node = nullptr;
    }
-   else
-   {
+   else{
        AVLTreeNode*& aux = (node->left == nullptr) ? lowestData(node->right) : highestData(node->left);
        *(node->dataPtr) = *(aux->dataPtr);
        removeNode(aux);
@@ -249,16 +245,15 @@ void AVLTreeSecundario::removePrimary(const string data, long id)
 }
 
 /// EXTRA ///
-int AVLTreeSecundario::busqueda_binaria(long id, LSL<IndicePrimario>*& lista)
+int AVLTreeSecundario::busqueda_binaria(long id, LSL<IndicePrimario>& lista)
 {
     int l = 0;
-    int r = int(lista->size() - 1);
-    while (l <= r)
-    {
+    int r = int(lista.size() - 1);
+    while (l <= r){
         int m = (l + r) / 2;
-        if (id == atol((*lista)[size_t(m)].getLlave().c_str()))
+        if (id == atol(lista[size_t(m)].getLlave().c_str()))
             return m;
-        else if (id < atol((*lista)[size_t(m)].getLlave().c_str()))
+        else if (id < atol(lista[size_t(m)].getLlave().c_str()))
             r = m - 1;
         else
             l = m + 1;
@@ -266,26 +261,31 @@ int AVLTreeSecundario::busqueda_binaria(long id, LSL<IndicePrimario>*& lista)
     return -1;
 }
 
-void AVLTreeSecundario::shell_sort(LSL<IndicePrimario>*& list)
+void AVLTreeSecundario::shell_sort(LSL<IndicePrimario>& list)
 {
-    size_t n = list->size();
+    size_t n = list.size();
     size_t brecha = n / 2;
     size_t j;
     IndicePrimario tmp;
-    while (brecha > 0)
-    {
-        for (size_t i = brecha; i < n; ++i)
-        {
-            tmp = (*list)[i];
+    while (brecha > 0){
+        for (size_t i = brecha; i < n; ++i){
+            tmp = list[i];
             j = i;
-            while (j >= brecha && atol((*list)[j - brecha].getLlave().c_str()) > atol(tmp.getLlave().c_str()))
-            {
-                (*list)[j] = (*list)[j - brecha];
+            while (j >= brecha && atol(list[j - brecha].getLlave().c_str()) > atol(tmp.getLlave().c_str())){
+                list[j] = list[j - brecha];
                 j -= brecha;
             }
-            (*list)[j] = tmp;
+            list[j] = tmp;
         }
         brecha /= 2;
     }
 }
 
+void AVLTreeSecundario::export_to_hash(AVLTreeNode *&node, HashMap<string, LSL<IndicePrimario>*> *map)
+{
+    if (node != nullptr){
+        export_to_hash(node->left, map);
+        map->insert(node->dataPtr->getLlave(), &node->dataPtr->getReferencia());
+        export_to_hash(node->right, map);
+    }
+}

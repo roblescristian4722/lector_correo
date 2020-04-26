@@ -11,6 +11,7 @@
 #include "vector.h"
 #include "avl_tree_primario.h"
 #include "indices.h"
+#include "hash_map.h"
 
 #if defined(_WIN32) || defined(_WIN64)
     #define CLEAR std::system("cls")
@@ -23,11 +24,14 @@ using namespace std;
 class LectorCorreo
 {
 public:
-    LectorCorreo(AVLTreePrimario *indices, AVLTreePrimario *paginados, AVLTreeSecundario *rem, AVLTreeSecundario *des);
-
+    LectorCorreo(AVLTreePrimario *indices, AVLTreePrimario *paginados, AVLTreeSecundario *rem,
+                 AVLTreeSecundario *des, HashMap<string, LSL<IndicePrimario>*>* mapRem,
+                 HashMap<string, LSL<IndicePrimario>*>* mapDes);
     virtual ~LectorCorreo();
 
     void menu();
+
+    // guardar índices en archivo
     void guardar_indices();
 
     // Cargar datos de archivo
@@ -35,7 +39,7 @@ public:
     void cargar_archivo_datos();
 
     // Operaciones básicas
-    void crear(Correo* tmp, bool modificar = false, bool paginado = false);
+    void crear(Correo* tmp, bool modificar = false, bool hash = false);
     Correo leer(const char* id);
     Correo leer(long pos);
     void leer(LSL<long>& ids);
@@ -57,11 +61,16 @@ public:
     // Cargar en RAM
     void leerRAM(Vector<Correo> &vec);
 
+    // Cargar índices en memoria
+    void cargar_map();
+
 private:
     AVLTreePrimario* m_indices;
     AVLTreePrimario* m_paginados;
     AVLTreeSecundario* m_rem;
     AVLTreeSecundario* m_des;
+    HashMap<string, LSL<IndicePrimario>*> *m_mapRem;
+    HashMap<string, LSL<IndicePrimario>*> *m_mapDes;
 };
 
 #endif // LECTORCORREO_H

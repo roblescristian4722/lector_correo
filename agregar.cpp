@@ -1,11 +1,11 @@
 #include "agregar.h"
 #include "ui_agregar.h"
 
-agregar::agregar(LectorCorreo* lector, bool paginado, QWidget *parent) :
+agregar::agregar(LectorCorreo* lector, bool hash, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::agregar),
     m_lector(lector),
-    m_paginado(paginado)
+    m_hash(hash)
 {
     ui->setupUi(this);
     this->setWindowTitle("Agregar correo");
@@ -61,7 +61,7 @@ void agregar::on_guardar_clicked()
         correo.setIdentificador(id.toLocal8Bit());
         correo.setCopiaCarbonCiega(ccc.toStdString().c_str());
 
-        m_lector->crear(&correo, m_paginado);
+        m_lector->crear(&correo, m_hash);
         agregar::close();
     }
     else

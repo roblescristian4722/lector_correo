@@ -6,26 +6,27 @@
 #include <fstream>
 #include "vector.h"
 #include "indices.h"
+#include "hash_map.h"
 using namespace std;
+
+struct AVLTreeNode
+{
+    IndiceSecundario* dataPtr;
+    AVLTreeNode* right;
+    AVLTreeNode* left;
+
+    AVLTreeNode(const string & data);
+    ~AVLTreeNode();
+};
 
 class AVLTreeSecundario
 {
 public:
-    struct AVLTreeNode
-    {
-        IndiceSecundario* dataPtr;
-        AVLTreeNode* right;
-        AVLTreeNode* left;
-
-        AVLTreeNode(const string & data);
-        ~AVLTreeNode();
-    };
-
     AVLTreeSecundario();
     ~AVLTreeSecundario();
 
     // MODIFY DATA
-    void insertData(const string& llave, IndicePrimario*& prim);
+    void insertData(const string& llave, IndicePrimario* prim);
     void removeData(const string& data);
     void removeNode(AVLTreeNode*& node);
     void removePrimary(const string data, long id);
@@ -44,11 +45,14 @@ public:
     AVLTreeNode*& lowestData();
     AVLTreeNode*& highestData();
 
+    // EXTRA
+    void export_to_hash(HashMap<string, LSL<IndicePrimario>*> *map);
+
 private:
     AVLTreeNode* m_root;
 
     // MODIFY DATA
-    void insertData(const string& llave, AVLTreeNode*& node, IndicePrimario*& prim);
+    void insertData(const string& llave, AVLTreeNode*& node, IndicePrimario* prim);
     void removeAll(AVLTreeNode*& node);
     void removePrimary(long id, AVLTreeNode*& node);
 
@@ -74,8 +78,9 @@ private:
     AVLTreeNode*& highestData(AVLTreeNode*& node);
 
     // EXTRA
-    int busqueda_binaria(long dato, LSL<IndicePrimario>*& list);
-    void shell_sort(LSL<IndicePrimario>*& list);
+    int busqueda_binaria(long dato, LSL<IndicePrimario>& list);
+    void shell_sort(LSL<IndicePrimario>& list);
+    void export_to_hash(AVLTreeNode*& node, HashMap<string, LSL<IndicePrimario>*> *map);
 };
 
 #endif

@@ -31,7 +31,7 @@ public:
     ~AVLTreePrimario();
 
     // MODIFY DATA
-    void insertData(IndicePrimario& data, AVLTreeSecundario*& rem, AVLTreeSecundario*& des, bool mod = false);
+    void insertData(IndicePrimario& data);
     void removeData(IndicePrimario& data, bool removeFromList = false);
     void removeNode(AVLTreeNode*& node, bool removeFromList = false);
     void removeLRU();
@@ -47,13 +47,12 @@ public:
     int height();
 
     // GET AVL DATA
-    AVLTreeNode*& findData(IndicePrimario& data);
+    AVLTreeNode*& operator [](IndicePrimario& data);
     AVLTreeNode*& lowestData();
     AVLTreeNode*& highestData();
 
     // EXTRA
     void shell_sort();
-    void shell_sort_key();
 
     long getSize() const;
     void setSize(const long &size);
@@ -67,7 +66,7 @@ private:
     long m_size;
 
     // MODIFY DATA
-    void insertData(IndicePrimario& data, AVLTreeNode*& node, AVLTreeSecundario*& rem, AVLTreeSecundario*& des, bool mod = false);
+    void insertData(IndicePrimario& data, AVLTreeNode*& node);
     void removeAll(AVLTreeNode*& node);
 
     // PARSE

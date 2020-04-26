@@ -62,14 +62,14 @@ public:
 
     /// GETTERS ///
     string getLlave() const;
-    LSL<IndicePrimario>*& getReferencia();
+    LSL<IndicePrimario>& getReferencia();
 
     /// SETTERS ///
     void setLlave(const string llave);
 
 private:
     char m_llave[50];
-    LSL<IndicePrimario> *m_referencia;
+    LSL<IndicePrimario> m_referencia;
 };
 
 #endif // INDICES_H

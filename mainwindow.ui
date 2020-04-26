@@ -87,6 +87,16 @@
            <string>ID (indices paginados)</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>remitente (dispersión)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>destinatario (dispersión)</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="8" column="6" colspan="2">
@@ -232,7 +242,7 @@
      <x>0</x>
      <y>0</y>
      <width>1219</width>
-     <height>24</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuCSV">
@@ -301,8 +311,10 @@
   <tabstop>barraRemLE</tabstop>
   <tabstop>buscarPB</tabstop>
   <tabstop>bandejaTabla</tabstop>
-  <tabstop>modificar</tabstop>
+  <tabstop>mostrarTodo</tabstop>
+  <tabstop>agregar</tabstop>
   <tabstop>eliminar</tabstop>
+  <tabstop>modificar</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -7,7 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     QStringList columnas;
 
-    m_lector = new LectorCorreo(&m_indices, &m_paginados, &m_rem, &m_des);
+    m_lector = new LectorCorreo(&m_indices, &m_paginados, &m_rem,
+                                &m_des, &m_mapRem, &m_mapDes);
 
     // Se inicializa la interfaz y todos sus atributos
     ui->setupUi(this);
@@ -41,13 +42,14 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//// MÉTODOS /////
+/// Elimina todos los correos de la tabla de correos
 void MainWindow::limpiarFilas()
 {
     while (ui->bandejaTabla->rowCount())
         ui->bandejaTabla->removeRow(0);
 }
 
+/// Crea una nueva fila en la bandeja principal
 void MainWindow::crearFila(Correo &correo)
 {
     ui->bandejaTabla->insertRow(ui->bandejaTabla->rowCount());
@@ -79,9 +81,9 @@ int MainWindow::busqueda_binaria(int dato)
         while (l <= r)
         {
             int m = (l + r) / 2;
-            if (dato == m_ids[m])
+            if (dato == m_ids[size_t(m)])
                 return m;
-            else if (dato < m_ids[m])
+            else if (dato < m_ids[size_t(m)])
                 r = m - 1;
             else
                 l = m + 1;
@@ -151,6 +153,9 @@ void MainWindow::shell_sort(size_t n, Vector<Correo> &vec)
 void MainWindow::on_agregar_clicked()
 {
     bool paginado = ui->opcCB->currentIndex() == OPC_IND_PAGINADOS ? true : false;
+    bool hash = false;
+    if (ui->opcCB->currentIndex() == OPC_HASH_DES || ui->opcCB->currentIndex() == OPC_HASH_REM)
+        hash = true;
     agregar a(m_lector, paginado);
     a.setModal(true);
     a.exec();
@@ -163,8 +168,7 @@ void MainWindow::on_eliminar_clicked()
 {
     long id;
     string aux;
-    if (!ui->bandejaTabla->rowCount())
-    {
+    if (!ui->bandejaTabla->rowCount()){
         m_fila = 0;
         QMessageBox::warning(this, "Sin correo seleccionado",
                              "No hay correos seleccionados, intente buscar o añadir uno");
@@ -250,8 +254,9 @@ void MainWindow::on_bandejaTabla_cellClicked(int row, int column)
 void MainWindow::on_buscarPB_clicked()
 {
     char idTmp[10];
-    strcpy(idTmp, ui->buscarPB->text().toStdString().c_str());
+    LSL<IndicePrimario> **listaIndices = nullptr;
 
+    strcpy(idTmp, ui->buscarPB->text().toStdString().c_str());
     if (!ui->barraRemLE->text().size() && ui->opcCB->currentIndex())
         QMessageBox::warning(this, "Campo vacío", "Ingrese el ID o remitente a buscar");
     else if ((ui->barraRemLE->text().toULongLong() < 1 || ui->barraRemLE->text().toStdString().length() > 10
@@ -290,7 +295,7 @@ void MainWindow::on_buscarPB_clicked()
             IndicePrimario tmp;
             tmp.setLlave(ui->barraRemLE->text().toStdString().c_str());
 
-            nodo = m_indices.findData(tmp);
+            nodo = m_indices[tmp];
 
             if (nodo != nullptr){
                 correoTmp = m_lector->leer(nodo->dataPtr->getReferencia());
@@ -302,7 +307,7 @@ void MainWindow::on_buscarPB_clicked()
         else if (ui->opcCB->currentIndex() == OPC_IND_SEC_REM || ui->opcCB->currentIndex() == OPC_IND_SEC_DES){
             string input = ui->barraRemLE->text().toStdString();
             LSL<IndicePrimario>* lista;
-            AVLTreeSecundario::AVLTreeNode* nodo;
+            AVLTreeNode* nodo;
 
             if (ui->opcCB->currentIndex() == OPC_IND_SEC_REM )
                 nodo = m_rem.findData(input);
@@ -310,7 +315,7 @@ void MainWindow::on_buscarPB_clicked()
                 nodo = m_des.findData(input);
 
             if (nodo != nullptr){
-                lista = nodo->dataPtr->getReferencia();
+                lista = &nodo->dataPtr->getReferencia();
                 for (size_t i = 0; i < lista->size(); ++i){
                     correoTmp = m_lector->leer((*lista)[i].getReferencia());
                     crearFila(correoTmp);
@@ -321,7 +326,7 @@ void MainWindow::on_buscarPB_clicked()
         else if (ui->opcCB->currentIndex() == OPC_IND_PAGINADOS){
             IndicePrimario indiceTmp;
             indiceTmp.setLlave(ui->barraRemLE->text().toStdString().c_str());
-            AVLTreePrimario::AVLTreeNode *node = m_paginados.findData(indiceTmp);
+            AVLTreePrimario::AVLTreeNode *node = m_paginados[indiceTmp];
 
             // Se imprime la lista de los 10 últimos datos añadidos
             cout << "<---últimos 10 elementos consulatdos:--->" << endl;
@@ -348,7 +353,7 @@ void MainWindow::on_buscarPB_clicked()
                     m_paginados.removeLRU();
                     AVLTreeSecundario* rem = &m_rem;
                     AVLTreeSecundario* des = &m_des;
-                    m_paginados.insertData(indiceTmp, rem, des);
+                    m_paginados.insertData(indiceTmp);
                     correoTmp = m_lector->leer(indiceTmp.getReferencia());
                 }
             }
@@ -366,6 +371,19 @@ void MainWindow::on_buscarPB_clicked()
                 cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
         }
 
+        // BÚSQUEDA POR ÍNDICES CARGADOS EN HASH MAP
+        else if (ui->opcCB->currentIndex() == OPC_HASH_DES || ui->opcCB->currentIndex() == OPC_HASH_REM){
+            if (ui->opcCB->currentIndex() == OPC_HASH_DES)
+                listaIndices = m_mapDes[ui->barraRemLE->text().toStdString()];
+            else
+                listaIndices = m_mapRem[ui->barraRemLE->text().toStdString()];
+
+            if (listaIndices != nullptr)
+                for (size_t i = 0; i < (*listaIndices)->size(); ++i){
+                    correoTmp = m_lector->leer((*(*listaIndices))[i].getReferencia());
+                    crearFila(correoTmp);
+            }
+        }
         else{
             /// BÚSQUEDA POR ID EN ARCHIVO BINARIO ///
             if (ui->opcCB->currentIndex() == OPC_ID){
@@ -424,7 +442,7 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
         // el correo leído de la copia de seguridad. En caso de
         // que no se hayan encontrado coincidencias regresa un -1
         shell_sort();
-        res = busqueda_binaria(stoi(copiaDatos[i]));
+        res = busqueda_binaria(atoi(copiaDatos[i].c_str()));
 
         correoCopia.setIdentificador(copiaDatos[i].c_str());
         correoCopia.setFechaEnvio(copiaDatos[i + 1].c_str());
@@ -445,7 +463,6 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
         // uno de los almacenadosen el programa
         else{
             correoActual = m_lector->leer(to_string(m_ids[size_t(res)]).c_str());
-
             if (correoActual != correoCopia){
                 Sobrescribir sob(m_lector, &correoActual, &correoCopia, &m_rem, &m_des);
                 sob.setModal(true);
@@ -500,6 +517,7 @@ void MainWindow::on_actionModificar_Correo_triggered()
     mod.exec();
 }
 
+/// Índice actual cambiado ///
 void MainWindow::on_opcCB_currentIndexChanged(int index)
 {
     if (index == OPC_IND_PAGINADOS){
@@ -519,6 +537,10 @@ void MainWindow::on_opcCB_currentIndexChanged(int index)
             m_lector->cargar_archivo_indices(true);
         }
     }
+    else if (index == OPC_HASH_REM || index == OPC_HASH_DES){
+        cout << "CARGANDO DATOS A TABLAS HASH..." << endl;
+        m_lector->cargar_map();
+    }
     else if (index != OPC_IND_PAGINADOS){
         ui->agregar->setEnabled(true);
         ui->actionCrear_copia_de_seguridad->setEnabled(true);
@@ -534,4 +556,5 @@ void MainWindow::on_opcCB_currentIndexChanged(int index)
             m_lector->cargar_archivo_indices();
         }
     }
+
 }

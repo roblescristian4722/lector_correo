@@ -39,6 +39,7 @@ HEADERS += \
     avl_tree_secundario.h \
     eliminar_copia.h \
     eliminar_propietario.h \
+    hash_map.h \
     indices.h \
     lsl.h \
     mainwindow.h \
