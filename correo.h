@@ -13,26 +13,26 @@ public:
     virtual ~Correo();
 
     // Getters
-    char *getIdentificador() const;
-    char *getHoraEnvio() const;
-    char *getContenido() const;
-    char *getAsunto() const;
-    char *getCopiaCarbon() const;
-    char *getCopiaCarbonCiega() const;
-    char *getDestinatario() const;
-    char *getRem() const;
-    char *getFechaEnvio() const;
+    string getIdentificador() const;
+    string getHoraEnvio() const;
+    string getContenido() const;
+    string getAsunto() const;
+    string getCopiaCarbon() const;
+    string getCopiaCarbonCiega() const;
+    string getDestinatario() const;
+    string getRem() const;
+    string getFechaEnvio() const;
 
     // Setters
-    void setHoraEnvio(const char *horaEnvio);
+    void setHoraEnvio(const char* horaEnvio);
     void setIdentificador(const char* identificador);
-    void setContenido(const char *contenido);
-    void setAsunto(const char *asunto);
-    void setCopiaCarbonCiega(const char *copiaCarbonCiega);
-    void setCopiaCarbon(const char *copiaCarbon);
-    void setDestinatario(const char *destinatario);
-    void setRem(const char *value);
-    void setFechaEnvio(const char *fechaEnvio);
+    void setContenido(const char* contenido);
+    void setAsunto(const char* asunto);
+    void setCopiaCarbonCiega(const char* copiaCarbonCiega);
+    void setCopiaCarbon(const char* copiaCarbon);
+    void setDestinatario(const char* destinatario);
+    void setRem(const char* value);
+    void setFechaEnvio(const char* fechaEnvio);
 
     // Sobrecarga de operadores
     bool operator ==(Correo& correo2);

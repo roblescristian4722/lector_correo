@@ -2,8 +2,7 @@
 #define TOTAL_CAMPOS 9
 
 LectorCorreo::LectorCorreo(AVLTreePrimario* indices, AVLTreePrimario *paginados, AVLTreeSecundario *rem,
-                           AVLTreeSecundario *des, HashMap<string, LSL<IndicePrimario>*>* mapRem,
-                           HashMap<string, LSL<IndicePrimario>*>* mapDes)
+                           AVLTreeSecundario *des, HashMap<string, LSL<string>>* mapRem)
 {
     // Se crea un archivo binario nuevo en caso de que aún no exista
     fstream entrada("datos.bin", ios::binary | ios::in | ios::out);
@@ -17,7 +16,6 @@ LectorCorreo::LectorCorreo(AVLTreePrimario* indices, AVLTreePrimario *paginados,
     m_indices = indices;
     m_des = des;
     m_rem = rem;
-    m_mapDes = mapDes;
     m_mapRem = mapRem;
 
     // Si no está abierto el archivo de índices se crea y se pone
@@ -44,7 +42,8 @@ LectorCorreo::LectorCorreo(AVLTreePrimario* indices, AVLTreePrimario *paginados,
     else
     {
         indicesArchivo.read((char*)&actualizado, sizeof(actualizado));
-        cout << "\"bandera de archivo de índices: \": " << actualizado.getReferencia() << endl;
+        cout << "\"bandera de archivo de índices: \": " << actualizado.getReferencia()
+             << endl;
         indicesArchivo.close();
         entrada.close();
 
@@ -133,7 +132,7 @@ void LectorCorreo::cargar_archivo_datos()
         if (entrada.eof())
             break;
 
-        if (atol(correoTmp.getIdentificador()) == i){
+        if (atol(correoTmp.getIdentificador().c_str()) == i){
             indiceTmp.setLlave(correoTmp.getIdentificador());
             posTmp = entrada.tellg();
             indiceTmp.setReferencia(posTmp - long(sizeof(Correo)));
@@ -166,7 +165,7 @@ void LectorCorreo::crear(Correo* correo, bool modificar, bool hash)
     else{
         // Se elige la posición en la que se escribirá el correo
         // con ayuda del id
-        long pos = (atoll(correo->getIdentificador()) - 1) * long(sizeof(Correo));
+        long pos = (atoll(correo->getIdentificador().c_str()) - 1) * long(sizeof(Correo));
         archivoDatos.seekp(pos);
 
         // Se almacena el correo nuevo
@@ -176,7 +175,7 @@ void LectorCorreo::crear(Correo* correo, bool modificar, bool hash)
         // Se guardan los datos del correo en el índice temporal
         indiceTmp.setLlave(correo->getIdentificador());
         indiceTmp.setReferencia(pos);
-        pos = atoll(correo->getIdentificador()) * long(sizeof(Correo));
+        pos = atoll(correo->getIdentificador().c_str()) * long(sizeof(Correo));
 
         if (!modificar){
             // Se cambia la bandera del archivo de índices
@@ -188,13 +187,9 @@ void LectorCorreo::crear(Correo* correo, bool modificar, bool hash)
             indiceTmp.setReferencia(0);
             archivoIndices.write((char*)&indiceTmp, sizeof(IndicePrimario));
             archivoIndices.close();
-            /*if (hash){
-                LSL<IndicePrimario>* des = *(*m_mapDes)[correo->getDestinatario()];
-                for (size_t i = 0; i < des->size(); ++i){
+            if (hash){
 
-                }
-                LSL<IndicePrimario>* rem = *(*m_mapRem)[correo->getRem()];
-            }*/
+            }
         }
         else{
             m_rem->insertData(correo->getRem(), (*m_indices)[indiceTmp]->dataPtr);
@@ -203,7 +198,7 @@ void LectorCorreo::crear(Correo* correo, bool modificar, bool hash)
     }
 }
 
-void LectorCorreo::eliminar(long id, bool paginado)
+void LectorCorreo::eliminar(long id, bool paginado, bool hash)
 {
     Correo tmp;
     IndicePrimario indiceTmp;
@@ -225,8 +220,9 @@ void LectorCorreo::eliminar(long id, bool paginado)
         indiceTmp.setLlave(to_string(id).c_str());
         indiceTmp.setReferencia(pos);
         // Si el árbol es paginado
-        if (!paginado)
+        if (!paginado){
             m_indices->removeData(indiceTmp);
+        }
         // Si el árbol no es paginado
         else{
             AVLTreePrimario::AVLTreeNode* nodo;
@@ -299,8 +295,8 @@ void LectorCorreo::leer(LSL<long>& ids)
         long pos = i * long(sizeof(Correo));
         archivo.seekg(pos);
         archivo.read((char*)&tmp, long(sizeof(Correo)));
-        if (atol(tmp.getIdentificador()) == i + 1)
-            ids.push_back(atoi(tmp.getIdentificador()));
+        if (atol(tmp.getIdentificador().c_str()) == i + 1)
+            ids.push_back(atoi(tmp.getIdentificador().c_str()));
     }
     archivo.close();
 }
@@ -322,7 +318,7 @@ void LectorCorreo::leer_rem(LSL<long>& lista, const char* rem)
         archivo.read((char*)&correoTmp, long(sizeof(Correo)));
         strTmp = correoTmp.getRem();
         if (strTmp == rem)
-            lista.push_back(atol(correoTmp.getIdentificador()));
+            lista.push_back(atol(correoTmp.getIdentificador().c_str()));
     }
 }
 
@@ -346,7 +342,7 @@ void LectorCorreo::crear_copia_seguridad()
         binario.seekg(pos);
         binario.read((char*)&correoTmp, long(sizeof(Correo)));
 
-        if (atol(correoTmp.getIdentificador()) == i + 1)
+        if (atol(correoTmp.getIdentificador().c_str()) == i + 1)
         {
             validar_comillas(correoTmp);
 
@@ -380,8 +376,8 @@ void LectorCorreo::modificar_copia(Correo& correo, LSL<string> &idRegistrados)
     {
         getline(csv, aux);
         auxID = "";
-        for (int i = 0; aux[i] != ','; ++i)
-            auxID += aux[i];
+        for (int i = 0; aux[size_t(i)] != ','; ++i)
+            auxID += aux[size_t(i)];
 
         if (auxID == correo.getIdentificador()){
             validar_comillas(correo);
@@ -395,8 +391,7 @@ void LectorCorreo::modificar_copia(Correo& correo, LSL<string> &idRegistrados)
                 << correo.getAsunto() << ','
                 << correo.getContenido() << '\n';
             idRegistrados.pop_front();
-            if (idRegistrados.empty())
-            {
+            if (idRegistrados.empty()){
                 csv.seekg(ios::end);
                 break;
             }
@@ -404,8 +399,8 @@ void LectorCorreo::modificar_copia(Correo& correo, LSL<string> &idRegistrados)
             {
                 getline(csv, aux);
                 auxID = "";
-                for (int i = 0; aux[i] != ','; ++i)
-                    auxID += aux[i];
+                for (int i = 0; aux[size_t(i)] != ','; ++i)
+                    auxID += aux[size_t(i)];
             }while(auxID != idRegistrados.front());
             tmp << aux << '\n';
         }
@@ -430,21 +425,21 @@ void LectorCorreo::validar_comillas(Correo &correo)
     char asuntoTmp[200];
     bool asuntoComillas = false;
     bool contenidoComillas = false;
-    int i = 0;
-    int matchesContenido = 0;
+    size_t i = 0;
+    size_t matchesContenido = 0;
 
     // Se validan las comillas dobles en contenido
-    for (i; *(correo.getContenido() + i) != '\0'; i++){
-        if (*(correo.getContenido() + i) == '"'){
-            contenidoTmp[i + matchesContenido] = *(correo.getContenido() + i);
+    for (; i < correo.getContenido().size(); i++){
+        if (correo.getContenido()[i] == '"'){
+            contenidoTmp[i + matchesContenido] = correo.getContenido()[i];
             ++matchesContenido;
             contenidoTmp[i + matchesContenido] = '"';
-            asuntoComillas = true;
+            contenidoComillas = true;
         }
         else
-            contenidoTmp[i + matchesContenido] = *(correo.getContenido() + i);
-        if (*(correo.getContenido() + i) == ','
-                 || *(correo.getContenido() + i) == '\n')
+            contenidoTmp[i + matchesContenido] = correo.getContenido()[i];
+        if (correo.getContenido()[i] == ','
+                 || correo.getContenido()[i] == '\n')
             contenidoComillas = true;
     }
     contenidoTmp[i + matchesContenido] = '\0';
@@ -453,17 +448,17 @@ void LectorCorreo::validar_comillas(Correo &correo)
     // Se validan las comillas dobles en el asunto
     i = 0;
     int matchesAsunto = 0;
-    for (i; *(correo.getAsunto() + i) != '\0'; i++){
-        if (*(correo.getAsunto() + i) == '"'){
-            asuntoTmp[i + matchesAsunto] = *(correo.getAsunto() + i);
+    for (; i < correo.getAsunto().size(); i++){
+        if (correo.getAsunto()[i] == '"'){
+            asuntoTmp[i + matchesAsunto] = correo.getAsunto()[i];
             ++matchesAsunto;
             asuntoTmp[i + matchesAsunto] = '"';
             asuntoComillas = true;
         }
         else
-            asuntoTmp[i + matchesAsunto] = *(correo.getAsunto() + i);
-        if (*(correo.getAsunto() + i) == ','
-            || *(correo.getAsunto() + i) == '\n')
+            asuntoTmp[i + matchesAsunto] = correo.getAsunto()[i];
+        if (correo.getAsunto()[i] == ','
+            || correo.getAsunto()[i] == '\n')
             asuntoComillas = true;
     }
 
@@ -565,60 +560,62 @@ void LectorCorreo::crear_copia_propietario()
 
             // Se escribe en la copia de propietario
             // ID
-            tam = char(strlen(correoTmp.getIdentificador()));
+            tam = char(correoTmp.getIdentificador().size());
             // Si el ID está vacío entonces no se guarda
             if (tam){
                 prop.write((char*)&tam, sizeof(tam));
                 for (int i = 0; i < int(tam); ++i)
-                    prop.write((char*)correoTmp.getIdentificador() + i, sizeof(char));
+                    prop.write((char*)&correoTmp.getIdentificador()[i], sizeof(char));
 
                 // Fecha
-                tam = char(strlen(correoTmp.getFechaEnvio()));
+                tam = char(correoTmp.getFechaEnvio().size());
                 prop.write((char*)&tam, sizeof(tam));
                 for (int i = 0; i < tam; i++)
-                    prop.write((char*)correoTmp.getFechaEnvio() + i, sizeof(char));
+                    prop.write((char*)&correoTmp.getFechaEnvio()[i], sizeof(char));
 
                 // Hora
-                tam = char(strlen(correoTmp.getHoraEnvio()));
+                tam = char(correoTmp.getHoraEnvio().size());
                 prop.write((char*)&tam, sizeof(tam));
                 for (int i = 0; i < tam; i++)
-                    prop.write((char*)correoTmp.getHoraEnvio() + i, sizeof(char));
+                    prop.write((char*)&correoTmp.getHoraEnvio()[i], sizeof(char));
 
                 // Remitente
-                tam = char(strlen(correoTmp.getRem()));
+                tam = char(correoTmp.getRem().size());
                 prop.write((char*)&tam, sizeof(tam));
                 for (int i = 0; i < tam; i++)
-                    prop.write((char*)correoTmp.getRem() + i, sizeof(char));
+                    prop.write((char*)&correoTmp.getRem()[i], sizeof(char));
 
                 // Destinatario
-                tam = char(strlen(correoTmp.getDestinatario()));
+                tam = char(correoTmp.getDestinatario().size());
                 prop.write((char*)&tam, sizeof(tam));
                 for (int i = 0; i < tam; i++)
-                    prop.write((char*)correoTmp.getDestinatario() + i, sizeof(char));
+                    prop.write((char*)&correoTmp.getDestinatario()[i], sizeof(char));
 
                 // CC
-                tam = char(strlen(correoTmp.getCopiaCarbon()));
+                tam = char(correoTmp.getCopiaCarbon().size());
                 prop.write((char*)&tam, sizeof(tam));
                 for (int i = 0; i < tam; i++)
-                    prop.write((char*)correoTmp.getCopiaCarbon() + i, sizeof(char));
+                    prop.write((char*)&correoTmp.getCopiaCarbon()[i], sizeof(char));
 
                 // CCC
-                tam = char(strlen(correoTmp.getCopiaCarbonCiega()));
+                tam = char(correoTmp.getCopiaCarbonCiega().size());
                 prop.write((char*)&tam, sizeof(tam));
                 for (int i = 0; i < tam; i++)
-                    prop.write((char*)correoTmp.getCopiaCarbonCiega() + i, sizeof(char));
+                    prop.write((char*)&correoTmp.getCopiaCarbonCiega()[i], sizeof(char));
 
                 // Asunto
-                tam = char(strlen(correoTmp.getAsunto()));
+                tam = char(correoTmp.getAsunto().size());
                 prop.write((char*)&tam, sizeof(tam));
                 for (int i = 0; i < tam; i++)
-                    prop.write((char*)correoTmp.getAsunto() + i, sizeof(char));
+                    prop.write((char*)&correoTmp.getAsunto()[i], sizeof(char));
 
                 // Contenido
-                tam = char(strlen(correoTmp.getContenido()));
+                tam = char(correoTmp.getContenido().size());
                 prop.write((char*)&tam, sizeof(tam));
-                for (int i = 0; i < tam; i++)
-                    prop.write((char*)correoTmp.getContenido() + i, sizeof(char));
+                for (int i = 0; i < tam; i++){
+                    cout << correoTmp.getContenido()[i] ;
+                    prop.write((char*)&correoTmp.getContenido()[i], sizeof(char));
+                }
             }
         }
         bin.close();
@@ -658,43 +655,43 @@ bool LectorCorreo::modificar_copia_propietario(Correo& correo)
                 for (i = 0; i < int(tam); ++i)
                     tmp << auxString[i];
                 // En caso de encontrar el ID se activa ésta bandera
-                if (!strcmp(auxString, correo.getIdentificador()) && cont == 1)
+                if (correo.getIdentificador() == auxString && cont == 1)
                     match = true;
             }
             else if (match){
                 switch(cont){
                     case 4:
-                        tam = char(strlen(correo.getRem()));
+                        tam = char(correo.getRem().size());
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo.getRem()[i];
                     break;
                     case 5:
-                        tam = char(strlen(correo.getDestinatario()));
+                        tam = char(correo.getDestinatario().size());
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo.getDestinatario()[i];
                     break;
                     case 6:
-                        tam = char(strlen(correo.getCopiaCarbon()));
+                        tam = char(correo.getCopiaCarbon().size());
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo.getCopiaCarbon()[i];
                     break;
                     case 7:
-                        tam = char(strlen(correo.getCopiaCarbonCiega()));
+                        tam = char(correo.getCopiaCarbonCiega().size());
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo.getCopiaCarbonCiega()[i];
                     break;
                     case 8:
-                        tam = char(strlen(correo.getAsunto()));
+                        tam = char(correo.getAsunto().size());
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo.getAsunto()[i];
                     break;
                     case 9:
-                        tam = char(strlen(correo.getContenido()));
+                        tam = char(correo.getContenido().size());
                         tmp.write((char*)&tam, sizeof(tam));
                         for (i = 0; i < int(tam); ++i)
                             tmp << correo.getContenido()[i];
@@ -732,10 +729,8 @@ bool LectorCorreo::eliminar_copia_propietario(long id)
         while (!prop.eof())
         {
             prop.read((char*)&tam, sizeof(tam));
-
             if (prop.eof())
                 break;
-
             for (i = 0; i < int(tam); ++i){
                 prop.get(aux);
                 auxString[i] = aux;
@@ -770,12 +765,11 @@ void LectorCorreo::leerRAM(Vector<Correo> &vec)
     Correo tmpCorreo;
     fstream archivo("datos.bin", ios::out | ios::in | ios::binary);
     archivo.seekg(ios::beg);
-    for (long i = 0; !archivo.eof(); i++)
-    {
+    for (long i = 0; !archivo.eof(); i++){
         long pos = i * long(sizeof(Correo));
         archivo.seekg(pos);
         archivo.read((char*)&tmpCorreo, long(sizeof(Correo)));
-        if (atol(tmpCorreo.getIdentificador()) == i + 1)
+        if (atol(tmpCorreo.getIdentificador().c_str()) == i + 1)
             vec.push_back(tmpCorreo);
     }
     archivo.close();
@@ -785,14 +779,24 @@ void LectorCorreo::leerRAM(Vector<Correo> &vec)
 void LectorCorreo::cargar_map()
 {
     fstream archivoSecundarios;
+    HashMap<string, LSL<string>>::Pair par;
+    LSL<string>* listaAux;
     archivoSecundarios.open("indices_secundarios.txt", ios::in);
     if (!archivoSecundarios.is_open()){
         cout << "No encontrado el archivo de índices secundarios." << endl
              << "Creando nuevo archivo." << endl;
         archivoSecundarios.open("indices_secundarios.txt", ios::out);
     }
-
-    m_des->export_to_hash(m_mapDes);
+    cout << "Exporting data to hash map..." << endl;
     m_rem->export_to_hash(m_mapRem);
-
+    for (size_t i = 0; i < m_mapRem->size(); ++i){
+        par = m_mapRem->get_position(i);
+        cout << *par.key << ": ";
+        for (size_t j = 0; j < (*par.value).size(); ++j){
+            listaAux = par.value;
+            for (size_t k = 0; k < listaAux->size(); ++k)
+                (*listaAux)[k];
+        }
+        cout << endl;
+    }
 }

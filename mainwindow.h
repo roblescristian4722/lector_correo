@@ -62,8 +62,7 @@ private:
     AVLTreePrimario m_paginados;
     AVLTreeSecundario m_rem;
     AVLTreeSecundario m_des;
-    HashMap<string, LSL<IndicePrimario>*> m_mapRem;
-    HashMap<string, LSL<IndicePrimario>*> m_mapDes;
+    HashMap<string, LSL<string>> m_mapRem;
 
     // Objeto lector que se encargará de administrar
     // todos los datos de la interfaz
@@ -93,8 +92,7 @@ private:
         OPC_IND_SEC_REM,
         OPC_IND_SEC_DES,
         OPC_IND_PAGINADOS,
-        OPC_HASH_REM,
-        OPC_HASH_DES
+        OPC_HASH_REM
     };
 };
 #endif // MAINWINDOW_H

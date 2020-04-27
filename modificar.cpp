@@ -15,12 +15,12 @@ modificar::modificar(LectorCorreo* lector, long index, AVLTreeSecundario *rem,
     this->setWindowTitle("Modificar correo");
 
     m_correoTmp = m_lector->leer(to_string(index).c_str());
-    ui->des_linea->setText(m_correoTmp.getDestinatario());
-    ui->rem_linea->setText(m_correoTmp.getRem());
-    ui->asunto_linea->setText(m_correoTmp.getAsunto());
-    ui->copiaCarbon_linea->setText(m_correoTmp.getCopiaCarbon());
-    ui->copiaCarbonCiega_linea->setText(m_correoTmp.getCopiaCarbonCiega());
-    ui->contenido_caja->setPlainText(m_correoTmp.getContenido());
+    ui->des_linea->setText(m_correoTmp.getDestinatario().c_str());
+    ui->rem_linea->setText(m_correoTmp.getRem().c_str());
+    ui->asunto_linea->setText(m_correoTmp.getAsunto().c_str());
+    ui->copiaCarbon_linea->setText(m_correoTmp.getCopiaCarbon().c_str());
+    ui->copiaCarbonCiega_linea->setText(m_correoTmp.getCopiaCarbonCiega().c_str());
+    ui->contenido_caja->setPlainText(m_correoTmp.getContenido().c_str());
 }
 
 modificar::~modificar()
@@ -41,8 +41,8 @@ void modificar::on_guardar_clicked()
 
     if (!des.isEmpty() && !rem.isEmpty())
     {
-        m_rem->removePrimary(m_correoTmp.getRem(), atol(m_correoTmp.getIdentificador()));
-        m_des->removePrimary(m_correoTmp.getDestinatario(), atol(m_correoTmp.getIdentificador()));
+        m_rem->removePrimary(m_correoTmp.getRem(), atol(m_correoTmp.getIdentificador().c_str()));
+        m_des->removePrimary(m_correoTmp.getDestinatario(), atol(m_correoTmp.getIdentificador().c_str()));
 
         m_correoTmp.setRem(rem.toStdString().c_str());
         m_correoTmp.setAsunto(asunto.toStdString().c_str());

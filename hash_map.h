@@ -209,7 +209,7 @@ void HashMap<K, V>::delete_value(const K &keyVal)
 /// Removes every value stored in the hash map
 template <typename K, typename V>
 void HashMap<K, V>::clear()
-{ 
+{
     for (long i = 0; i < PRIMO; ++i){
         m_buckets[i].m_nodes.clear();
         m_buckets[i].m_visited = false;
@@ -229,7 +229,7 @@ size_t HashMap<K, V>::hash_function(K val)
     char pos;
     size_t hash = 0;
     size_t tmp;
-    
+
     ss << val;
     string auxStr = ss.str();
     for (long i = 0; i < auxStr.size(); ++i){

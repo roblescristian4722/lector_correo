@@ -57,6 +57,7 @@ size_t LSL<T>::size()const{
 
 template<typename T>
 void LSL<T>::push_front(const T& element){
+    cout << element << endl;
     if(empty()){
         listFront = new NodoLSL(element);
         listBack = listFront;
@@ -231,7 +232,7 @@ LSL<T>& LSL<T>::operator=(const LSL<T>& other){
     listFront = nullptr;
     NodoLSL* temp = other.listFront;
     for(size_t i(0); i<other.size(); ++i){
-        push_back(temp->dato);
+        this->push_back(temp->dato);
         temp = temp->siguiente;
     }
     return *this;

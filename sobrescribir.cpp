@@ -15,25 +15,25 @@ Sobrescribir::Sobrescribir(LectorCorreo* lector, Correo* actual, Correo* copia,
     m_rem = rem;
     m_des = des;
 
-    ui->idLE_copia->setText(copia->getIdentificador());
-    ui->fechaLE_copia->setText(copia->getFechaEnvio());
-    ui->horaLE_copia->setText(copia->getHoraEnvio());
-    ui->remLE_copia->setText(copia->getRem());
-    ui->desLE_copia->setText(copia->getDestinatario());
-    ui->CCLE_copia->setText(copia->getCopiaCarbon());
-    ui->CCCLE_copia->setText(copia->getCopiaCarbonCiega());
-    ui->asuntoLE_copia->setText(copia->getAsunto());
-    ui->contenidoLE_copia->setText(copia->getContenido());
+    ui->idLE_copia->setText(copia->getIdentificador().c_str());
+    ui->fechaLE_copia->setText(copia->getFechaEnvio().c_str());
+    ui->horaLE_copia->setText(copia->getHoraEnvio().c_str());
+    ui->remLE_copia->setText(copia->getRem().c_str());
+    ui->desLE_copia->setText(copia->getDestinatario().c_str());
+    ui->CCLE_copia->setText(copia->getCopiaCarbon().c_str());
+    ui->CCCLE_copia->setText(copia->getCopiaCarbonCiega().c_str());
+    ui->asuntoLE_copia->setText(copia->getAsunto().c_str());
+    ui->contenidoLE_copia->setText(copia->getContenido().c_str());
 
-    ui->idLE_actual->setText(actual->getIdentificador());
-    ui->fechaLE_actual->setText(actual->getFechaEnvio());
-    ui->horaLE_actual->setText(actual->getHoraEnvio());
-    ui->remLE_actual->setText(actual->getRem());
-    ui->desLE_actual->setText(actual->getDestinatario());
-    ui->CCLE_actual->setText(actual->getCopiaCarbon());
-    ui->CCCLE_actual->setText(actual->getCopiaCarbonCiega());
-    ui->asuntoLE_actual->setText(actual->getAsunto());
-    ui->contenidoLE_actual->setText(actual->getContenido());
+    ui->idLE_actual->setText(actual->getIdentificador().c_str());
+    ui->fechaLE_actual->setText(actual->getFechaEnvio().c_str());
+    ui->horaLE_actual->setText(actual->getHoraEnvio().c_str());
+    ui->remLE_actual->setText(actual->getRem().c_str());
+    ui->desLE_actual->setText(actual->getDestinatario().c_str());
+    ui->CCLE_actual->setText(actual->getCopiaCarbon().c_str());
+    ui->CCCLE_actual->setText(actual->getCopiaCarbonCiega().c_str());
+    ui->asuntoLE_actual->setText(actual->getAsunto().c_str());
+    ui->contenidoLE_actual->setText(actual->getContenido().c_str());
 }
 
 Sobrescribir::~Sobrescribir()
@@ -48,7 +48,7 @@ void Sobrescribir::on_actualPB_clicked()
 
 void Sobrescribir::on_copiaPB_clicked()
 {
-    long id = atol(m_actual->getIdentificador());
+    long id = atol(m_actual->getIdentificador().c_str());
     m_rem->removePrimary(m_actual->getRem(), id);
     m_des->removePrimary(m_actual->getDestinatario(), id);
 

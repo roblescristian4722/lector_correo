@@ -7,15 +7,15 @@ vistaPrevia::vistaPrevia(Correo correo, QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowTitle("Vista Previa");
-    ui->CCCLE->setText(correo.getCopiaCarbonCiega());
-    ui->idLE->setText(correo.getIdentificador());
-    ui->asuntoLE->setText(correo.getAsunto());
-    ui->desLE->setText(correo.getDestinatario());
-    ui->remLE->setText(correo.getRem());
-    ui->fechaLE->setText(correo.getFechaEnvio());
-    ui->horaLE->setText(correo.getHoraEnvio());
-    ui->CCLE->setText(correo.getCopiaCarbon());
-    ui->contenidoLE->setText(correo.getContenido());
+    ui->CCCLE->setText(correo.getCopiaCarbonCiega().c_str());
+    ui->idLE->setText(correo.getIdentificador().c_str());
+    ui->asuntoLE->setText(correo.getAsunto().c_str());
+    ui->desLE->setText(correo.getDestinatario().c_str());
+    ui->remLE->setText(correo.getRem().c_str());
+    ui->fechaLE->setText(correo.getFechaEnvio().c_str());
+    ui->horaLE->setText(correo.getHoraEnvio().c_str());
+    ui->CCLE->setText(correo.getCopiaCarbon().c_str());
+    ui->contenidoLE->setText(correo.getContenido().c_str());
 }
 
 vistaPrevia::~vistaPrevia()

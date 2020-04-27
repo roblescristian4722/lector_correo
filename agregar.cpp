@@ -43,7 +43,7 @@ void agregar::on_guardar_clicked()
 
     if (id.toULongLong() < 1 || id.toULongLong() > 9999999999 || id[0] == '0')
         QMessageBox::warning(this, "ID no válido", "ID fuera del rango (1 - 9999999999)");
-    else if (atoll(tmp.getIdentificador()) == id.toLongLong())
+    else if (atoll(tmp.getIdentificador().c_str()) == id.toLongLong())
         QMessageBox::warning(this, "ID en uso",
                              "El ID está en uso, utilice uno nuevo o modifique el ya existente");
     else if (!id.isEmpty() && !des.isEmpty() && !rem.isEmpty())

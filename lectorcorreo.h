@@ -25,8 +25,7 @@ class LectorCorreo
 {
 public:
     LectorCorreo(AVLTreePrimario *indices, AVLTreePrimario *paginados, AVLTreeSecundario *rem,
-                 AVLTreeSecundario *des, HashMap<string, LSL<IndicePrimario>*>* mapRem,
-                 HashMap<string, LSL<IndicePrimario>*>* mapDes);
+                 AVLTreeSecundario *des, HashMap<string, LSL<string>>* mapRem);
     virtual ~LectorCorreo();
 
     void menu();
@@ -45,7 +44,7 @@ public:
     void leer(LSL<long>& ids);
     void leer_rem(LSL<long>& lista, const char* rem);
     void modificar(long id, Correo& correo);
-    void eliminar(long id, bool paginado = false);
+    void eliminar(long id, bool paginado = false, bool hash = false);
 
     // Copia de seguridad (CSV)
     void crear_copia_seguridad();
@@ -69,8 +68,7 @@ private:
     AVLTreePrimario* m_paginados;
     AVLTreeSecundario* m_rem;
     AVLTreeSecundario* m_des;
-    HashMap<string, LSL<IndicePrimario>*> *m_mapRem;
-    HashMap<string, LSL<IndicePrimario>*> *m_mapDes;
+    HashMap<string, LSL<string>> *m_mapRem;
 };
 
 #endif // LECTORCORREO_H
