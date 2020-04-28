@@ -1,10 +1,7 @@
-/*
- * Robles Perez Cristian Ismael
- * SSP de Estructuras de Datos II
-*/
+// Robles Perez Cristian Ismael
+// SSP de Estructuras de Datos II
 #include "mainwindow.h"
 #include <QApplication>
-#include "hash_map.h"
 
 int main(int argc, char *argv[])
 {

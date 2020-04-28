@@ -62,7 +62,7 @@ private:
     AVLTreePrimario m_paginados;
     AVLTreeSecundario m_rem;
     AVLTreeSecundario m_des;
-    HashMap<string, LSL<string>> m_mapRem;
+    HashMap<string, Vector<string>> m_mapRem;
 
     // Objeto lector que se encargará de administrar
     // todos los datos de la interfaz

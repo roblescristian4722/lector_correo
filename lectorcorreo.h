@@ -25,7 +25,7 @@ class LectorCorreo
 {
 public:
     LectorCorreo(AVLTreePrimario *indices, AVLTreePrimario *paginados, AVLTreeSecundario *rem,
-                 AVLTreeSecundario *des, HashMap<string, LSL<string>>* mapRem);
+                 AVLTreeSecundario *des, HashMap<string, Vector<string>>* mapRem);
     virtual ~LectorCorreo();
 
     void menu();
@@ -68,7 +68,7 @@ private:
     AVLTreePrimario* m_paginados;
     AVLTreeSecundario* m_rem;
     AVLTreeSecundario* m_des;
-    HashMap<string, LSL<string>> *m_mapRem;
+    HashMap<string, Vector<string>> *m_mapRem;
 };
 
 #endif // LECTORCORREO_H

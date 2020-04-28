@@ -46,7 +46,7 @@ public:
     AVLTreeNode*& highestData();
 
     // EXTRA
-    void export_to_hash(HashMap<string, LSL<string>> *map);
+    void export_to_hash(HashMap<string, Vector<string>> *map);
 
 private:
     AVLTreeNode* m_root;
@@ -80,7 +80,7 @@ private:
     // EXTRA
     int busqueda_binaria(long dato, LSL<IndicePrimario>& list);
     void shell_sort(LSL<IndicePrimario>& list);
-    void export_to_hash(AVLTreeNode*& node, HashMap<string, LSL<string>> *map);
+    void export_to_hash(AVLTreeNode*& node, HashMap<string, Vector<string>> *map);
 };
 
 #endif

@@ -166,7 +166,7 @@ void MainWindow::on_eliminar_clicked()
 {
     long id;
     string auxRem;
-    LSL<string>* listaTmp;
+    Vector<string>* listaTmp;
     if (!ui->bandejaTabla->rowCount()){
         m_fila = 0;
         QMessageBox::warning(this, "Sin correo seleccionado",
@@ -260,14 +260,14 @@ void MainWindow::on_bandejaTabla_cellClicked(int row, int column)
 void MainWindow::on_buscarPB_clicked()
 {
     char idTmp[10];
-    LSL<string> *listaIndices = nullptr;
+    Vector<string> *listaIndices = nullptr;
 
     strcpy(idTmp, ui->buscarPB->text().toStdString().c_str());
     if (!ui->barraRemLE->text().size() && ui->opcCB->currentIndex())
         QMessageBox::warning(this, "Campo vacío", "Ingrese el ID o remitente a buscar");
-    else if ((ui->barraRemLE->text().toULongLong() < 1 || ui->barraRemLE->text().toStdString().length() > 10
-             || idTmp[0] == '0') && (!ui->opcCB->currentIndex() || ui->opcCB->currentIndex() == 3))
-        QMessageBox::warning(this, "ID no válido", "El ID debe de estar en un rango de (1 - 9999999999)");
+    else if((ui->opcCB->currentIndex() == OPC_ID || ui->opcCB->currentIndex() == OPC_IND_PRIM || ui->opcCB->currentIndex() == OPC_IND_PAGINADOS)
+            && (ui->barraRemLE->text().toULongLong() < 1 || ui->barraRemLE->text().toStdString().length() > 10 || idTmp[0] == '0'))
+                QMessageBox::warning(this, "ID no válido", "El ID debe de estar en un rango de (1 - 9999999999)");
     else
     {
         Correo correoTmp;
@@ -381,7 +381,8 @@ void MainWindow::on_buscarPB_clicked()
 
             if (listaIndices != nullptr)
                 for (size_t i = 0; i < listaIndices->size(); ++i){
-                    correoTmp = m_lector->leer(stol((*listaIndices)[i]));
+                    cout << "num: " << atol(((*listaIndices)[i]).c_str()) << endl;
+                    correoTmp = m_lector->leer(((*listaIndices)[i]).c_str());
                     cout << correoTmp.getIdentificador() << endl;
                     crearFila(correoTmp);
             }
@@ -407,7 +408,6 @@ void MainWindow::on_buscarPB_clicked()
                 crearFila(correoTmp);
             }
         }
-
         this->setCursor(Qt::ArrowCursor);
     }
 }

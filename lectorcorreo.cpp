@@ -2,7 +2,7 @@
 #define TOTAL_CAMPOS 9
 
 LectorCorreo::LectorCorreo(AVLTreePrimario* indices, AVLTreePrimario *paginados, AVLTreeSecundario *rem,
-                           AVLTreeSecundario *des, HashMap<string, LSL<string>>* mapRem)
+                           AVLTreeSecundario *des, HashMap<string, Vector<string>>* mapRem)
 {
     // Se crea un archivo binario nuevo en caso de que aún no exista
     fstream entrada("datos.bin", ios::binary | ios::in | ios::out);
@@ -779,8 +779,8 @@ void LectorCorreo::leerRAM(Vector<Correo> &vec)
 void LectorCorreo::cargar_map()
 {
     fstream archivoSecundarios;
-    HashMap<string, LSL<string>>::Pair par;
-    LSL<string>* listaAux;
+    HashMap<string, Vector<string>>::Pair par;
+    Vector<string>* listaAux;
     archivoSecundarios.open("indices_secundarios.txt", ios::in);
     if (!archivoSecundarios.is_open()){
         cout << "No encontrado el archivo de índices secundarios." << endl
@@ -792,11 +792,9 @@ void LectorCorreo::cargar_map()
     for (size_t i = 0; i < m_mapRem->size(); ++i){
         par = m_mapRem->get_position(i);
         cout << *par.key << ": ";
-        for (size_t j = 0; j < (*par.value).size(); ++j){
-            listaAux = par.value;
-            for (size_t k = 0; k < listaAux->size(); ++k)
-                (*listaAux)[k];
-        }
+        listaAux = par.value;
+        for (size_t k = 0; k < listaAux->size(); ++k)
+            cout << (*listaAux)[k] << " ";
         cout << endl;
     }
 }

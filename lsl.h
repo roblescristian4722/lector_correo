@@ -227,9 +227,7 @@ T& LSL<T>::operator [](size_t index){
 
 template<typename T>
 LSL<T>& LSL<T>::operator=(const LSL<T>& other){
-    listSize = 0;
-    listBack = nullptr;
-    listFront = nullptr;
+    clear();
     NodoLSL* temp = other.listFront;
     for(size_t i(0); i<other.size(); ++i){
         this->push_back(temp->dato);

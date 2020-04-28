@@ -213,7 +213,7 @@ AVLTreeNode*& AVLTreeSecundario::lowestData()
 AVLTreeNode*& AVLTreeSecundario::highestData()
 { return highestData(m_root); }
 
-void AVLTreeSecundario::export_to_hash(HashMap<string, LSL<string>> *map)
+void AVLTreeSecundario::export_to_hash(HashMap<string, Vector<string>> *map)
 { export_to_hash(m_root, map); }
 
 void AVLTreeSecundario::removeData(const string& data)
@@ -281,15 +281,17 @@ void AVLTreeSecundario::shell_sort(LSL<IndicePrimario>& list)
     }
 }
 
-void AVLTreeSecundario::export_to_hash(AVLTreeNode *&node, HashMap<string, LSL<string>> *map)
+void AVLTreeSecundario::export_to_hash(AVLTreeNode *&node, HashMap<string, Vector<string>> *map)
 {
     if (node != nullptr){
         export_to_hash(node->left, map);
-        LSL<string>* aux = new LSL<string>;
+        Vector<string>* aux = new Vector<string>;
         string* strAux = new string(node->dataPtr->getLlave());
+
         for (size_t i = 0; i < node->dataPtr->getReferencia().size(); ++i)
             aux->push_back(node->dataPtr->getReferencia()[i].getLlave());
         map->insert(*strAux, *aux);
+
         delete aux;
         delete strAux;
         aux = nullptr;
