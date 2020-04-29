@@ -37,6 +37,7 @@ public:
     void shell_sort(size_t n, Vector<Correo> &vec);
     void shell_sort();
     void limpiarFilas();
+    void eliminar_archivo_hash();
 
 private slots:
     void on_agregar_clicked();
@@ -63,6 +64,7 @@ private:
     AVLTreeSecundario m_rem;
     AVLTreeSecundario m_des;
     HashMap<string, Vector<string>> m_mapRem;
+    bool m_hashEnabled;
 
     // Objeto lector que se encargará de administrar
     // todos los datos de la interfaz

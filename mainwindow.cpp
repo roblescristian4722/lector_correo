@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Se recuperan los datos del archivo binario en la
     // lista doblemente ligada que forma parte de la clase
     ui->bandejaTabla->horizontalHeader()->setVisible(true);
-
+    m_hashEnabled = false;
     m_rem.parseInOrder();
     m_des.parseInOrder();
     on_mostrarTodo_clicked();
@@ -38,6 +38,7 @@ MainWindow::~MainWindow()
     m_ids.clear();
     ui->opcCB->setCurrentIndex(OPC_ID);
     m_lector->guardar_indices();
+    eliminar_archivo_hash();
     delete m_lector;
     delete ui;
 }
@@ -47,6 +48,15 @@ void MainWindow::limpiarFilas()
 {
     while (ui->bandejaTabla->rowCount())
         ui->bandejaTabla->removeRow(0);
+}
+
+void MainWindow::eliminar_archivo_hash()
+{
+    if (!m_hashEnabled){
+        fstream hashArchivo("indices_secundarios.txt", ios::out);
+        hashArchivo.close();
+        remove("indices_secundarios.txt");
+    }
 }
 
 /// Crea una nueva fila en la bandeja principal
@@ -157,6 +167,8 @@ void MainWindow::on_agregar_clicked()
     a.exec();
     m_rem.parseInOrder();
     m_des.parseInOrder();
+    m_hashEnabled = false;
+    eliminar_archivo_hash();
     on_mostrarTodo_clicked();
 }
 
@@ -206,6 +218,8 @@ void MainWindow::on_eliminar_clicked()
 
     m_rem.parseInOrder();
     m_des.parseInOrder();
+    m_hashEnabled = false;
+    eliminar_archivo_hash();
     on_mostrarTodo_clicked();
 }
 
@@ -227,6 +241,8 @@ void MainWindow::on_modificar_clicked()
     modificar m(m_lector, id, &m_rem, &m_des, hash);
     m.setModal(true);
     m.exec();
+    m_hashEnabled = false;
+    eliminar_archivo_hash();
     on_mostrarTodo_clicked();
 }
 
@@ -539,7 +555,9 @@ void MainWindow::on_opcCB_currentIndexChanged(int index)
     }
     else if (index == OPC_HASH_REM && !m_mapRem.size()){
         cout << "CARGANDO DATOS A TABLAS HASH..." << endl;
+        m_hashEnabled = true;
         m_lector->cargar_map();
+        m_indices.removeAll();
         m_des.removeAll();
         m_rem.removeAll();
     }
@@ -564,7 +582,6 @@ void MainWindow::on_opcCB_currentIndexChanged(int index)
             cout << "----------------------------------------------------------------"
                  << endl
                  << "Insertando índices secundarios en árboles..." << endl;
-            m_indices.removeAll();
             m_mapRem.clear();
         }
         m_lector->cargar_archivo_indices();
