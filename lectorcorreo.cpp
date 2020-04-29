@@ -206,37 +206,41 @@ void LectorCorreo::crear(Correo* correo, bool modificar, bool hash)
             indiceTmp.setReferencia(0);
             archivoIndices.write((char*)&indiceTmp, sizeof(IndicePrimario));
             archivoIndices.close();
-            if (hash){
-                hashIndices = (*m_mapRem)[correo->getRem()];
-                if (hashIndices == nullptr){
-                    Vector<string> tmp;
-                    tmp.push_back(correo->getIdentificador());
-                    m_mapRem->insert(correo->getRem(), tmp);
-                }
-                else
-                    hashIndices->push_back(correo->getIdentificador());
-            }
         }
         if (!hash){
             m_rem->insertData(correo->getRem(), (*m_indices)[indiceTmp]->dataPtr);
             m_des->insertData(correo->getDestinatario(), (*m_indices)[indiceTmp]->dataPtr);
+        }
+        else{
+            hashIndices = (*m_mapRem)[correo->getRem()];
+            if (hashIndices == nullptr){
+                Vector<string> tmp;
+                tmp.push_back(correo->getIdentificador());
+                m_mapRem->insert(correo->getRem(), tmp);
+            }
+            else
+                hashIndices->push_back(correo->getIdentificador());
         }
     }
 }
 
 void LectorCorreo::eliminar(long id, bool paginado, bool hash)
 {
+    string hashDato;
     Correo tmp;
     IndicePrimario indiceTmp;
+    Vector<string> *vecTmp;
     fstream archivoDatos("datos.bin", ios::out | ios::in | ios::binary);
     fstream archivoIndices;
-
-    tmp.setIdentificador("");
 
     if (!archivoDatos.is_open())
         cout << "Error en el archivo de datos" << endl;
     else{
         long pos = (id - 1) * long(sizeof(Correo));
+        archivoDatos.seekg(pos);
+        archivoDatos.read((char*)&tmp, long(sizeof(Correo)));
+        hashDato = tmp.getRem();
+        tmp.setIdentificador("");
         archivoDatos.seekp(pos);
         archivoDatos.write((char*)&tmp, long(sizeof(Correo)));
         archivoDatos.close();
@@ -245,11 +249,21 @@ void LectorCorreo::eliminar(long id, bool paginado, bool hash)
         pos = id * long(sizeof(IndicePrimario));
         indiceTmp.setLlave(to_string(id).c_str());
         indiceTmp.setReferencia(pos);
-        // Si el árbol es paginado
-        if (!paginado){
-            m_indices->removeData(indiceTmp);
+        // Si se utiliza el hash map
+        if (hash){
+            vecTmp = (*m_mapRem)[hashDato];
+            for (size_t i = 0; i < vecTmp->size(); ++i)
+                if ((*vecTmp)[i] == to_string(id)){
+                    vecTmp->erase(i);
+            }
+            if (!vecTmp->size())
+                m_mapRem->delete_value(hashDato);
         }
         // Si el árbol no es paginado
+        else if (!paginado){
+            m_indices->removeData(indiceTmp);
+        }
+        // Si el árbol es paginado
         else{
             AVLTreePrimario::AVLTreeNode* nodo;
             nodo = (*m_paginados)[indiceTmp];

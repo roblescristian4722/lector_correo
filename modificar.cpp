@@ -2,12 +2,14 @@
 #include "ui_modificar.h"
 
 modificar::modificar(LectorCorreo* lector, long index, AVLTreeSecundario *rem,
-                     AVLTreeSecundario *des, bool hash, QWidget *parent) :
+                     AVLTreeSecundario *des, bool hash, HashMap<string, Vector<string>>* mapRem,
+                     QWidget *parent) :
     m_lector(lector),
     m_rem(rem),
     m_des(des),
     m_index(index),
     m_hash(hash),
+    m_mapRem(mapRem),
     QDialog(parent),
     ui(new Ui::modificar)
 {
@@ -31,6 +33,7 @@ modificar::~modificar()
 void modificar::on_guardar_clicked()
 {
     QString des, rem, cc, ccc, asunto, cont;
+    Vector<string> *vecStr;
 
     des = ui->des_linea->text();
     rem = ui->rem_linea->text();
@@ -44,6 +47,15 @@ void modificar::on_guardar_clicked()
         if (!m_hash){
             m_rem->removePrimary(m_correoTmp.getRem(), atol(m_correoTmp.getIdentificador().c_str()));
             m_des->removePrimary(m_correoTmp.getDestinatario(), atol(m_correoTmp.getIdentificador().c_str()));
+        }
+        else{
+            vecStr = (*m_mapRem)[m_correoTmp.getRem()];
+            for (size_t i = 0; i < vecStr->size(); ++i){
+                if ((*vecStr)[i] == m_correoTmp.getIdentificador())
+                    vecStr->erase(i);
+            }
+            if (!vecStr->size())
+                m_mapRem->delete_value(m_correoTmp.getRem());
         }
 
         m_correoTmp.setRem(rem.toStdString().c_str());

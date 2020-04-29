@@ -175,8 +175,8 @@ void MainWindow::on_agregar_clicked()
 void MainWindow::on_eliminar_clicked()
 {
     long id;
+    bool hash = ui->opcCB->currentIndex() == OPC_HASH_REM ? true : false;
     string auxRem;
-    Vector<string>* listaTmp;
     if (!ui->bandejaTabla->rowCount()){
         m_fila = 0;
         QMessageBox::warning(this, "Sin correo seleccionado",
@@ -196,25 +196,19 @@ void MainWindow::on_eliminar_clicked()
 
     // Se elimina el dato de los árboles secundarios
     auxRem = ui->bandejaTabla->item(m_fila, COL_REM)->text().toStdString();
-    if (ui->opcCB->currentIndex() == OPC_IND_SEC_REM){
-        listaTmp = m_mapRem[auxRem];
-        for(size_t i = 0; i < listaTmp->size(); ++i){
-            if ((*listaTmp)[i] == to_string(id))
-                listaTmp->erase(i);
-        }
-        if (!listaTmp->size())
-            m_mapRem.delete_value(auxRem);
-    }
-    else
-        m_rem.removePrimary(auxRem, id);
 
     if (ui->opcCB->currentIndex() == OPC_IND_PAGINADOS){
+        m_rem.removePrimary(auxRem, id);
         m_lector->eliminar(id, true);
         for (size_t i = 0; i < PAG_MAX_SIZE && i < size_t(m_paginados.getSize()); ++i)
             cout << i + 1 << ": " << m_paginados.getLRU()[i]->getLlave() << endl;
     }
-    else
+    else if (hash)
+        m_lector->eliminar(id, false, hash);
+    else{
+        m_rem.removePrimary(auxRem, id);
         m_lector->eliminar(id);
+    }
 
     m_rem.parseInOrder();
     m_des.parseInOrder();
@@ -238,7 +232,7 @@ void MainWindow::on_modificar_clicked()
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
-    modificar m(m_lector, id, &m_rem, &m_des, hash);
+    modificar m(m_lector, id, &m_rem, &m_des, hash, &m_mapRem);
     m.setModal(true);
     m.exec();
     m_hashEnabled = false;

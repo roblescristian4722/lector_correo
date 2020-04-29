@@ -17,7 +17,8 @@ class modificar : public QDialog
 
 public:
     explicit modificar(LectorCorreo* lector, long index, AVLTreeSecundario *rem,
-                       AVLTreeSecundario *des, bool hash, QWidget *parent = nullptr);
+                       AVLTreeSecundario *des, bool hash, HashMap<string, Vector<string>>* mapRem,
+                       QWidget *parent = nullptr);
     ~modificar();
 
 private slots:
@@ -32,6 +33,7 @@ private:
     Correo m_correoTmp;
     AVLTreeSecundario* m_rem;
     AVLTreeSecundario* m_des;
+    HashMap<string, Vector<string>>* m_mapRem;
     long m_index;
     bool m_hash;
 };

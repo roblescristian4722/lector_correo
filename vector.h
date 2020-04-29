@@ -59,9 +59,7 @@ private:
 // STATUS
 template<typename T>
 size_t Vector<T>::size() const
-{
-    return m_vectorSize;
-}
+{ return m_vectorSize; }
 
 template <typename T>
 size_t Vector<T>::capacity() const

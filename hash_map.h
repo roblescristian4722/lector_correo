@@ -199,8 +199,6 @@ void HashMap<K, V>::delete_value(const K &keyVal)
         // turns into false again
         if (auxList->empty())
             m_buckets[pos].m_visited = false;
-        else if (auxList->size() == i)
-            cout << "There is not such value" << endl;
     }
     else
         cout << "There is not such value" << endl;
