@@ -2,12 +2,12 @@
 #include "ui_modificar.h"
 
 modificar::modificar(LectorCorreo* lector, long index, AVLTreeSecundario *rem,
-                     AVLTreeSecundario *des, bool paginado, QWidget *parent) :
+                     AVLTreeSecundario *des, bool hash, QWidget *parent) :
     m_lector(lector),
     m_rem(rem),
     m_des(des),
     m_index(index),
-    m_paginado(paginado),
+    m_hash(hash),
     QDialog(parent),
     ui(new Ui::modificar)
 {
@@ -41,8 +41,10 @@ void modificar::on_guardar_clicked()
 
     if (!des.isEmpty() && !rem.isEmpty())
     {
-        m_rem->removePrimary(m_correoTmp.getRem(), atol(m_correoTmp.getIdentificador().c_str()));
-        m_des->removePrimary(m_correoTmp.getDestinatario(), atol(m_correoTmp.getIdentificador().c_str()));
+        if (!m_hash){
+            m_rem->removePrimary(m_correoTmp.getRem(), atol(m_correoTmp.getIdentificador().c_str()));
+            m_des->removePrimary(m_correoTmp.getDestinatario(), atol(m_correoTmp.getIdentificador().c_str()));
+        }
 
         m_correoTmp.setRem(rem.toStdString().c_str());
         m_correoTmp.setAsunto(asunto.toStdString().c_str());
@@ -51,7 +53,7 @@ void modificar::on_guardar_clicked()
         m_correoTmp.setDestinatario(des.toStdString().c_str());
         m_correoTmp.setCopiaCarbonCiega(ccc.toStdString().c_str());
 
-        m_lector->crear(&m_correoTmp, true, m_paginado);
+        m_lector->crear(&m_correoTmp, true, m_hash);
         modificar::close();
     }
     else

@@ -94,9 +94,7 @@ void AVLTreeSecundario::doBalancing(AVLTreeNode*& node)
 }
 
 int AVLTreeSecundario::balanceFactor(AVLTreeNode*& node)
-{
-   return height(node->right) - height(node->left);
-}
+{ return height(node->right) - height(node->left); }
 
 void AVLTreeSecundario::simpleLeftRotation(AVLTreeNode*& node)
 {
@@ -167,8 +165,7 @@ void AVLTreeSecundario::removePrimary(long id, AVLTreeNode *&node)
 {
     if (node == nullptr)
         throw range_error("Node doesn't exist");
-    else
-    {
+    else{
         cout << id << endl;
         LSL<IndicePrimario>& list = node->dataPtr->getReferencia();
         int pos = busqueda_binaria(id, list);

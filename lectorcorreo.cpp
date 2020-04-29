@@ -72,13 +72,34 @@ void LectorCorreo::guardar_indices()
     else{
         archivoIndices.read((char*)&indiceTmp, sizeof(IndicePrimario));
         archivoIndices.close();
-
         if (!indiceTmp.getReferencia())
             m_indices->writeFileInOrder();
-
         m_indices->removeAll();
         m_paginados->removeAll();
     }
+}
+
+void LectorCorreo::guardar_indices_hash()
+{
+    fstream archivoInSecundarios;
+    archivoInSecundarios.open("indices_secundarios.txt", ios::out);
+    archivoInSecundarios.close();
+    archivoInSecundarios.open("indices_secundarios.txt", ios::out | ios::in);
+    Vector<string>* vecAux;
+    if (m_mapRem->size()){
+        for (size_t i = 0; i < m_mapRem->size(); ++i){
+            archivoInSecundarios << (*m_mapRem->get_position(i).key).c_str();
+            cout << (*m_mapRem->get_position(i).key).c_str();
+            vecAux = m_mapRem->get_position(i).value;
+            for (size_t j = 0; j < vecAux->size(); ++j){
+                archivoInSecundarios << "|" << (*vecAux)[j];
+                cout << "|" << (*vecAux)[j];
+            }
+            archivoInSecundarios << '\n';
+            cout << endl;
+        }
+    }
+    archivoInSecundarios.close();
 }
 
 /// CARGAR ARCHIVO ///
@@ -159,6 +180,7 @@ void LectorCorreo::crear(Correo* correo, bool modificar, bool hash)
     fstream archivoDatos("datos.bin", ios::out | ios::binary | ios::in);
     fstream archivoIndices;
     IndicePrimario indiceTmp;
+    Vector<string>* hashIndices;
 
     if (!archivoDatos.is_open())
         cout << "Error en el achivo de datos" << endl;
@@ -178,20 +200,24 @@ void LectorCorreo::crear(Correo* correo, bool modificar, bool hash)
         pos = atoll(correo->getIdentificador().c_str()) * long(sizeof(Correo));
 
         if (!modificar){
-            // Se cambia la bandera del archivo de índices
             m_indices->insertData(indiceTmp);
-            m_rem->insertData(correo->getRem(), (*m_indices)[indiceTmp]->dataPtr);
-            m_des->insertData(correo->getDestinatario(), (*m_indices)[indiceTmp]->dataPtr);
-
+            // Se cambia la bandera del archivo de índices
             archivoIndices.open("indices.bin", ios::out | ios::binary | ios::in);
             indiceTmp.setReferencia(0);
             archivoIndices.write((char*)&indiceTmp, sizeof(IndicePrimario));
             archivoIndices.close();
             if (hash){
-
+                hashIndices = (*m_mapRem)[correo->getRem()];
+                if (hashIndices == nullptr){
+                    Vector<string> tmp;
+                    tmp.push_back(correo->getIdentificador());
+                    m_mapRem->insert(correo->getRem(), tmp);
+                }
+                else
+                    hashIndices->push_back(correo->getIdentificador());
             }
         }
-        else{
+        if (!hash){
             m_rem->insertData(correo->getRem(), (*m_indices)[indiceTmp]->dataPtr);
             m_des->insertData(correo->getDestinatario(), (*m_indices)[indiceTmp]->dataPtr);
         }
@@ -781,14 +807,40 @@ void LectorCorreo::cargar_map()
     fstream archivoSecundarios;
     HashMap<string, Vector<string>>::Pair par;
     Vector<string>* listaAux;
+    string key;
+    string value = "";
+    Vector<string> valueStr;
+    char tmp;
+
     archivoSecundarios.open("indices_secundarios.txt", ios::in);
-    if (!archivoSecundarios.is_open()){
-        cout << "No encontrado el archivo de índices secundarios." << endl
-             << "Creando nuevo archivo." << endl;
-        archivoSecundarios.open("indices_secundarios.txt", ios::out);
-    }
     cout << "Exporting data to hash map..." << endl;
-    m_rem->export_to_hash(m_mapRem);
+    if (!archivoSecundarios.is_open())
+        m_rem->export_to_hash(m_mapRem);
+    else{
+        while (!archivoSecundarios.eof()){
+            valueStr.clear();
+            getline(archivoSecundarios, key, '|');
+            if (archivoSecundarios.eof())
+                break;
+            do{
+                archivoSecundarios.get(tmp);
+                if (tmp == '|'){
+                    valueStr.push_back(value);
+                    value = "";
+                }
+                else if (tmp == '\n'){
+                    valueStr.push_back(value);
+                    value = "";
+                    break;
+                }
+                else
+                    value += tmp;
+            }while (1);
+            m_mapRem->insert(key, valueStr);
+        }
+    }
+    archivoSecundarios.close();
+    remove("indices_secundarios.txt");
     for (size_t i = 0; i < m_mapRem->size(); ++i){
         par = m_mapRem->get_position(i);
         cout << *par.key << ": ";

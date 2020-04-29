@@ -32,6 +32,7 @@ public:
 
     // guardar índices en archivo
     void guardar_indices();
+    void guardar_indices_hash();
 
     // Cargar datos de archivo
     void cargar_archivo_indices(bool indicesPaginados = false);

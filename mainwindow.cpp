@@ -151,9 +151,7 @@ void MainWindow::shell_sort(size_t n, Vector<Correo> &vec)
 /// ARCHIVO DE DATOS ///
 void MainWindow::on_agregar_clicked()
 {
-    bool hash = false;
-    if (ui->opcCB->currentIndex() == OPC_HASH_REM)
-        hash = true;
+    bool hash = ui->opcCB->currentIndex() == OPC_HASH_REM ? true : false;
     agregar a(m_lector, hash);
     a.setModal(true);
     a.exec();
@@ -214,6 +212,7 @@ void MainWindow::on_eliminar_clicked()
 void MainWindow::on_modificar_clicked()
 {
     long id;
+    bool hash = ui->opcCB->currentIndex() == OPC_HASH_REM ? true : false;
     if (!ui->bandejaTabla->rowCount()){
         m_fila = 0;
         QMessageBox::warning(this, "Sin correo seleccionado",
@@ -225,8 +224,7 @@ void MainWindow::on_modificar_clicked()
 
     id = ui->bandejaTabla->item(m_fila, COL_ID)->text().toLong();
 
-    bool paginado = ui->opcCB->currentIndex() == OPC_IND_PAGINADOS ? true : false;
-    modificar m(m_lector, id, &m_rem, &m_des, paginado);
+    modificar m(m_lector, id, &m_rem, &m_des, hash);
     m.setModal(true);
     m.exec();
     on_mostrarTodo_clicked();
@@ -562,6 +560,7 @@ void MainWindow::on_opcCB_currentIndexChanged(int index)
         }
         // HASH
         else{
+            m_lector->guardar_indices_hash();
             cout << "----------------------------------------------------------------"
                  << endl
                  << "Insertando índices secundarios en árboles..." << endl;

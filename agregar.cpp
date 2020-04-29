@@ -61,7 +61,7 @@ void agregar::on_guardar_clicked()
         correo.setIdentificador(id.toLocal8Bit());
         correo.setCopiaCarbonCiega(ccc.toStdString().c_str());
 
-        m_lector->crear(&correo, m_hash);
+        m_lector->crear(&correo, false, m_hash);
         agregar::close();
     }
     else
