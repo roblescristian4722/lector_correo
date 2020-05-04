@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++11 -pthread
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -19,6 +19,8 @@ SOURCES += \
     agregar.cpp \
     avl_tree_primario.cpp \
     avl_tree_secundario.cpp \
+    cifrar.cpp \
+    descifrar.cpp \
     eliminar_copia.cpp \
     eliminar_propietario.cpp \
     indices.cpp \
@@ -37,6 +39,8 @@ HEADERS += \
     agregar.h \
     avl_tree_primario.h \
     avl_tree_secundario.h \
+    cifrar.h \
+    descifrar.h \
     eliminar_copia.h \
     eliminar_propietario.h \
     hash_map.h \
@@ -55,6 +59,8 @@ HEADERS += \
 
 FORMS += \
     agregar.ui \
+    cifrar.ui \
+    descifrar.ui \
     eliminar_copia.ui \
     eliminar_propietario.ui \
     mainwindow.ui \

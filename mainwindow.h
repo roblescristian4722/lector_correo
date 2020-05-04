@@ -18,6 +18,8 @@
 #include "modificar_propietario.h"
 #include "avl_tree_primario.h"
 #include "hash_map.h"
+#include "cifrar.h"
+#include "descifrar.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -55,6 +57,8 @@ private slots:
     void on_actionEliminar_correo_triggered();
     void on_actionModificar_Correo_triggered();
     void on_opcCB_currentIndexChanged(int index);
+    void on_actionCifrar_copia_de_seguridad_triggered();
+    void on_actionDescifrar_copia_de_seguridad_triggered();
 
 private:
     Ui::MainWindow *ui;

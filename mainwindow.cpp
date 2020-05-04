@@ -439,49 +439,55 @@ void MainWindow::on_actionRecuperar_copia_de_seguridad_triggered()
     Correo correoCopia;
     LSL<string> copiaDatos;
     int res;
+    bool exists;
 
     // Se almacenan los datos de la copia de seguridad en una lista
     // de strings cuyos valores se copiarán luego a un correo temporal
-    parser.getData("respaldo.csv", copiaDatos);
-    if (!m_ids.size())
-        m_lector->leer(m_ids);
+    exists = parser.getData("respaldo.csv", copiaDatos);
+    if (exists){
+        if (!m_ids.size())
+            m_lector->leer(m_ids);
+        for (size_t i = 0; i < copiaDatos.size(); i += 9)
+        {
+            // res guardará el índice de la lista que coincida con
+            // el correo leído de la copia de seguridad. En caso de
+            // que no se hayan encontrado coincidencias regresa un -1
+            shell_sort();
+            res = busqueda_binaria(atoi(copiaDatos[i].c_str()));
 
-    for (size_t i = 0; i < copiaDatos.size(); i += 9)
-    {
-        // res guardará el índice de la lista que coincida con
-        // el correo leído de la copia de seguridad. En caso de
-        // que no se hayan encontrado coincidencias regresa un -1
-        shell_sort();
-        res = busqueda_binaria(atoi(copiaDatos[i].c_str()));
+            correoCopia.setIdentificador(copiaDatos[i].c_str());
+            correoCopia.setFechaEnvio(copiaDatos[i + 1].c_str());
+            correoCopia.setHoraEnvio(copiaDatos[i + 2].c_str());
+            correoCopia.setRem(copiaDatos[i + 3].c_str());
+            correoCopia.setDestinatario(copiaDatos[i + 4].c_str());
+            correoCopia.setCopiaCarbon(copiaDatos[i + 5].c_str());
+            correoCopia.setCopiaCarbonCiega(copiaDatos[i + 6].c_str());
+            correoCopia.setAsunto(copiaDatos[i + 7].c_str());
+            correoCopia.setContenido(copiaDatos[i + 8].c_str());
 
-        correoCopia.setIdentificador(copiaDatos[i].c_str());
-        correoCopia.setFechaEnvio(copiaDatos[i + 1].c_str());
-        correoCopia.setHoraEnvio(copiaDatos[i + 2].c_str());
-        correoCopia.setRem(copiaDatos[i + 3].c_str());
-        correoCopia.setDestinatario(copiaDatos[i + 4].c_str());
-        correoCopia.setCopiaCarbon(copiaDatos[i + 5].c_str());
-        correoCopia.setCopiaCarbonCiega(copiaDatos[i + 6].c_str());
-        correoCopia.setAsunto(copiaDatos[i + 7].c_str());
-        correoCopia.setContenido(copiaDatos[i + 8].c_str());
-
-        // Si el id de la copia no se encontró en la lista de
-        // ids cargada en memoria
-        if (res == -1){
-            m_lector->crear(&correoCopia);
-        }
-        // En caso de que uno de los correos tenga el mismo ID que
-        // uno de los almacenadosen el programa
-        else{
-            correoActual = m_lector->leer(to_string(m_ids[size_t(res)]).c_str());
-            if (correoActual != correoCopia){
-                Sobrescribir sob(m_lector, &correoActual, &correoCopia, &m_rem, &m_des);
-                sob.setModal(true);
-                sob.exec();
+            // Si el id de la copia no se encontró en la lista de
+            // ids cargada en memoria
+            if (res == -1){
+                m_lector->crear(&correoCopia);
+            }
+            // En caso de que uno de los correos tenga el mismo ID que
+            // uno de los almacenadosen el programa
+            else{
+                correoActual = m_lector->leer(to_string(m_ids[size_t(res)]).c_str());
+                if (correoActual != correoCopia){
+                    Sobrescribir sob(m_lector, &correoActual, &correoCopia, &m_rem, &m_des);
+                    sob.setModal(true);
+                    sob.exec();
+                }
             }
         }
+        on_mostrarTodo_clicked();
+        QMessageBox::information(this, "Copia de seguridad restaurada", "Copia de seguridad restaurada con éxito");
     }
-    on_mostrarTodo_clicked();
-    QMessageBox::information(this, "Copia de seguridad restaurada", "Copia de seguridad restaurada con éxito");
+    else
+        QMessageBox::warning(this, "Copia de seguridad no encontrada", "La copia de seguridad no se ha encontrado,"
+                                                                           "intente crear una copia de seguridad nueva"
+                                                                           " o descifrar una copia previamente cifrada");
 }
 
 void MainWindow::on_actionCrear_copia_de_seguridad_triggered()
@@ -581,4 +587,19 @@ void MainWindow::on_opcCB_currentIndexChanged(int index)
         m_lector->cargar_archivo_indices();
     }
 
+}
+
+void MainWindow::on_actionCifrar_copia_de_seguridad_triggered()
+{
+    Cifrar cif;
+    cif.setModal(true);
+    cif.exec();
+    remove("respaldo.csv");
+}
+
+void MainWindow::on_actionDescifrar_copia_de_seguridad_triggered()
+{
+    Descifrar des;
+    des.setModal(true);
+    des.exec();
 }

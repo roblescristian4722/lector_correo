@@ -251,6 +251,10 @@
     <addaction name="actionEliminar_correo_en_copia_de_seguridad"/>
     <addaction name="separator"/>
     <addaction name="actionModificar_correo_en_copia_de_seguridad"/>
+    <addaction name="separator"/>
+    <addaction name="actionCifrar_copia_de_seguridad"/>
+    <addaction name="separator"/>
+    <addaction name="actionDescifrar_copia_de_seguridad"/>
    </widget>
    <widget class="QMenu" name="menuCopia_de_propietario">
     <property name="title">
@@ -298,6 +302,16 @@
   <action name="actionModificar_Correo">
    <property name="text">
     <string>Modificar correo</string>
+   </property>
+  </action>
+  <action name="actionCifrar_copia_de_seguridad">
+   <property name="text">
+    <string>Cifrar copia de seguridad</string>
+   </property>
+  </action>
+  <action name="actionDescifrar_copia_de_seguridad">
+   <property name="text">
+    <string>Descifrar copia de seguridad</string>
    </property>
   </action>
  </widget>

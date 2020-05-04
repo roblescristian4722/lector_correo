@@ -14,7 +14,7 @@ public:
     Parser();
     ~Parser();
 
-    void getData(const char* fileName, LSL<string> &data);
+    bool getData(const char* fileName, LSL<string> &data);
 
 private:
     unsigned int m_size;

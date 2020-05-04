@@ -1,10 +1,8 @@
 #include "correo.h"
 
-Correo::Correo()
-{}
+Correo::Correo(){}
 
-Correo::~Correo()
-{}
+Correo::~Correo(){}
 
 // Getters
 string Correo::getIdentificador() const
@@ -36,37 +34,28 @@ string Correo::getContenido() const
 
 // Setters
 void Correo::setIdentificador(const char* identificador)
-{
-    strcpy(m_identificador, identificador);
-}
+{ strcpy(m_identificador, identificador); }
+
 void Correo::setContenido(const char* contenido)
-{
-    strcpy(m_contenido, contenido);
-}
+{ strcpy(m_contenido, contenido); }
+
 void Correo::setAsunto(const char* asunto)
-{
-    strcpy(m_asunto, asunto);
-}
+{ strcpy(m_asunto, asunto); }
+
 void Correo::setCopiaCarbonCiega(const char* copiaCarbonCiega)
-{
-    strcpy(m_copiaCarbonCiega, copiaCarbonCiega);
-}
+{ strcpy(m_copiaCarbonCiega, copiaCarbonCiega); }
+
 void Correo::setCopiaCarbon(const char* copiaCarbon)
-{
-    strcpy(m_copiaCarbon, copiaCarbon);
-}
+{ strcpy(m_copiaCarbon, copiaCarbon); }
+
 void Correo::setDestinatario(const char* destinatario)
-{
-    strcpy(m_destinatario, destinatario);
-}
+{ strcpy(m_destinatario, destinatario); }
+
 void Correo::setRem(const char* value)
-{
-    strcpy(m_rem, value);
-}
+{ strcpy(m_rem, value); }
+
 void Correo::setFechaEnvio(const char* fechaEnvio)
-{
-    strcpy(m_fechaEnvio, fechaEnvio);
-}
+{ strcpy(m_fechaEnvio, fechaEnvio); }
 
 void Correo::setHoraEnvio(const char* horaEnvio)
 { strcpy(m_horaEnvio, horaEnvio); }

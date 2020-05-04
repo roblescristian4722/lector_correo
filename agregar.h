@@ -16,7 +16,8 @@ class agregar : public QDialog
     Q_OBJECT
 
 public:
-    explicit agregar(LectorCorreo* lector, bool hash = false, QWidget *parent = nullptr);
+    explicit agregar(LectorCorreo* lector, bool hash = false,
+                     QWidget *parent = nullptr);
     ~agregar();
 
 private slots:

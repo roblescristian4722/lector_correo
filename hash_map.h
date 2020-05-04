@@ -181,7 +181,6 @@ void HashMap<K, V>::insert(const K &keyVal, const V &val)
 template <typename K, typename V>
 void HashMap<K, V>::delete_value(const K &keyVal)
 {
-    size_t aux = hash_function(keyVal);
     size_t i;
     LSL<Node<K, V>> *auxList;
     long pos = hash_function(keyVal);
