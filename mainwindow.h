@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtDebug>
+#include <thread>
 #include "string.h"
 #include "agregar.h"
 #include "vistaprevia.h"
@@ -20,6 +21,7 @@
 #include "hash_map.h"
 #include "cifrar.h"
 #include "descifrar.h"
+#include "compresion.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -59,6 +61,10 @@ private slots:
     void on_opcCB_currentIndexChanged(int index);
     void on_actionCifrar_copia_de_seguridad_triggered();
     void on_actionDescifrar_copia_de_seguridad_triggered();
+
+    void on_actionComprimir_copia_de_seguridad_triggered();
+
+    void on_actionDescomprimir_copia_de_seguridad_triggered();
 
 private:
     Ui::MainWindow *ui;

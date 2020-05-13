@@ -20,6 +20,7 @@ SOURCES += \
     avl_tree_primario.cpp \
     avl_tree_secundario.cpp \
     cifrar.cpp \
+    compresion.cpp \
     descifrar.cpp \
     eliminar_copia.cpp \
     eliminar_propietario.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     avl_tree_primario.h \
     avl_tree_secundario.h \
     cifrar.h \
+    compresion.h \
     descifrar.h \
     eliminar_copia.h \
     eliminar_propietario.h \
@@ -60,6 +62,7 @@ HEADERS += \
 FORMS += \
     agregar.ui \
     cifrar.ui \
+    compresion.ui \
     descifrar.ui \
     eliminar_copia.ui \
     eliminar_propietario.ui \

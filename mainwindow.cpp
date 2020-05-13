@@ -603,3 +603,17 @@ void MainWindow::on_actionDescifrar_copia_de_seguridad_triggered()
     des.setModal(true);
     des.exec();
 }
+
+void MainWindow::on_actionComprimir_copia_de_seguridad_triggered()
+{
+    compresion com("comprimir");
+    com.setModal(true);
+    com.exec();
+}
+
+void MainWindow::on_actionDescomprimir_copia_de_seguridad_triggered()
+{
+    compresion com("descomprimir");
+    com.setModal(true);
+    com.exec();
+}

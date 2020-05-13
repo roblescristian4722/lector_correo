@@ -255,6 +255,10 @@
     <addaction name="actionCifrar_copia_de_seguridad"/>
     <addaction name="separator"/>
     <addaction name="actionDescifrar_copia_de_seguridad"/>
+    <addaction name="separator"/>
+    <addaction name="actionComprimir_copia_de_seguridad"/>
+    <addaction name="separator"/>
+    <addaction name="actionDescomprimir_copia_de_seguridad"/>
    </widget>
    <widget class="QMenu" name="menuCopia_de_propietario">
     <property name="title">
@@ -312,6 +316,16 @@
   <action name="actionDescifrar_copia_de_seguridad">
    <property name="text">
     <string>Descifrar copia de seguridad</string>
+   </property>
+  </action>
+  <action name="actionComprimir_copia_de_seguridad">
+   <property name="text">
+    <string>Comprimir copia de seguridad</string>
+   </property>
+  </action>
+  <action name="actionDescomprimir_copia_de_seguridad">
+   <property name="text">
+    <string>Descomprimir copia de seguridad</string>
    </property>
   </action>
  </widget>

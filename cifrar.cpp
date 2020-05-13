@@ -77,5 +77,6 @@ void hilo(string dest, string pass)
 {
     string tmp = "./cipher cifrar respaldo.csv ";
     tmp += dest + " " + pass;
+    system("g++ cesar/main.cpp -o cipher");
     system(tmp.c_str());
 }
